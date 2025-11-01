@@ -1,0 +1,84 @@
+# Spike results
+
+Machine for all numbers below unless stated otherwise: cloud VM, 2 vCPU Intel Xeon
+@ 2.10 GHz, 7 GiB RAM, Linux 6.x, OpenJDK 25.0.4 (Ubuntu build), G1 GC, `-Xmx2g`.
+A shared 2-vCPU VM is noisy; differences below roughly 20 % are not meaningful.
+
+## S1 — Heap vs native allocation
+
+Source: `src/spike/MemorySpike.java`.
+
+### S1.1 Alignment of heap segments
+
+| Segment | Layout | Result |
+| --- | --- | --- |
+| `byte[]`-backed | `JAVA_DOUBLE` (8-byte aligned) | **fails**: `IllegalArgumentException: Target offset 0 is incompatible with alignment constraint 8` |
+| `byte[]`-backed | `JAVA_DOUBLE_UNALIGNED` | ok |
+| `long[]`-backed | `JAVA_DOUBLE` | ok |
+| `long[]`-backed | `JAVA_DOUBLE` at byte offset 4 | fails (expected) |
+| `long[]`-backed | `maxByteAlignment()` | 8 |
+| native, `allocate(n, 64)` | `maxByteAlignment()` | 128 (allocator returned more than requested) |
+
+Heap buffers must therefore be backed by `long[]`; that gives 8-byte alignment, enough
+for every dtype including the 8-byte components of `complex128`.
+
+### S1.2 Allocation + release cost (manual harness, median of 7 rounds)
+
+`heap` = `MemorySegment.ofArray(new long[n])`; `confined`/`shared` = arena created,
+segment allocated with 64-byte alignment, arena closed; `auto` = `Arena.ofAuto()`,
+released by GC. Heap B/op is the Java heap allocated per operation (native memory
+is not visible here).
+
+| float64 elements | heap | confined | shared | auto |
+| ---: | ---: | ---: | ---: | ---: |
+| 16 | 83 ns | 87 ns | 38.6 µs | 418 ns |
+| 128 | 225 ns | 177 ns | 34.8 µs | 1.0 µs |
+| 1,024 | 1.4 µs | 280 ns | 33.5 µs | 5.6 µs |
+| 65,536 | 53 µs | 10.3 µs | 41.7 µs | 217 µs |
+| 1,048,576 | 6.3 ms | 322 µs | 358 µs | 1.3 ms |
+| 16,777,216 | 13.7 ms | 56.3 ms | 53.4 ms | 66.9 ms |
+
+Heap bytes per operation: heap = array size + ~90 B; confined/shared/auto = 144–168 B
+independent of size.
+
+### S1.3 Sequential read, aligned vs unaligned layout
+
+1,048,576 float64 values, constant layouts, ns per element:
+
+| Memory | `JAVA_DOUBLE` | `JAVA_DOUBLE_UNALIGNED` |
+| --- | ---: | ---: |
+| heap (`long[]`) | 0.63 | 0.65 |
+| native | 0.67 | 0.66 |
+
+No measurable difference. A first version passed the layout as a method parameter and
+measured 6–9 ns/element: the JIT only intrinsifies a `VarHandle` access when the
+layout is a constant. Kernels must therefore use `static final` layouts.
+
+### S1.4 Heap vs automatic native crossover
+
+| bytes | heap | auto | confined |
+| ---: | ---: | ---: | ---: |
+| 8 KiB | 1.5 µs | 4.8 µs | 1.5 µs |
+| 16 KiB | 1.9 µs | 4.4 µs | 0.2 µs |
+| 32 KiB | 17.4 µs\* | 4.9 µs | 0.4 µs |
+| 64 KiB | 7.3 µs | 8.5 µs | 1.5 µs |
+| 256 KiB | 26.5 µs | 32.2 µs | 5.6 µs |
+| 1 MiB | 126 µs | 141 µs | 37 µs |
+| 2 MiB | 228 µs | 1.1 ms | 75 µs |
+| 8 MiB | 889 µs | 4.4 ms | 321 µs |
+
+\* outlier, a GC cycle fell into the measured rounds.
+
+### S1 observations
+
+1. **Shared arenas have a fixed ~35 µs close cost** (thread handshake), independent of
+   size. They must not be the default scope mode.
+2. **Confined arenas are the cheapest way to get memory at every size above ~1 KiB**,
+   because release is deterministic and nothing is left for GC.
+3. **Automatic arenas are never cheaper than heap below 1 MiB** in this harness and
+   2–5× more expensive above it, because release goes through `Cleaner` and GC.
+   S1.2 shows the opposite at 8 MiB (heap 6.3 ms): there, a heap that is too small
+   for the live set turned every allocation into a GC cycle. The manual harness
+   cannot separate those effects; S5 repeats this with JMH.
+4. Both answers to "heap or native for automatic arrays?" are therefore driven by
+   GC behaviour, not by allocation cost. S4 measures the GC side.
