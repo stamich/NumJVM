@@ -82,3 +82,32 @@ layout is a constant. Kernels must therefore use `static final` layouts.
    cannot separate those effects; S5 repeats this with JMH.
 4. Both answers to "heap or native for automatic arrays?" are therefore driven by
    GC behaviour, not by allocation cost. S4 measures the GC side.
+
+## S2 — Minimal float64 array and odometer iterator
+
+Source: `SpikeArray.java`, `Odometer.java`, `SpikeArrayCheck.java`. All 28 value
+checks pass on heap and native memory: C-contiguous reads, `get(i, j)`, transpose
+(shape `[4, 3]`, strides `[8, 32]`), positive and negative steps, broadcast with zero
+strides (`[0, 8]`), 1-D → 3-D broadcast, 0-D and zero-length arrays.
+
+| Access | Time | Heap bytes |
+| --- | ---: | ---: |
+| `get(i, j)` (rank-specialised) | 12.4 ns/op | 0 B/op |
+| `getVarargs(i, j)` | 13.2 ns/op | 0 B/op |
+| odometer sum, 256×256 transposed | 94.6 µs/op (1.44 ns/element) | 120 B/op |
+
+Times include the harness lambda and a volatile write; only the relative numbers
+matter.
+
+### S2 observations
+
+1. **The varargs accessor did not allocate here**: after inlining, escape analysis
+   removed the index array. That is not a guarantee. It fails as soon as the call
+   site is not inlined (large callers, megamorphic sites, interpreter, C1). The
+   rank-specialised accessors are allocation-free by construction, so they stay the
+   primary API and the `long[]` form is the general fallback (ADR-002).
+2. **The odometer allocates once per iteration, not per element**: 120 B per traversal
+   for its counter and offset arrays. That is acceptable for M0 and is what ADR-003
+   adopts.
+3. Byte strides make transpose, reverse and broadcast pure metadata changes; no case
+   needed element-size arithmetic at access time.
