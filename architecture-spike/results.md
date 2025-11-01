@@ -111,3 +111,43 @@ matter.
    adopts.
 3. Byte strides make transpose, reverse and broadcast pure metadata changes; no case
    needed element-size arithmetic at access time.
+
+## S3 — Strided add with broadcasting, pairwise sum
+
+Source: `StridedAdd.java`, `SumReduction.java`, `KernelSpike.java`.
+
+Correctness: all 18 checks pass — `(3,4) + (4,)`, transposed + contiguous,
+reversed rows + column vector, pairwise sum for n ∈ {0, 1, 7, 8, 9, 127, 128, 129,
+1000, 65 536, 1 048 577} against the closed form n(n−1)/2, sum over transposed and
+broadcast views.
+
+Accuracy, 2^24 copies of 0.1:
+
+| Algorithm | Relative error |
+| --- | ---: |
+| pairwise (NumPy algorithm) | 1.4 × 10⁻¹⁶ |
+| naive single accumulator | 2.5 × 10⁻¹⁰ |
+
+Speed, ns per element (manual harness; `add` includes allocating and zeroing the
+output, so it measures what a user call costs):
+
+| elements | add fast path | add generic loop | add, one operand transposed | sum pairwise | sum naive |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 1,024 | 1.92 | 2.43 | 2.53 | 2.60 | 0.65 |
+| 65,536 | 5.59 | 7.82 | 10.27 | 1.52 | 0.75 |
+| 1,048,576 | 5.08 | 7.52 | 19.31 | 1.54 | 0.67 |
+| 16,777,216 | 6.08 | 11.91 | 46.24 | 2.22 | 1.62 |
+
+### S3 observations
+
+1. **Contiguous fast path vs generic odometer loop: 1.3–2.0× faster** on identical
+   contiguous inputs. Worth keeping, but the generic loop is not a cliff; M0 can ship
+   the generic loop plus one contiguous fast path, and M1 adds dimension coalescing.
+2. **Transposed operands degrade with size** (19–46 ns/element at ≥1M elements)
+   because the inner loop strides through memory by a full row. This is the case
+   loop reordering in M1 must fix; it is out of scope for M0.
+3. **Pairwise sum is 2–4× slower than the naive loop** in this spike, mostly the
+   per-block stride multiplications and the recursion, but it is six orders of
+   magnitude more accurate and matches NumPy's results. M0 keeps pairwise (needed for
+   oracle comparison); speeding it up is M1/M2 work (unit-stride specialisation,
+   Vector API).
