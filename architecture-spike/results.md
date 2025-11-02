@@ -201,3 +201,51 @@ limit: 536870912)`, and succeeds with `-XX:MaxDirectMemorySize=1g`.
 Decision input for ADR-001: keep live-native-bytes accounting for `NJ.memoryStats()`;
 make the soft limit opt-in and off by default; document `MaxDirectMemorySize` as the
 real bound.
+
+## S5 — JMH and NumPy baseline
+
+Source: `benchmarks/src/spike/SpikeBenchmarks.java`, `benchmarks/numpy_baseline.py`.
+JMH 1.37, 1 fork, 3 × 1 s warm-up, 5 × 1 s measurement, average time, `-prof gc`,
+single thread. NumPy 2.5.3 on the same VM, `OMP_NUM_THREADS=1`, best of 5 `timeit`
+rounds. Error columns are JMH's 99.9 % confidence half-width; on this shared VM they
+are large for anything that allocates megabytes.
+
+### Allocation (µs/op, heap bytes/op)
+
+| float64 elements | heap `long[]` | `ofAuto()` | `ofConfined()` + close | NumPy `zeros` |
+| ---: | ---: | ---: | ---: | ---: |
+| 1,024 | 1.18 ± 0.22 (8,280 B) | 3.35 ± 1.54 | 0.12 ± 0.05 | 0.25 |
+| 65,536 | 59.5 ± 3.8 (524 KB) | 101 ± 29 | 11.5 ± 0.9 | 11.8 |
+| 1,048,576 | 891 ± 127 (8.4 MB) | 1,981 ± 1,256 | 345 ± 72 | 350 |
+
+### Kernels (µs/op; `add` includes allocating the output)
+
+| elements | op | Java fast path | Java generic loop | NumPy | Java / NumPy |
+| ---: | --- | ---: | ---: | ---: | ---: |
+| 1,024 | add contiguous | 1.87 ± 0.31 | 2.98 ± 0.73 | 0.65 | 2.9× |
+| 1,024 | add, one transposed | 3.00 ± 0.70 | — | 1.73 | 1.7× |
+| 1,024 | sum (pairwise) | 0.67 ± 0.32 | naive 0.69 | 2.76 | 0.24× |
+| 65,536 | add contiguous | 129 ± 20 | 208 ± 69 | 45.9 | 2.8× |
+| 65,536 | add, one transposed | 202 ± 79 | — | 136 | 1.5× |
+| 65,536 | sum (pairwise) | 43.7 ± 24.7 | naive 48.9 | 23.5 | 1.9× |
+| 1,048,576 | add contiguous | 5,132 ± 4,113 | 4,814 ± 2,483 | 1,245 | 4.1× |
+| 1,048,576 | add, one transposed | 8,974 ± 2,584 | — | 5,717 | 1.6× |
+| 1,048,576 | sum (pairwise) | 787 ± 208 | naive 752 | 460 | 1.7× |
+
+Allocation profile: every kernel benchmark is allocation-free apart from the output
+array (sum: < 6 B/op, i.e. noise).
+
+### S5 observations
+
+1. **The 1.5× NumPy target from the proposal is not met by scalar Java loops** for
+   contiguous `add` (2.8–4.1×); NumPy's loops are SIMD. `sum` is at 1.7–1.9× and
+   *faster* than NumPy below a few thousand elements, where Python call overhead
+   dominates. This supports the plan: M0 ships correct scalar loops, M2 adds the
+   Vector API path, and the target is re-measured there.
+2. **Pairwise and naive sum cost the same under JMH.** The 2–4× gap in S3 was a
+   harness artifact (OSR compilation of the lambda loop). Pairwise costs nothing.
+3. **Automatic native allocation is 1.7–2.8× slower than heap at every size** and
+   much noisier; confined arenas are as fast as NumPy's `zeros`. For GC-managed
+   arrays the heap is the better default well beyond 32 KiB.
+4. The add fast path is not reliably faster than the generic loop at 1M elements;
+   allocation and page faults on the output dominate there.
