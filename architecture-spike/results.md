@@ -151,3 +151,53 @@ output, so it measures what a user call costs):
    magnitude more accurate and matches NumPy's results. M0 keeps pairwise (needed for
    oracle comparison); speeding it up is M1/M2 work (unit-stride specialisation,
    Vector API).
+
+## S4 — Lifetime soak: 100,000 short-lived off-heap arrays
+
+Source: `LifetimeSoak.java`. Eight arrays alive at any time, each written and read
+once. `-Xmx512m`, each mode in its own JVM. "Tracked native" is a spike-side counter
+incremented on allocation and decremented by a `Cleaner` action.
+
+32 KiB arrays (3.1 GiB allocated in total):
+
+| Mode | Time | Peak RSS | GCs |
+| --- | ---: | ---: | ---: |
+| heap (`long[]`) | 563 ms | 270 MiB | 26 |
+| `Arena.ofAuto()` | 1,008 ms | 575 MiB | 6 |
+| `ofAuto()` + 256 MiB soft limit → `System.gc()` | 943 ms | 342 MiB | 13 (13 forced) |
+| `Arena.ofConfined()` per array, closed immediately | 229 ms | 67 MiB | 1 |
+
+1 MiB arrays (98 GiB allocated in total):
+
+| Mode | Time | Peak RSS | GCs |
+| --- | ---: | ---: | ---: |
+| heap (`long[]`) | 6.2 s | 186 MiB | 958 |
+| `Arena.ofAuto()` | 17.0 s | 567 MiB | 200 |
+| `ofAuto()` + 256 MiB soft limit | 20.7 s | 310 MiB | 403 (403 forced) |
+| `ofAuto()`, `-XX:MaxDirectMemorySize=128m` | 21.1 s | 183 MiB | 838 |
+| `Arena.ofConfined()` | 2.4 s | 69 MiB | 1 |
+
+A single `Arena.ofAuto().allocate(600 MiB)` with `-Xmx512m` fails with
+`OutOfMemoryError: Cannot reserve 629145648 bytes of direct buffer memory (allocated: 0,
+limit: 536870912)`, and succeeds with `-XX:MaxDirectMemorySize=1g`.
+
+### S4 observations
+
+1. **The unbounded-growth scenario from the analysis does not happen.** Native
+   segments are reserved against the JDK's direct-memory limit
+   (`-XX:MaxDirectMemorySize`, default = max heap). On reaching it, the JDK runs
+   `System.gc()` and retries before throwing. RSS stayed below ~575 MiB in every
+   automatic run; the hypothesis behind analysis finding #4 was wrong.
+2. **The real costs are throughput and headroom.** Automatic native memory took
+   2.7× longer than heap at 1 MiB, and a process can hold heap *plus* the same amount
+   again in native memory by default.
+3. **Our own soft limit duplicates what the JDK already does**: at the same peak RSS it
+   was no faster than lowering `MaxDirectMemorySize`. It adds nothing as a safety
+   mechanism. What the JDK does not give is *visibility*: there is no cheap API for
+   "how much of that is NumJVM's?"
+4. **Confined scopes are 4–7× faster than any GC-managed option** and keep RSS flat;
+   they are the pattern to recommend for allocation-heavy loops.
+
+Decision input for ADR-001: keep live-native-bytes accounting for `NJ.memoryStats()`;
+make the soft limit opt-in and off by default; document `MaxDirectMemorySize` as the
+real bound.
