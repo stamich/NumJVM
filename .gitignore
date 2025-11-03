@@ -12,3 +12,7 @@ out/
 .settings
 .classpath
 .factorypath
+.kotlin/
+__pycache__/
+*.pyc
+.venv/

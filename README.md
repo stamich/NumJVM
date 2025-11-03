@@ -1,16 +1,28 @@
-## Feature kafka documentation
+# NumJVM
 
-- [Micronaut Kafka Messaging documentation](https://micronaut-projects.github.io/micronaut-kafka/latest/guide/index.html)
+Numerical computing for the Java Virtual Machine: multidimensional arrays with NumPy
+semantics, built on the Java 25 Foreign Function & Memory API.
 
-## Feature reactor documentation
+> **Status:** pre-alpha. Milestone M0 (core array and memory foundation) is in
+> progress. Design decisions are recorded in [`docs/adr`](docs/adr).
 
-- [Micronaut Reactor documentation](https://micronaut-projects.github.io/micronaut-reactor/snapshot/guide/index.html)
+## Modules
 
-## Feature kafka-streams documentation
+| Module | Contents |
+| --- | --- |
+| `numjvm-core` | dtypes, memory management, `NDArray`, views, broadcasting |
+| `numjvm-io` | NumPy `.npy` reading and writing |
+| `numjvm-bench` | JMH benchmarks (not published) |
 
-- [Micronaut Kafka Streams documentation](https://micronaut-projects.github.io/micronaut-kafka/latest/guide/index.html#kafkaStream)
+## Building
 
-## Feature http-client documentation
+Requires JDK 25. The Gradle wrapper downloads Gradle; the build can provision a JDK 25
+toolchain automatically if none is installed.
 
-- [Micronaut Micronaut HTTP Client documentation](https://docs.micronaut.io/latest/guide/index.html#httpClient)
+```bash
+./gradlew build
+```
 
+## License
+
+Apache License 2.0, see [`LICENSE`](LICENSE).
