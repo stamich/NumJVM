@@ -1,0 +1,44 @@
+name: oracle-tests
+
+# Differential tests against NumPy. Kept separate from the main build so that
+# `./gradlew build` never needs Python.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: oracle-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  oracle:
+    name: NumPy oracle
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install NumPy
+        run: python -m pip install numpy
+
+      - name: NumPy version
+        run: python -c "import numpy; print('numpy', numpy.__version__)"
+
+      - name: Java tests
+        run: ./gradlew test --stacktrace
