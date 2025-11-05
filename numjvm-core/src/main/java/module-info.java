@@ -5,4 +5,6 @@
  */
 module org.numjvm.core {
     exports org.numjvm;
+    exports org.numjvm.dtype;
+    exports org.numjvm.exception;
 }
