@@ -1,5 +1,6 @@
 package org.numjvm.internal;
 
+import org.numjvm.internal.memory.Buffer;
 import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.memory.NJScope;
 
@@ -22,6 +23,18 @@ public final class SharedSecrets {
          * @return its allocator
          */
         MemoryAllocator allocator(NJScope scope);
+
+        /**
+         * Copies bytes out of a scope into GC-managed storage that outlives it; the
+         * memory-level half of {@code NJScope.keep}.
+         *
+         * @param scope  the scope that is still open
+         * @param source buffer to copy from (normally owned by {@code scope})
+         * @param start  first byte to copy
+         * @param length number of bytes
+         * @return a new automatic buffer holding the copy
+         */
+        Buffer keep(NJScope scope, Buffer source, long start, long length);
     }
 
     private static volatile ScopeAccess scopeAccess;

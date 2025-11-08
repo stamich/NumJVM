@@ -1,10 +1,13 @@
 package org.numjvm.memory;
 
 import java.lang.foreign.Arena;
+import java.lang.foreign.MemorySegment;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.numjvm.exception.MemoryException;
 import org.numjvm.internal.SharedSecrets;
+import org.numjvm.internal.memory.Buffer;
+import org.numjvm.internal.memory.HybridAllocator;
 import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.internal.memory.MemoryErrors;
 import org.numjvm.internal.memory.NativeAllocator;
@@ -24,6 +27,10 @@ import org.numjvm.internal.memory.NativeAllocator;
  *     result = scope.keep(b);      // a copy that outlives the scope
  * }
  * }</pre>
+ *
+ * <p>{@code keep} always copies: FFM cannot transfer memory from one arena to another,
+ * and a zero-copy promise that depends on implementation details would be worse than an
+ * honest copy.
  *
  * <h2>Threads</h2>
  * <ul>
@@ -48,7 +55,17 @@ public final class NJScope implements MemoryOwner, AutoCloseable {
     private static final AtomicLong IDS = new AtomicLong();
 
     static {
-        SharedSecrets.setScopeAccess(scope -> scope.allocator);
+        SharedSecrets.setScopeAccess(new SharedSecrets.ScopeAccess() {
+            @Override
+            public MemoryAllocator allocator(NJScope scope) {
+                return scope.allocator;
+            }
+
+            @Override
+            public Buffer keep(NJScope scope, Buffer source, long start, long length) {
+                return scope.keepBytes(source, start, length);
+            }
+        });
     }
 
     private final Arena arena;
@@ -120,6 +137,24 @@ public final class NJScope implements MemoryOwner, AutoCloseable {
             // Already closed through another path; closing is idempotent.
             closed = true;
         }
+    }
+
+    /**
+     * Copies {@code length} bytes from {@code source} into a GC-managed buffer.
+     *
+     * <p>FFM cannot move a segment from one arena to another, so keeping data beyond a
+     * scope always means copying it (ADR-001). The copy is allocated by the default
+     * hybrid allocator: on the heap up to the threshold, otherwise in an automatic arena.
+     */
+    private Buffer keepBytes(Buffer source, long start, long length) {
+        checkAlive();
+        Buffer target = HybridAllocator.defaultInstance().allocate(length);
+        try {
+            MemorySegment.copy(source.segment(), start, target.segment(), 0, length);
+        } catch (IllegalStateException | WrongThreadException e) {
+            throw MemoryErrors.translate(e, source.owner());
+        }
+        return target;
     }
 
     @Override
