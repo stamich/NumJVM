@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.Properties;
 
+import org.numjvm.memory.NJScope;
+
 /**
  * Entry point to NumJVM.
  *
@@ -25,6 +27,35 @@ public final class NJ {
      */
     public static String version() {
         return VERSION;
+    }
+
+    /**
+     * Opens a memory scope confined to the current thread. Arrays created through the
+     * scope are freed when it is closed.
+     *
+     * @return a new confined scope; close it with try-with-resources
+     * @see NJScope
+     */
+    public static NJScope scope() {
+        return NJScope.confined();
+    }
+
+    /**
+     * Opens a memory scope confined to the current thread; same as {@link #scope()}.
+     *
+     * @return a new confined scope
+     */
+    public static NJScope scopeConfined() {
+        return NJScope.confined();
+    }
+
+    /**
+     * Opens a memory scope whose arrays any thread may access.
+     *
+     * @return a new shared scope
+     */
+    public static NJScope scopeShared() {
+        return NJScope.shared();
     }
 
     private static String loadVersion() {
