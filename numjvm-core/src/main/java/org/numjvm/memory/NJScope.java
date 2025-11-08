@@ -72,7 +72,7 @@ public final class NJScope implements MemoryOwner, AutoCloseable {
     private final Mode mode;
     private final long id;
     private final String ownerThread;
-    private final MemoryAllocator allocator;
+    private final NativeAllocator allocator;
     private volatile boolean closed;
 
     private NJScope(Mode mode) {
@@ -131,6 +131,7 @@ public final class NJScope implements MemoryOwner, AutoCloseable {
         try {
             arena.close();
             closed = true;
+            allocator.arenaClosed();
         } catch (WrongThreadException e) {
             throw MemoryErrors.translate(e, this);
         } catch (IllegalStateException e) {

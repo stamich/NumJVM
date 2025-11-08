@@ -5,6 +5,9 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.Properties;
 
+import org.numjvm.internal.memory.HybridAllocator;
+import org.numjvm.internal.memory.NativeMemoryTracker;
+import org.numjvm.memory.MemoryStats;
 import org.numjvm.memory.NJScope;
 
 /**
@@ -56,6 +59,23 @@ public final class NJ {
      */
     public static NJScope scopeShared() {
         return NJScope.shared();
+    }
+
+    /**
+     * Returns a snapshot of NumJVM's native memory usage and memory settings.
+     *
+     * <p>Settings are read from system properties:
+     * {@code -Dnumjvm.memory.heapThreshold=<bytes>} (default 1 MiB) and
+     * {@code -Dnumjvm.memory.nativeSoftLimit=<bytes>} (default: none). The hard bound on
+     * native memory is the JVM's {@code -XX:MaxDirectMemorySize}.
+     *
+     * @return current statistics
+     */
+    public static MemoryStats memoryStats() {
+        HybridAllocator allocator = HybridAllocator.defaultInstance();
+        NativeMemoryTracker t = NativeMemoryTracker.GLOBAL;
+        return new MemoryStats(t.liveBytes(), t.peakBytes(), t.allocationCount(),
+                allocator.heapThreshold(), allocator.nativeSoftLimit());
     }
 
     private static String loadVersion() {
