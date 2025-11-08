@@ -16,3 +16,4 @@ out/
 __pycache__/
 *.pyc
 .venv/
+.jqwik-database
