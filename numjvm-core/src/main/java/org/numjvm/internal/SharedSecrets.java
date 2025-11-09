@@ -1,8 +1,13 @@
 package org.numjvm.internal;
 
+import org.numjvm.dtype.DType;
 import org.numjvm.internal.memory.Buffer;
 import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.memory.NJScope;
+import org.numjvm.ndarray.NDArray;
+import org.numjvm.ndarray.Order;
+import org.numjvm.ndarray.Shape;
+import org.numjvm.ndarray.Strides;
 
 /**
  * Access to non-public members of public classes in other packages of this module.
@@ -37,7 +42,48 @@ public final class SharedSecrets {
         Buffer keep(NJScope scope, Buffer source, long start, long length);
     }
 
+    /** Internal operations on {@link NDArray}. */
+    public interface ArrayAccess {
+
+        /**
+         * Creates an array on a buffer, validating all invariants.
+         *
+         * @param buffer    the memory
+         * @param dtype     element type
+         * @param offset    byte offset of element {@code [0, ..., 0]}
+         * @param shape     the shape
+         * @param strides   byte strides
+         * @param writeable whether elements may be written
+         * @return the array
+         */
+        NDArray create(Buffer buffer, DType dtype, long offset, Shape shape, Strides strides, boolean writeable);
+
+        /**
+         * Allocates a zero-filled contiguous array.
+         *
+         * @param allocator where the memory comes from
+         * @param dtype     element type
+         * @param shape     the shape
+         * @param order     memory order
+         * @return the array
+         */
+        NDArray allocate(MemoryAllocator allocator, DType dtype, Shape shape, Order order);
+
+        /**
+         * @param array an array
+         * @return its buffer
+         */
+        Buffer buffer(NDArray array);
+
+        /**
+         * @param array an array
+         * @return byte offset of its element {@code [0, ..., 0]}
+         */
+        long offset(NDArray array);
+    }
+
     private static volatile ScopeAccess scopeAccess;
+    private static volatile ArrayAccess arrayAccess;
 
     private SharedSecrets() {
     }
@@ -57,6 +103,25 @@ public final class SharedSecrets {
         if (a == null) {
             ensureInitialized(NJScope.class);
             a = scopeAccess;
+        }
+        return a;
+    }
+
+    /**
+     * Registers the array accessor; called once by {@link NDArray}.
+     *
+     * @param access the accessor
+     */
+    public static void setArrayAccess(ArrayAccess access) {
+        arrayAccess = access;
+    }
+
+    /** @return the array accessor, initialising {@link NDArray} if necessary */
+    public static ArrayAccess arrayAccess() {
+        ArrayAccess a = arrayAccess;
+        if (a == null) {
+            ensureInitialized(NDArray.class);
+            a = arrayAccess;
         }
         return a;
     }
