@@ -70,6 +70,7 @@ public final class NDArray {
     final Shape shape;
     final Strides strides;
     final boolean writeable;
+    final int flags;
 
     NDArray(Buffer buffer, DType dtype, long offset, Shape shape, Strides strides, boolean writeable) {
         this.buffer = Objects.requireNonNull(buffer, "buffer");
@@ -95,6 +96,8 @@ public final class NDArray {
             throw new MemoryException(buffer.owner().describe() + " is closed; cannot create an array on its memory");
         }
         this.writeable = writeable;
+        this.flags = ArrayFlags.compute(shape.dims, strides.values, offset, dtype.size(), dtype.alignment(),
+                buffer.baseAlignment(), writeable);
     }
 
     private static boolean hasBroadcastAxis(long[] dims, long[] strides) {
@@ -165,6 +168,21 @@ public final class NDArray {
     /** @return {@code true} if elements may be written through this array */
     public boolean isWriteable() {
         return writeable;
+    }
+
+    /** @return layout and access flags (contiguity, writeability, alignment) */
+    public ArrayFlags flags() {
+        return ArrayFlags.of(flags);
+    }
+
+    /** @return {@code true} if the array is C-contiguous */
+    public boolean isCContiguous() {
+        return (flags & ArrayFlags.C_CONTIGUOUS) != 0;
+    }
+
+    /** @return {@code true} if the array is Fortran-contiguous */
+    public boolean isFContiguous() {
+        return (flags & ArrayFlags.F_CONTIGUOUS) != 0;
     }
 
     /** @return the owner that decides how long this array's memory stays valid */
