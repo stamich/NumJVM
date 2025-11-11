@@ -4,11 +4,14 @@ import java.lang.foreign.MemorySegment;
 import java.util.Objects;
 
 import org.numjvm.dtype.DType;
+import org.numjvm.exception.IndexException;
 import org.numjvm.exception.MemoryException;
+import org.numjvm.exception.ReadOnlyArrayException;
 import org.numjvm.exception.ShapeException;
 import org.numjvm.internal.SharedSecrets;
 import org.numjvm.internal.memory.Buffer;
 import org.numjvm.internal.memory.MemoryAllocator;
+import org.numjvm.internal.memory.MemoryErrors;
 import org.numjvm.internal.memory.Sizes;
 import org.numjvm.memory.MemoryOwner;
 
@@ -35,6 +38,32 @@ import org.numjvm.memory.MemoryOwner;
  *       read-only.</li>
  * </ol>
  * Because of (4), element access only checks each index against its axis length.
+ *
+ * <h2>Element access</h2>
+ * Accessors exist for {@code double}, {@code long} and {@code boolean}, each for rank 0
+ * to 3 with one index argument per axis and, for any rank, with a {@code long[]}
+ * index (ADR-002). Setters take the value last. Indices must lie in
+ * {@code [0, dim)}; negative indices are not wrapped (use {@link Slice} for that).
+ * Values are converted as follows:
+ * <table>
+ *   <caption>Conversion rules</caption>
+ *   <tr><th>Accessor</th><th>Rule</th></tr>
+ *   <tr><td>{@code getDouble}</td><td>any real dtype; bool reads as 0 or 1, uint64 as
+ *       its unsigned value, float16 and bfloat16 are widened exactly</td></tr>
+ *   <tr><td>{@code getLong}</td><td>bool and integer dtypes; uint64 returns the raw
+ *       bits (see {@link org.numjvm.dtype.Unsigned}); floating-point dtypes throw</td></tr>
+ *   <tr><td>{@code getBoolean}</td><td>any real dtype; {@code true} for any non-zero
+ *       value, including NaN</td></tr>
+ *   <tr><td>{@code setDouble}</td><td>integer dtypes truncate toward zero and wrap to
+ *       the dtype's width; bool stores {@code value != 0}; float types round to nearest</td></tr>
+ *   <tr><td>{@code setLong}</td><td>integer dtypes keep the low bits; float types round
+ *       to nearest; bool stores {@code value != 0}</td></tr>
+ *   <tr><td>{@code setBoolean}</td><td>stores 1 or 0 in any real dtype</td></tr>
+ * </table>
+ * Complex dtypes are storage-only in this release; their accessors throw
+ * {@link org.numjvm.exception.DTypeException}. Writing to a read-only array throws
+ * {@link ReadOnlyArrayException}; accessing an array whose scope is closed, or a
+ * confined scope's array from another thread, throws {@link MemoryException}.
  */
 public final class NDArray {
 
@@ -198,5 +227,350 @@ public final class NDArray {
     /** @return {@code true} if the elements live in native (off-heap) memory */
     public boolean isNative() {
         return buffer.isNative();
+    }
+
+    // ------------------------------------------------------------------ element access: helpers
+
+    private long idx(long i, int axis) {
+        long n = shape.dims[axis];
+        if (Long.compareUnsigned(i, n) >= 0) {
+            throw IndexException.outOfBounds(i, axis, n);
+        }
+        return i;
+    }
+
+    private void requireRank(int rank) {
+        if (shape.dims.length != rank) {
+            throw new IndexException(rank + (rank == 1 ? " index" : " indices") + " given for an array of rank "
+                    + shape.dims.length);
+        }
+    }
+
+    private long at0() {
+        requireRank(0);
+        return offset;
+    }
+
+    private long at1(long i) {
+        requireRank(1);
+        return offset + idx(i, 0) * strides.values[0];
+    }
+
+    private long at2(long i, long j) {
+        requireRank(2);
+        long[] st = strides.values;
+        return offset + idx(i, 0) * st[0] + idx(j, 1) * st[1];
+    }
+
+    private long at3(long i, long j, long k) {
+        requireRank(3);
+        long[] st = strides.values;
+        return offset + idx(i, 0) * st[0] + idx(j, 1) * st[1] + idx(k, 2) * st[2];
+    }
+
+    /** Byte offset of the element at {@code index}; validates rank and every index. */
+    long elementOffset(long[] index) {
+        requireRank(index.length);
+        long[] st = strides.values;
+        long off = offset;
+        for (int d = 0; d < index.length; d++) {
+            off += idx(index[d], d) * st[d];
+        }
+        return off;
+    }
+
+    private void requireWriteable() {
+        if (!writeable) {
+            throw new ReadOnlyArrayException("array is read-only"
+                    + (hasBroadcastAxis(shape.dims, strides.values) ? " (broadcast view)" : ""));
+        }
+    }
+
+    private double readDouble(long off) {
+        try {
+            return ElementCodec.readDouble(segment, off, dtype);
+        } catch (IllegalStateException | WrongThreadException e) {
+            throw MemoryErrors.translate(e, buffer.owner());
+        }
+    }
+
+    private long readLong(long off) {
+        try {
+            return ElementCodec.readLong(segment, off, dtype);
+        } catch (IllegalStateException | WrongThreadException e) {
+            throw MemoryErrors.translate(e, buffer.owner());
+        }
+    }
+
+    private boolean readBoolean(long off) {
+        try {
+            return ElementCodec.readBoolean(segment, off, dtype);
+        } catch (IllegalStateException | WrongThreadException e) {
+            throw MemoryErrors.translate(e, buffer.owner());
+        }
+    }
+
+    private void writeDouble(long off, double v) {
+        requireWriteable();
+        try {
+            ElementCodec.writeDouble(segment, off, dtype, v);
+        } catch (IllegalStateException | WrongThreadException e) {
+            throw MemoryErrors.translate(e, buffer.owner());
+        }
+    }
+
+    private void writeLong(long off, long v) {
+        requireWriteable();
+        try {
+            ElementCodec.writeLong(segment, off, dtype, v);
+        } catch (IllegalStateException | WrongThreadException e) {
+            throw MemoryErrors.translate(e, buffer.owner());
+        }
+    }
+
+    // ------------------------------------------------------------------ double
+
+    /** @return the single element of a 0-D array, as a {@code double} */
+    public double getDouble() {
+        return readDouble(at0());
+    }
+
+    /**
+     * @param i index on axis 0
+     * @return the element, as a {@code double}
+     */
+    public double getDouble(long i) {
+        return readDouble(at1(i));
+    }
+
+    /**
+     * @param i index on axis 0
+     * @param j index on axis 1
+     * @return the element, as a {@code double}
+     */
+    public double getDouble(long i, long j) {
+        return readDouble(at2(i, j));
+    }
+
+    /**
+     * @param i index on axis 0
+     * @param j index on axis 1
+     * @param k index on axis 2
+     * @return the element, as a {@code double}
+     */
+    public double getDouble(long i, long j, long k) {
+        return readDouble(at3(i, j, k));
+    }
+
+    /**
+     * @param index one index per axis
+     * @return the element, as a {@code double}
+     */
+    public double getDouble(long[] index) {
+        return readDouble(elementOffset(index));
+    }
+
+    /** @param value new value of the single element of a 0-D array */
+    public void setDouble(double value) {
+        writeDouble(at0(), value);
+    }
+
+    /**
+     * @param i     index on axis 0
+     * @param value new value
+     */
+    public void setDouble(long i, double value) {
+        writeDouble(at1(i), value);
+    }
+
+    /**
+     * @param i     index on axis 0
+     * @param j     index on axis 1
+     * @param value new value
+     */
+    public void setDouble(long i, long j, double value) {
+        writeDouble(at2(i, j), value);
+    }
+
+    /**
+     * @param i     index on axis 0
+     * @param j     index on axis 1
+     * @param k     index on axis 2
+     * @param value new value
+     */
+    public void setDouble(long i, long j, long k, double value) {
+        writeDouble(at3(i, j, k), value);
+    }
+
+    /**
+     * @param index one index per axis
+     * @param value new value
+     */
+    public void setDouble(long[] index, double value) {
+        writeDouble(elementOffset(index), value);
+    }
+
+    // ------------------------------------------------------------------ long
+
+    /** @return the single element of a 0-D array, as a {@code long} */
+    public long getLong() {
+        return readLong(at0());
+    }
+
+    /**
+     * @param i index on axis 0
+     * @return the element, as a {@code long}
+     */
+    public long getLong(long i) {
+        return readLong(at1(i));
+    }
+
+    /**
+     * @param i index on axis 0
+     * @param j index on axis 1
+     * @return the element, as a {@code long}
+     */
+    public long getLong(long i, long j) {
+        return readLong(at2(i, j));
+    }
+
+    /**
+     * @param i index on axis 0
+     * @param j index on axis 1
+     * @param k index on axis 2
+     * @return the element, as a {@code long}
+     */
+    public long getLong(long i, long j, long k) {
+        return readLong(at3(i, j, k));
+    }
+
+    /**
+     * @param index one index per axis
+     * @return the element, as a {@code long}
+     */
+    public long getLong(long[] index) {
+        return readLong(elementOffset(index));
+    }
+
+    /** @param value new value of the single element of a 0-D array */
+    public void setLong(long value) {
+        writeLong(at0(), value);
+    }
+
+    /**
+     * @param i     index on axis 0
+     * @param value new value
+     */
+    public void setLong(long i, long value) {
+        writeLong(at1(i), value);
+    }
+
+    /**
+     * @param i     index on axis 0
+     * @param j     index on axis 1
+     * @param value new value
+     */
+    public void setLong(long i, long j, long value) {
+        writeLong(at2(i, j), value);
+    }
+
+    /**
+     * @param i     index on axis 0
+     * @param j     index on axis 1
+     * @param k     index on axis 2
+     * @param value new value
+     */
+    public void setLong(long i, long j, long k, long value) {
+        writeLong(at3(i, j, k), value);
+    }
+
+    /**
+     * @param index one index per axis
+     * @param value new value
+     */
+    public void setLong(long[] index, long value) {
+        writeLong(elementOffset(index), value);
+    }
+
+    // ------------------------------------------------------------------ boolean
+
+    /** @return the single element of a 0-D array, as a {@code boolean} */
+    public boolean getBoolean() {
+        return readBoolean(at0());
+    }
+
+    /**
+     * @param i index on axis 0
+     * @return {@code true} if the element is non-zero
+     */
+    public boolean getBoolean(long i) {
+        return readBoolean(at1(i));
+    }
+
+    /**
+     * @param i index on axis 0
+     * @param j index on axis 1
+     * @return {@code true} if the element is non-zero
+     */
+    public boolean getBoolean(long i, long j) {
+        return readBoolean(at2(i, j));
+    }
+
+    /**
+     * @param i index on axis 0
+     * @param j index on axis 1
+     * @param k index on axis 2
+     * @return {@code true} if the element is non-zero
+     */
+    public boolean getBoolean(long i, long j, long k) {
+        return readBoolean(at3(i, j, k));
+    }
+
+    /**
+     * @param index one index per axis
+     * @return {@code true} if the element is non-zero
+     */
+    public boolean getBoolean(long[] index) {
+        return readBoolean(elementOffset(index));
+    }
+
+    /** @param value new value of the single element of a 0-D array */
+    public void setBoolean(boolean value) {
+        writeLong(at0(), value ? 1 : 0);
+    }
+
+    /**
+     * @param i     index on axis 0
+     * @param value new value
+     */
+    public void setBoolean(long i, boolean value) {
+        writeLong(at1(i), value ? 1 : 0);
+    }
+
+    /**
+     * @param i     index on axis 0
+     * @param j     index on axis 1
+     * @param value new value
+     */
+    public void setBoolean(long i, long j, boolean value) {
+        writeLong(at2(i, j), value ? 1 : 0);
+    }
+
+    /**
+     * @param i     index on axis 0
+     * @param j     index on axis 1
+     * @param k     index on axis 2
+     * @param value new value
+     */
+    public void setBoolean(long i, long j, long k, boolean value) {
+        writeLong(at3(i, j, k), value ? 1 : 0);
+    }
+
+    /**
+     * @param index one index per axis
+     * @param value new value
+     */
+    public void setBoolean(long[] index, boolean value) {
+        writeLong(elementOffset(index), value ? 1 : 0);
     }
 }
