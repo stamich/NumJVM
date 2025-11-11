@@ -4,13 +4,16 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.numjvm.dtype.DType;
 import org.numjvm.exception.MemoryException;
+import org.numjvm.internal.Factories;
 import org.numjvm.internal.SharedSecrets;
 import org.numjvm.internal.memory.Buffer;
 import org.numjvm.internal.memory.HybridAllocator;
 import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.internal.memory.MemoryErrors;
 import org.numjvm.internal.memory.NativeAllocator;
+import org.numjvm.ndarray.NDArray;
 
 /**
  * Deterministic lifetime for array memory.
@@ -138,6 +141,77 @@ public final class NJScope implements MemoryOwner, AutoCloseable {
             // Already closed through another path; closing is idempotent.
             closed = true;
         }
+    }
+
+    // ------------------------------------------------------------------ factories
+
+    /**
+     * Returns a new scoped array filled with zeros.
+     *
+     * @param dtype element type
+     * @param shape dimensions
+     * @return the array, valid until this scope closes
+     * @throws MemoryException if the scope is closed
+     */
+    public NDArray zeros(DType dtype, long... shape) {
+        return Factories.zeros(allocator, dtype, shape);
+    }
+
+    /**
+     * Returns a new scoped array filled with ones.
+     *
+     * @param dtype element type (real)
+     * @param shape dimensions
+     * @return the array, valid until this scope closes
+     */
+    public NDArray ones(DType dtype, long... shape) {
+        return Factories.full(allocator, dtype, 1.0, shape);
+    }
+
+    /**
+     * Same as {@link #zeros(DType, long...)}: new memory is always zero-filled.
+     *
+     * @param dtype element type
+     * @param shape dimensions
+     * @return the array, valid until this scope closes
+     */
+    public NDArray empty(DType dtype, long... shape) {
+        return zeros(dtype, shape);
+    }
+
+    /**
+     * Returns a new scoped array with every element set to {@code value}.
+     *
+     * @param dtype element type (real)
+     * @param value fill value
+     * @param shape dimensions
+     * @return the array, valid until this scope closes
+     */
+    public NDArray full(DType dtype, double value, long... shape) {
+        return Factories.full(allocator, dtype, value, shape);
+    }
+
+    /**
+     * Returns a scoped float64 array holding a copy of {@code values}.
+     *
+     * @param values elements in C order
+     * @param shape  dimensions whose product is {@code values.length}; none for 1-D
+     * @return the array, valid until this scope closes
+     */
+    public NDArray array(double[] values, long... shape) {
+        return Factories.of(allocator, values, shape);
+    }
+
+    /**
+     * Returns scoped int64 values in {@code [start, stop)}.
+     *
+     * @param start first value
+     * @param stop  end, exclusive
+     * @param step  spacing, not zero
+     * @return the array, valid until this scope closes
+     */
+    public NDArray arange(long start, long stop, long step) {
+        return Factories.arange(allocator, start, stop, step);
     }
 
     /**
