@@ -10,6 +10,7 @@ import org.numjvm.exception.ReadOnlyArrayException;
 import org.numjvm.exception.ShapeException;
 import org.numjvm.internal.SharedSecrets;
 import org.numjvm.internal.memory.Buffer;
+import org.numjvm.internal.memory.HybridAllocator;
 import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.internal.memory.MemoryErrors;
 import org.numjvm.internal.memory.Sizes;
@@ -227,6 +228,59 @@ public final class NDArray {
     /** @return {@code true} if the elements live in native (off-heap) memory */
     public boolean isNative() {
         return buffer.isNative();
+    }
+
+    // ------------------------------------------------------------------ copies
+
+    /**
+     * Returns a C-contiguous copy with independent, automatically managed memory.
+     *
+     * <p>The copy is writeable even if this array is a read-only view, and it does not
+     * depend on this array's scope.
+     *
+     * @return the copy
+     */
+    public NDArray copy() {
+        return copy(Order.C);
+    }
+
+    /**
+     * Returns a contiguous copy in the requested order.
+     *
+     * @param order memory order of the copy
+     * @return the copy, with independent, automatically managed memory
+     */
+    public NDArray copy(Order order) {
+        return Copier.copy(this, HybridAllocator.defaultInstance(), dtype, order);
+    }
+
+    /**
+     * Returns a C-contiguous copy converted to another dtype ({@code NUMPY_COMPATIBILITY}:
+     * NumPy's {@code astype} with {@code casting="unsafe"}).
+     *
+     * <p>Integer and bool conversions go through {@code long}, so int64 and uint64 values
+     * keep all their bits; conversions involving a floating-point type go through
+     * {@code double} with the rules of {@code setDouble}. Real values become complex
+     * with a zero imaginary part; converting complex to real is rejected rather than
+     * silently discarding the imaginary part.
+     *
+     * @param target the dtype of the result
+     * @return the converted copy; a plain copy if {@code target} equals this dtype
+     * @throws org.numjvm.exception.DTypeException for complex to real conversions
+     */
+    public NDArray astype(DType target) {
+        return astype(target, Order.C);
+    }
+
+    /**
+     * Same as {@link #astype(DType)} with an explicit memory order.
+     *
+     * @param target the dtype of the result
+     * @param order  memory order of the result
+     * @return the converted copy
+     */
+    public NDArray astype(DType target, Order order) {
+        return Copier.copy(this, HybridAllocator.defaultInstance(), Objects.requireNonNull(target, "target"), order);
     }
 
     // ------------------------------------------------------------------ element access: helpers

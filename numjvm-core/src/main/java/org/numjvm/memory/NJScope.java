@@ -14,6 +14,7 @@ import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.internal.memory.MemoryErrors;
 import org.numjvm.internal.memory.NativeAllocator;
 import org.numjvm.ndarray.NDArray;
+import org.numjvm.ndarray.Strides;
 
 /**
  * Deterministic lifetime for array memory.
@@ -141,6 +142,30 @@ public final class NJScope implements MemoryOwner, AutoCloseable {
             // Already closed through another path; closing is idempotent.
             closed = true;
         }
+    }
+
+    // ------------------------------------------------------------------ keep
+
+    /**
+     * Copies an array into automatically managed memory so that it outlives this scope.
+     *
+     * <p>Always a copy (C order), never an alias: FFM cannot move memory between arenas.
+     * The result is independent of the scope and writeable.
+     *
+     * @param array an array, typically created in this scope
+     * @return the copy
+     * @throws MemoryException if this scope or the array's memory is already closed
+     */
+    public NDArray keep(NDArray array) {
+        checkAlive();
+        array.memoryOwner().checkAlive();
+        if (array.isCContiguous() && array.size() > 0) {
+            SharedSecrets.ArrayAccess access = SharedSecrets.arrayAccess();
+            Buffer kept = keepBytes(access.buffer(array), access.offset(array), array.nbytes());
+            return access.create(kept, array.dtype(), 0, array.shape(),
+                    Strides.cContiguous(array.shape(), array.itemSize()), true);
+        }
+        return array.copy();
     }
 
     // ------------------------------------------------------------------ factories
