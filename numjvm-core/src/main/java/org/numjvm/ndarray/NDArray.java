@@ -230,6 +230,22 @@ public final class NDArray {
         return buffer.isNative();
     }
 
+    /**
+     * Formats the array like NumPy's {@code repr}, e.g.
+     * <pre>
+     * array([[1., 2., 3.],
+     *        [4., 5., 6.]])
+     * </pre>
+     * Arrays with more than 1000 elements are summarised with {@code ...}. An array whose
+     * memory is no longer accessible prints its shape and dtype instead of its values.
+     *
+     * @return the formatted array
+     */
+    @Override
+    public String toString() {
+        return ArrayFormatter.repr(this);
+    }
+
     // ------------------------------------------------------------------ copies
 
     /**

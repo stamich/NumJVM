@@ -247,6 +247,54 @@ public final class NJ {
         return Factories.arange(automatic(), start, stop, step);
     }
 
+    // ------------------------------------------------------------------ comparison
+
+    /**
+     * Tells whether two arrays have the same shape and equal elements
+     * ({@code NUMPY_COMPATIBILITY}: {@code np.array_equal}).
+     *
+     * <p>The dtypes may differ: values are compared as numbers ({@code 1} equals
+     * {@code 1.0}). Integer and bool arrays are compared exactly as 64-bit integers
+     * (uint64 by unsigned value); NaN is never equal to anything.
+     *
+     * @param a first array
+     * @param b second array
+     * @return {@code true} if shapes and all elements are equal
+     */
+    public static boolean arrayEquals(NDArray a, NDArray b) {
+        return Comparisons.arrayEquals(a, b);
+    }
+
+    /**
+     * Tells whether two arrays of the same shape are element-wise equal within a
+     * tolerance, with NumPy's defaults {@code rtol = 1e-5}, {@code atol = 1e-8}.
+     *
+     * @param a first array
+     * @param b second array
+     * @return {@code true} if {@code |a - b| <= atol + rtol * |b|} for every element
+     * @see #allClose(NDArray, NDArray, double, double)
+     */
+    public static boolean allClose(NDArray a, NDArray b) {
+        return allClose(a, b, 1e-5, 1e-8);
+    }
+
+    /**
+     * Tells whether two arrays of the same shape are element-wise equal within a
+     * tolerance ({@code NUMPY_COMPATIBILITY}: {@code np.allclose}, which is asymmetric in
+     * {@code a} and {@code b}). NaN is never close; infinities are close only to an
+     * infinity of the same sign.
+     *
+     * @param a    first array
+     * @param b    second array, the reference
+     * @param rtol relative tolerance
+     * @param atol absolute tolerance
+     * @return {@code true} if {@code |a - b| <= atol + rtol * |b|} for every element
+     * @throws org.numjvm.exception.ShapeException if the shapes differ
+     */
+    public static boolean allClose(NDArray a, NDArray b, double rtol, double atol) {
+        return Comparisons.allClose(a, b, rtol, atol);
+    }
+
     // ------------------------------------------------------------------ scopes and memory
 
     /**
