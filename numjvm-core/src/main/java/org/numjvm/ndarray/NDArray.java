@@ -246,6 +246,78 @@ public final class NDArray {
         return ArrayFormatter.repr(this);
     }
 
+    // ------------------------------------------------------------------ views
+
+    /** A view on the same buffer; the caller hands over ownership of both arrays. */
+    private NDArray view(long newOffset, long[] dims, long[] newStrides, boolean newWriteable) {
+        return new NDArray(buffer, dtype, newOffset, Shape.ofOwned(dims), Strides.ofOwned(newStrides), newWriteable);
+    }
+
+    /**
+     * Returns a view with the axes reversed ({@code a.T} in NumPy). For a matrix this is
+     * the transpose: shape {@code [2, 3]} with strides {@code [24, 8]} becomes shape
+     * {@code [3, 2]} with strides {@code [8, 24]}. No data is copied.
+     *
+     * @return the transposed view; the same as this array's layout for rank 0 and 1
+     */
+    public NDArray transpose() {
+        int n = ndim();
+        int[] axes = new int[n];
+        for (int i = 0; i < n; i++) {
+            axes[i] = n - 1 - i;
+        }
+        return permuteDims(axes);
+    }
+
+    /**
+     * Returns a view with the axes reordered ({@code ARRAY_API}: {@code permute_dims}).
+     * Axis {@code i} of the result is axis {@code axes[i]} of this array. No data is copied.
+     *
+     * @param axes a permutation of {@code 0 .. ndim-1}; negative values count from the end
+     * @return the view
+     * @throws ShapeException if {@code axes} is not a permutation of the axes
+     */
+    public NDArray permuteDims(int... axes) {
+        int n = ndim();
+        if (axes.length != n) {
+            throw new ShapeException("permutation " + java.util.Arrays.toString(axes) + " has " + axes.length
+                    + " axes, array has " + n);
+        }
+        long[] dims = new long[n];
+        long[] st = new long[n];
+        boolean[] used = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            int ax = Shape.normalizeAxis(axes[i], n);
+            if (used[ax]) {
+                throw new ShapeException("axis " + ax + " repeated in permutation " + java.util.Arrays.toString(axes));
+            }
+            used[ax] = true;
+            dims[i] = shape.dims[ax];
+            st[i] = strides.values[ax];
+        }
+        return view(offset, dims, st, writeable);
+    }
+
+    /**
+     * Returns a view with two axes exchanged. No data is copied.
+     *
+     * @param axis1 first axis; negative values count from the end
+     * @param axis2 second axis
+     * @return the view
+     */
+    public NDArray swapAxes(int axis1, int axis2) {
+        int n = ndim();
+        int a = Shape.normalizeAxis(axis1, n);
+        int b = Shape.normalizeAxis(axis2, n);
+        int[] axes = new int[n];
+        for (int i = 0; i < n; i++) {
+            axes[i] = i;
+        }
+        axes[a] = b;
+        axes[b] = a;
+        return permuteDims(axes);
+    }
+
     // ------------------------------------------------------------------ copies
 
     /**

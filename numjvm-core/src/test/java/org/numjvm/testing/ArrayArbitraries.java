@@ -6,7 +6,9 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 
+import org.numjvm.NJ;
 import org.numjvm.dtype.DType;
+import org.numjvm.ndarray.NDArray;
 import org.numjvm.ndarray.Shape;
 import org.numjvm.ndarray.Strides;
 
@@ -85,6 +87,40 @@ public final class ArrayArbitraries {
                             }
                             return new Layout(shape, Strides.of(st), negativeSpan + slack * item, item);
                         }));
+    }
+
+    /**
+     * C-contiguous float64 arrays over small shapes whose elements are 0, 1, 2, ... in C
+     * order, so every element is distinguishable.
+     */
+    public static Arbitrary<NDArray> arrays() {
+        return smallShapes().map(ArrayArbitraries::sequential);
+    }
+
+    /** A float64 array of the given shape holding 0, 1, 2, ... in C order. */
+    public static NDArray sequential(Shape shape) {
+        double[] values = new double[Math.toIntExact(shape.size())];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = i;
+        }
+        return shape.rank() == 0 ? NJ.scalar(0.0) : NJ.array(values, shape.dimensions());
+    }
+
+    /** Values of an array in logical C order, read through its own strides. */
+    public static double[] values(NDArray a) {
+        double[] out = new double[Math.toIntExact(a.size())];
+        long[] dims = a.shape().dimensions();
+        long[] idx = new long[dims.length];
+        for (int k = 0; k < out.length; k++) {
+            out[k] = a.getDouble(idx);
+            for (int d = dims.length - 1; d >= 0; d--) {
+                if (++idx[d] < dims[d]) {
+                    break;
+                }
+                idx[d] = 0;
+            }
+        }
+        return out;
     }
 
     /** Element offsets of a layout in C order, by enumerating every index. */
