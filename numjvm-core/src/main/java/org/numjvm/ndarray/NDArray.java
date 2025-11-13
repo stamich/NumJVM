@@ -318,6 +318,143 @@ public final class NDArray {
         return permuteDims(axes);
     }
 
+    /**
+     * Returns a view selected by a basic NumPy index: single positions, ranges with
+     * positive or negative steps, new axes and an ellipsis. Missing trailing components
+     * select whole axes. No data is copied; see {@link Slice} for the NumPy equivalents.
+     *
+     * @param index the index components
+     * @return the view; single positions remove their axis, new axes add one of length 1
+     * @throws IndexException if there are more positional components than axes, more than
+     *                        one ellipsis, or a single position is outside its axis
+     */
+    public NDArray slice(Slice... index) {
+        int ndim = ndim();
+        int consuming = 0;
+        int ellipses = 0;
+        int newAxes = 0;
+        for (Slice s : index) {
+            switch (s) {
+                case Slice.Ellipsis _ -> ellipses++;
+                case Slice.NewAxis _ -> newAxes++;
+                default -> consuming++;
+            }
+        }
+        if (ellipses > 1) {
+            throw new IndexException("an index can only have a single ellipsis");
+        }
+        if (consuming > ndim) {
+            throw new IndexException("too many indices for array: array is " + ndim + "-dimensional, but "
+                    + consuming + " were indexed");
+        }
+        int fill = ndim - consuming;  // axes covered by the ellipsis or implicitly at the end
+        long[] dims = new long[ndim - countIndices(index) + newAxes];
+        long[] st = new long[dims.length];
+        long off = offset;
+        int src = 0;
+        int dst = 0;
+        boolean ellipsisSeen = false;
+        for (Slice s : index) {
+            switch (s) {
+                case Slice.Ellipsis _ -> {
+                    ellipsisSeen = true;
+                    for (int k = 0; k < fill; k++, src++, dst++) {
+                        dims[dst] = shape.dims[src];
+                        st[dst] = strides.values[src];
+                    }
+                }
+                case Slice.NewAxis _ -> {
+                    dims[dst] = 1;
+                    st[dst] = 0;
+                    dst++;
+                }
+                case Slice.All _ -> {
+                    dims[dst] = shape.dims[src];
+                    st[dst] = strides.values[src];
+                    src++;
+                    dst++;
+                }
+                case Slice.Index i -> {
+                    long n = shape.dims[src];
+                    long p = i.index() < 0 ? i.index() + n : i.index();
+                    if (p < 0 || p >= n) {
+                        throw IndexException.outOfBounds(i.index(), src, n);
+                    }
+                    off += p * strides.values[src];
+                    src++;
+                }
+                case Slice.Range r -> {
+                    long n = shape.dims[src];
+                    long[] sl = adjust(r, n);
+                    dims[dst] = sl[2];
+                    st[dst] = strides.values[src] * r.step();
+                    if (sl[2] > 0) {
+                        off += sl[0] * strides.values[src];
+                    }
+                    src++;
+                    dst++;
+                }
+            }
+        }
+        if (!ellipsisSeen) {
+            for (; src < ndim; src++, dst++) {
+                dims[dst] = shape.dims[src];
+                st[dst] = strides.values[src];
+            }
+        }
+        return view(off, dims, st, writeable);
+    }
+
+    private static int countIndices(Slice[] index) {
+        int n = 0;
+        for (Slice s : index) {
+            if (s instanceof Slice.Index) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    /** Python's {@code PySlice_AdjustIndices}: returns {start, stop, length}. */
+    static long[] adjust(Slice.Range r, long n) {
+        long step = r.step();
+        long start;
+        long stop;
+        if (r.start() == null) {
+            start = step < 0 ? n - 1 : 0;
+        } else {
+            start = r.start();
+            if (start < 0) {
+                start += n;
+                if (start < 0) {
+                    start = step < 0 ? -1 : 0;
+                }
+            } else if (start >= n) {
+                start = step < 0 ? n - 1 : n;
+            }
+        }
+        if (r.stop() == null) {
+            stop = step < 0 ? -1 : n;
+        } else {
+            stop = r.stop();
+            if (stop < 0) {
+                stop += n;
+                if (stop < 0) {
+                    stop = step < 0 ? -1 : 0;
+                }
+            } else if (stop >= n) {
+                stop = step < 0 ? n - 1 : n;
+            }
+        }
+        long length;
+        if (step < 0) {
+            length = stop < start ? (start - stop - 1) / -step + 1 : 0;
+        } else {
+            length = start < stop ? (stop - start - 1) / step + 1 : 0;
+        }
+        return new long[]{start, stop, length};
+    }
+
     // ------------------------------------------------------------------ copies
 
     /**
