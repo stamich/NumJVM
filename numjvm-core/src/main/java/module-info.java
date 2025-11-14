@@ -11,6 +11,7 @@ module org.numjvm.core {
     exports org.numjvm.dtype;
     exports org.numjvm.exception;
     exports org.numjvm.iteration;
+    exports org.numjvm.kernels;
     exports org.numjvm.memory;
     exports org.numjvm.ndarray;
     exports org.numjvm.shape;
