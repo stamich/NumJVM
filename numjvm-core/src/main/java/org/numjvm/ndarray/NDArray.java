@@ -319,6 +319,25 @@ public final class NDArray {
     }
 
     /**
+     * Returns a read-only view that repeats this array to fill {@code shape}
+     * ({@code ARRAY_API}: {@code broadcast_to}). Stretched and new axes get stride 0, so no
+     * data is copied: broadcasting {@code [1, 2, 3]} to {@code [4, 3]} gives strides
+     * {@code [0, 8]}.
+     *
+     * <p>The view is always read-only: a write through a zero stride would change many
+     * logical elements at once. Copy it to get a writeable array.
+     *
+     * @param shape the target shape
+     * @return the read-only view
+     * @throws ShapeException if this shape cannot be broadcast to {@code shape}
+     */
+    public NDArray broadcastTo(long... shape) {
+        Shape target = Shape.of(shape);
+        Strides st = org.numjvm.shape.Broadcasting.broadcastStrides(this.shape, strides, target);
+        return new NDArray(buffer, dtype, offset, target, st, false);
+    }
+
+    /**
      * Returns an array with the same elements in a new shape: a view when the layout
      * allows it, otherwise a C-contiguous copy ({@code NUMPY_COMPATIBILITY}: NumPy's
      * {@code reshape}). One dimension may be {@code -1} and is inferred.
