@@ -319,6 +319,59 @@ public final class NDArray {
     }
 
     /**
+     * Returns an array with the same elements in a new shape: a view when the layout
+     * allows it, otherwise a C-contiguous copy ({@code NUMPY_COMPATIBILITY}: NumPy's
+     * {@code reshape}). One dimension may be {@code -1} and is inferred.
+     *
+     * <p>Code that relies on writes reaching the original must use
+     * {@link #reshapeView(long...)}, which never copies.
+     *
+     * @param newShape the new dimensions; their product must equal {@link #size()}
+     * @return a view or a copy
+     * @throws ShapeException if the element count differs or more than one dimension is -1
+     */
+    public NDArray reshape(long... newShape) {
+        long[] dims = Reshaper.resolve(newShape, size());
+        long[] st = Reshaper.noCopyStrides(shape.dims, strides.values, dims, dtype.size());
+        if (st != null) {
+            return view(offset, dims, st, writeable);
+        }
+        NDArray c = copy();
+        return c.view(0, dims, Strides.cStrides(dims, dtype.size()), true);
+    }
+
+    /**
+     * Returns a view with a new shape, never a copy ({@code NUMJVM_SPECIFIC}). One dimension
+     * may be {@code -1}.
+     *
+     * <p>A view exists exactly when NumPy's {@code reshape} would return one: the axes of
+     * this array that are merged or split must be contiguous with each other. A
+     * C-contiguous array can always be reshaped this way; a transposed one usually not.
+     *
+     * @param newShape the new dimensions
+     * @return the view
+     * @throws ShapeException if the element count differs or no view with that shape exists
+     */
+    public NDArray reshapeView(long... newShape) {
+        long[] dims = Reshaper.resolve(newShape, size());
+        long[] st = Reshaper.noCopyStrides(shape.dims, strides.values, dims, dtype.size());
+        if (st == null) {
+            throw new ShapeException("cannot reshape an array with shape " + shape + " and strides " + strides
+                    + " into " + java.util.Arrays.toString(dims) + " without copying; use reshape() to allow a copy");
+        }
+        return view(offset, dims, st, writeable);
+    }
+
+    /**
+     * Returns a 1-D array of all elements in C order: a view when possible, else a copy.
+     *
+     * @return {@code reshape(-1)}
+     */
+    public NDArray ravel() {
+        return reshape(-1);
+    }
+
+    /**
      * Returns a view selected by a basic NumPy index: single positions, ranges with
      * positive or negative steps, new axes and an ellipsis. Missing trailing components
      * select whole axes. No data is copied; see {@link Slice} for the NumPy equivalents.
