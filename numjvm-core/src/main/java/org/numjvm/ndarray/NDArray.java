@@ -248,6 +248,44 @@ public final class NDArray {
 
     // ------------------------------------------------------------------ views
 
+    /**
+     * Tells whether this array and {@code other} may refer to the same bytes
+     * ({@code NUMPY_COMPATIBILITY}: {@code np.may_share_memory}).
+     *
+     * <p>The test compares the byte ranges the two arrays can touch, so it is exact for
+     * contiguous blocks and conservative for interleaved views: {@code a[::2]} and
+     * {@code a[1::2]} report {@code true} although no element is shared, while
+     * {@code a[:5]} and {@code a[5:]} report {@code false}. Arrays without elements never
+     * share memory.
+     *
+     * @param other another array
+     * @return {@code true} if the byte ranges of the two arrays overlap
+     */
+    public boolean sharesMemoryWith(NDArray other) {
+        ByteExtent mine = Strides.extent(shape.dims, strides.values, offset, dtype.size());
+        ByteExtent theirs = Strides.extent(other.shape.dims, other.strides.values, other.offset, other.dtype.size());
+        if (mine.isEmpty() || theirs.isEmpty()) {
+            return false;
+        }
+        MemorySegment s1 = segment;
+        MemorySegment s2 = other.segment;
+        if (s1.isNative() != s2.isNative()) {
+            return false;
+        }
+        if (!s1.isNative()) {
+            Object base1 = s1.heapBase().orElse(null);
+            if (base1 == null || base1 != s2.heapBase().orElse(null)) {
+                return false;
+            }
+        }
+        // address() is the absolute address for native segments and the offset into the
+        // backing array for heap segments.
+        long a1 = s1.address();
+        long a2 = s2.address();
+        return new ByteExtent(a1 + mine.start(), a1 + mine.end())
+                .overlaps(new ByteExtent(a2 + theirs.start(), a2 + theirs.end()));
+    }
+
     /** A view on the same buffer; the caller hands over ownership of both arrays. */
     private NDArray view(long newOffset, long[] dims, long[] newStrides, boolean newWriteable) {
         return new NDArray(buffer, dtype, newOffset, Shape.ofOwned(dims), Strides.ofOwned(newStrides), newWriteable);
