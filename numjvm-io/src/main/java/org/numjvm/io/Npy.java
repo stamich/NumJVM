@@ -46,6 +46,19 @@ public final class Npy {
     }
 
     /**
+     * Writes an array as a {@code .npy} file, replacing the file if it exists.
+     *
+     * @param path  the file
+     * @param array the array; any dtype except bfloat16, any layout
+     * @throws NpyFormatException if the dtype has no NumPy equivalent
+     * @throws java.io.UncheckedIOException if writing fails
+     * @see NpyWriter
+     */
+    public static void write(Path path, NDArray array) {
+        NpyWriter.write(path, array);
+    }
+
+    /**
      * Reads one array from a stream, which is left open after the array's data.
      *
      * @param in the stream
