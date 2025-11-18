@@ -100,9 +100,11 @@ def cases(arr):
         ("complex_rev", "c16_2x2", ["::-1"]),
         ("uint8_tail", "u1_5", ["-3:"]),
     ]
+    # np.asarray: indexing every axis gives a 0-D array in the Array API (and NumJVM),
+    # where NumPy returns a scalar.
     for cid, name, specs in slice_cases:
         add(f"slice_{cid}", ARRAY_API, "slice", [name], {"index": specs},
-            lambda a, specs=specs: a[tuple(slice_expr(s) for s in specs)])
+            lambda a, specs=specs: np.asarray(a[tuple(slice_expr(s) for s in specs)]))
 
     reshape_cases = [
         ("f8_2x3x4", [6, 4]), ("f8_2x3x4", [4, -1]), ("f8_2x3x4", [24]), ("f8_2x3x4", [2, 1, 12]),

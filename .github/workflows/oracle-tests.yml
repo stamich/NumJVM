@@ -40,5 +40,8 @@ jobs:
       - name: Fixtures are reproducible with the current NumPy
         run: python numjvm-tests-oracle/generate_cases.py --check
 
-      - name: Java tests
+      - name: Java tests, including the NumPy oracle replay
         run: ./gradlew test --stacktrace
+
+      - name: NumPy reads the files NumJVM wrote
+        run: python numjvm-tests-oracle/verify_results.py numjvm-io/build/oracle-out

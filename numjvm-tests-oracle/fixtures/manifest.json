@@ -336,7 +336,10 @@
   },
   {
    "expect": {
-    "value": 9.0
+    "dtype": "<f8",
+    "file": "expected_slice_element.npy",
+    "fortran": false,
+    "shape": []
    },
    "id": "slice_element",
    "inputs": [
