@@ -40,6 +40,15 @@ public final class SharedSecrets {
          * @return a new automatic buffer holding the copy
          */
         Buffer keep(NJScope scope, Buffer source, long start, long length);
+
+        /**
+         * Returns the arena behind a scope, for memory that is not allocated but
+         * mapped into it (memory-mapped files).
+         *
+         * @param scope an open scope
+         * @return its arena
+         */
+        java.lang.foreign.Arena arena(NJScope scope);
     }
 
     /** Internal operations on {@link NDArray}. */

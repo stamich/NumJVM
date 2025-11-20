@@ -69,6 +69,12 @@ public final class NJScope implements MemoryOwner, AutoCloseable {
             public Buffer keep(NJScope scope, Buffer source, long start, long length) {
                 return scope.keepBytes(source, start, length);
             }
+
+            @Override
+            public Arena arena(NJScope scope) {
+                scope.checkAlive();
+                return scope.arena;
+            }
         });
     }
 
