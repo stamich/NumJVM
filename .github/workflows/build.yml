@@ -31,6 +31,9 @@ jobs:
       - name: Build
         run: ./gradlew build --stacktrace
 
+      - name: Run examples
+        run: ./gradlew --quiet :examples:basic-arrays:run :examples:memory-scopes:run
+
       - name: Publish test results
         if: always()
         uses: mikepenz/action-junit-report@v5

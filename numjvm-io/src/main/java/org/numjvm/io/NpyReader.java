@@ -36,12 +36,18 @@ public final class NpyReader {
         this.limits = Objects.requireNonNull(limits, "limits");
     }
 
-    /** @return a reader with {@link NpyLimits#defaults()} */
+    /**
+     * Returns a reader with {@link NpyLimits#defaults()}.
+     *
+     * @return a reader with {@link NpyLimits#defaults()}
+     */
     public static NpyReader withDefaults() {
         return new NpyReader(NpyLimits.defaults());
     }
 
     /**
+     * Returns a reader that enforces them.
+     *
      * @param limits limits on header size, rank and payload size
      * @return a reader that enforces them
      */
@@ -95,7 +101,13 @@ public final class NpyReader {
         }
     }
 
-    /** @param available total stream length if known, else -1 */
+    /**
+     * Reads header and data from {@code in}.
+     *
+     * @param in        stream positioned at the start of the file
+     * @param available total stream length if known, else -1
+     * @param allocator where the array's memory comes from
+     */
     private NDArray read(InputStream in, long available, MemoryAllocator allocator) throws IOException {
         NpyHeader h = NpyHeader.read(in, limits);
         long bytes = h.dataBytes();

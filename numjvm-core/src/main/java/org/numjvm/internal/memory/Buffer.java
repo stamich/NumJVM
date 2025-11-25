@@ -42,32 +42,56 @@ public final class Buffer {
         return new Buffer(segment, owner, baseAlignment);
     }
 
-    /** @return the memory segment */
+    /**
+     * Returns the memory segment.
+     *
+     * @return the memory segment
+     */
     public MemorySegment segment() {
         return segment;
     }
 
-    /** @return the owner that decides this buffer's lifetime */
+    /**
+     * Returns the owner that decides this buffer's lifetime.
+     *
+     * @return the owner that decides this buffer's lifetime
+     */
     public MemoryOwner owner() {
         return owner;
     }
 
-    /** @return the size in bytes */
+    /**
+     * Returns the size in bytes.
+     *
+     * @return the size in bytes
+     */
     public long byteSize() {
         return segment.byteSize();
     }
 
-    /** @return {@code true} if the memory is off-heap */
+    /**
+     * Returns {@code true} if the memory is off-heap.
+     *
+     * @return {@code true} if the memory is off-heap
+     */
     public boolean isNative() {
         return segment.isNative();
     }
 
-    /** @return the guaranteed alignment of byte 0, e.g. 8 for heap and 64 for native buffers */
+    /**
+     * Returns the guaranteed alignment of byte 0, e.g. 8 for heap and 64 for native buffers.
+     *
+     * @return the guaranteed alignment of byte 0, e.g. 8 for heap and 64 for native buffers
+     */
     public int baseAlignment() {
         return baseAlignment;
     }
 
-    /** @return {@code true} if both the owner and the segment's arena are still open */
+    /**
+     * Returns {@code true} if both the owner and the segment's arena are still open.
+     *
+     * @return {@code true} if both the owner and the segment's arena are still open
+     */
     public boolean isAlive() {
         return owner.isAlive() && segment.scope().isAlive();
     }

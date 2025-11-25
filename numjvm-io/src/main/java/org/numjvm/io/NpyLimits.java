@@ -38,6 +38,8 @@ public record NpyLimits(int maxHeaderBytes, int maxRank, long maxDataBytes) {
     }
 
     /**
+     * Returns a copy with a different payload limit.
+     *
      * @param bytes largest payload accepted
      * @return a copy with a different payload limit
      */
@@ -46,6 +48,8 @@ public record NpyLimits(int maxHeaderBytes, int maxRank, long maxDataBytes) {
     }
 
     /**
+     * Returns a copy with a different header limit.
+     *
      * @param bytes largest header accepted
      * @return a copy with a different header limit
      */

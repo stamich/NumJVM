@@ -29,6 +29,8 @@ public final class Factories {
     }
 
     /**
+     * Returns a zero-filled C-contiguous array.
+     *
      * @param allocator memory source
      * @param dtype     element type
      * @param shape     dimensions
@@ -39,6 +41,8 @@ public final class Factories {
     }
 
     /**
+     * Returns a C-contiguous array with every element set to {@code value}.
+     *
      * @param allocator memory source
      * @param dtype     element type (not complex)
      * @param value     fill value, converted like {@code setDouble}
@@ -66,6 +70,8 @@ public final class Factories {
     }
 
     /**
+     * Returns a float64 array.
+     *
      * @param allocator memory source
      * @param values    elements in C order
      * @param shape     dimensions, or empty for a 1-D array of {@code values.length}
@@ -78,6 +84,8 @@ public final class Factories {
     }
 
     /**
+     * Returns a float32 array.
+     *
      * @param allocator memory source
      * @param values    elements in C order
      * @param shape     dimensions, or empty for 1-D
@@ -90,6 +98,8 @@ public final class Factories {
     }
 
     /**
+     * Returns an int64 array.
+     *
      * @param allocator memory source
      * @param values    elements in C order
      * @param shape     dimensions, or empty for 1-D
@@ -102,6 +112,8 @@ public final class Factories {
     }
 
     /**
+     * Returns an int32 array.
+     *
      * @param allocator memory source
      * @param values    elements in C order
      * @param shape     dimensions, or empty for 1-D
@@ -114,6 +126,8 @@ public final class Factories {
     }
 
     /**
+     * Returns a bool array.
+     *
      * @param allocator memory source
      * @param values    elements in C order
      * @param shape     dimensions, or empty for 1-D
@@ -129,6 +143,8 @@ public final class Factories {
     }
 
     /**
+     * Returns the array.
+     *
      * @param allocator memory source
      * @param dtype     element type of the result (not complex)
      * @param values    elements in C order, converted like {@code setDouble}

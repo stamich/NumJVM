@@ -83,32 +83,56 @@ public final class ArrayFlags {
         return combined % alignment == 0;
     }
 
-    /** @return {@code true} if the array is C-contiguous */
+    /**
+     * Returns {@code true} if the array is C-contiguous.
+     *
+     * @return {@code true} if the array is C-contiguous
+     */
     public boolean isCContiguous() {
         return (bits & C_CONTIGUOUS) != 0;
     }
 
-    /** @return {@code true} if the array is Fortran-contiguous */
+    /**
+     * Returns {@code true} if the array is Fortran-contiguous.
+     *
+     * @return {@code true} if the array is Fortran-contiguous
+     */
     public boolean isFContiguous() {
         return (bits & F_CONTIGUOUS) != 0;
     }
 
-    /** @return {@code true} if the array is C- or Fortran-contiguous */
+    /**
+     * Returns {@code true} if the array is C- or Fortran-contiguous.
+     *
+     * @return {@code true} if the array is C- or Fortran-contiguous
+     */
     public boolean isContiguous() {
         return (bits & (C_CONTIGUOUS | F_CONTIGUOUS)) != 0;
     }
 
-    /** @return {@code true} if elements may be written */
+    /**
+     * Returns {@code true} if elements may be written.
+     *
+     * @return {@code true} if elements may be written
+     */
     public boolean isWriteable() {
         return (bits & WRITEABLE) != 0;
     }
 
-    /** @return {@code true} if every element is aligned */
+    /**
+     * Returns {@code true} if every element is aligned.
+     *
+     * @return {@code true} if every element is aligned
+     */
     public boolean isAligned() {
         return (bits & ALIGNED) != 0;
     }
 
-    /** @return the raw flag bits, a combination of the constants of this class */
+    /**
+     * Returns the raw flag bits, a combination of the constants of this class.
+     *
+     * @return the raw flag bits, a combination of the constants of this class
+     */
     public int bits() {
         return bits;
     }

@@ -16,4 +16,6 @@ include(
     "numjvm-core",
     "numjvm-io",
     "numjvm-bench",
+    "examples:basic-arrays",
+    "examples:memory-scopes",
 )

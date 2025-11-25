@@ -107,12 +107,20 @@ public final class HybridAllocator implements MemoryAllocator {
         }
     }
 
-    /** @return the soft limit on live native bytes, or {@link #NO_LIMIT} */
+    /**
+     * Returns the soft limit on live native bytes, or {@link #NO_LIMIT}.
+     *
+     * @return the soft limit on live native bytes, or {@link #NO_LIMIT}
+     */
     public long nativeSoftLimit() {
         return nativeSoftLimit;
     }
 
-    /** @return the largest request, in bytes, served from the heap */
+    /**
+     * Returns the largest request, in bytes, served from the heap.
+     *
+     * @return the largest request, in bytes, served from the heap
+     */
     public long heapThreshold() {
         return heapThreshold;
     }

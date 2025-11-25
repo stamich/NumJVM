@@ -108,27 +108,47 @@ public enum DType {
         return name().toLowerCase(Locale.ROOT);
     }
 
-    /** @return {@code true} for {@link #BOOL} */
+    /**
+     * Returns {@code true} for {@link #BOOL}.
+     *
+     * @return {@code true} for {@link #BOOL}
+     */
     public boolean isBool() {
         return kind == DTypeKind.BOOL;
     }
 
-    /** @return {@code true} for signed and unsigned integer dtypes */
+    /**
+     * Returns {@code true} for signed and unsigned integer dtypes.
+     *
+     * @return {@code true} for signed and unsigned integer dtypes
+     */
     public boolean isInteger() {
         return kind == DTypeKind.SIGNED_INTEGER || kind == DTypeKind.UNSIGNED_INTEGER;
     }
 
-    /** @return {@code true} for unsigned integer dtypes */
+    /**
+     * Returns {@code true} for unsigned integer dtypes.
+     *
+     * @return {@code true} for unsigned integer dtypes
+     */
     public boolean isUnsigned() {
         return kind == DTypeKind.UNSIGNED_INTEGER;
     }
 
-    /** @return {@code true} for real floating-point dtypes (not complex) */
+    /**
+     * Returns {@code true} for real floating-point dtypes (not complex).
+     *
+     * @return {@code true} for real floating-point dtypes (not complex)
+     */
     public boolean isFloatingPoint() {
         return kind == DTypeKind.FLOATING;
     }
 
-    /** @return {@code true} for complex dtypes */
+    /**
+     * Returns {@code true} for complex dtypes.
+     *
+     * @return {@code true} for complex dtypes
+     */
     public boolean isComplex() {
         return kind == DTypeKind.COMPLEX;
     }

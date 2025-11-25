@@ -22,6 +22,8 @@ public final class IndexIterator {
     private boolean started;
 
     /**
+     * Creates an iterator positioned before the first index.
+     *
      * @param shape the shape to traverse
      */
     public IndexIterator(Shape shape) {
@@ -30,7 +32,11 @@ public final class IndexIterator {
         this.remaining = shape.size();
     }
 
-    /** @return {@code true} if another index follows */
+    /**
+     * Returns {@code true} if another index follows.
+     *
+     * @return {@code true} if another index follows
+     */
     public boolean hasNext() {
         return remaining > 0;
     }

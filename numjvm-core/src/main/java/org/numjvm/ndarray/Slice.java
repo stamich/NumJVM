@@ -88,12 +88,18 @@ public sealed interface Slice permits Slice.All, Slice.Index, Slice.Range, Slice
         }
     }
 
-    /** @return {@code :} */
+    /**
+     * Returns {@code :}.
+     *
+     * @return {@code :}
+     */
     static Slice all() {
         return new All();
     }
 
     /**
+     * Returns the single-position index.
+     *
      * @param index position; negative values count from the end
      * @return the single-position index
      */
@@ -102,6 +108,8 @@ public sealed interface Slice permits Slice.All, Slice.Index, Slice.Range, Slice
     }
 
     /**
+     * Returns {@code start:stop}.
+     *
      * @param start first position
      * @param stop  end position, exclusive
      * @return {@code start:stop}
@@ -111,6 +119,8 @@ public sealed interface Slice permits Slice.All, Slice.Index, Slice.Range, Slice
     }
 
     /**
+     * Returns {@code start:stop:step}.
+     *
      * @param start first position
      * @param stop  end position, exclusive
      * @param step  stride, positive or negative, not zero
@@ -121,6 +131,8 @@ public sealed interface Slice permits Slice.All, Slice.Index, Slice.Range, Slice
     }
 
     /**
+     * Returns {@code start:}.
+     *
      * @param start first position
      * @return {@code start:}
      */
@@ -129,6 +141,8 @@ public sealed interface Slice permits Slice.All, Slice.Index, Slice.Range, Slice
     }
 
     /**
+     * Returns {@code :stop}.
+     *
      * @param stop end position, exclusive
      * @return {@code :stop}
      */
@@ -137,6 +151,8 @@ public sealed interface Slice permits Slice.All, Slice.Index, Slice.Range, Slice
     }
 
     /**
+     * Returns {@code ::step}.
+     *
      * @param step stride, not zero; {@code -1} reverses the axis
      * @return {@code ::step}
      */
@@ -144,12 +160,20 @@ public sealed interface Slice permits Slice.All, Slice.Index, Slice.Range, Slice
         return new Range(null, null, step);
     }
 
-    /** @return a new axis of length 1 */
+    /**
+     * Returns a new axis of length 1.
+     *
+     * @return a new axis of length 1
+     */
     static Slice newAxis() {
         return new NewAxis();
     }
 
-    /** @return {@code ...} */
+    /**
+     * Returns {@code ...}.
+     *
+     * @return {@code ...}
+     */
     static Slice ellipsis() {
         return new Ellipsis();
     }

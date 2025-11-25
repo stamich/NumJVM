@@ -61,17 +61,29 @@ public final class NativeMemoryTracker {
         CLEANER.register(anchor, () -> released(bytes));
     }
 
-    /** @return native bytes allocated and not yet released */
+    /**
+     * Returns native bytes allocated and not yet released.
+     *
+     * @return native bytes allocated and not yet released
+     */
     public long liveBytes() {
         return live.get();
     }
 
-    /** @return the largest value {@link #liveBytes()} has had */
+    /**
+     * Returns the largest value {@link #liveBytes()} has had.
+     *
+     * @return the largest value {@link #liveBytes()} has had
+     */
     public long peakBytes() {
         return peak.get();
     }
 
-    /** @return the number of native allocations since start-up */
+    /**
+     * Returns the number of native allocations since start-up.
+     *
+     * @return the number of native allocations since start-up
+     */
     public long allocationCount() {
         return allocations.get();
     }

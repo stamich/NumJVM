@@ -150,27 +150,47 @@ public final class NDArray {
 
     // ------------------------------------------------------------------ metadata
 
-    /** @return the element type */
+    /**
+     * Returns the element type.
+     *
+     * @return the element type
+     */
     public DType dtype() {
         return dtype;
     }
 
-    /** @return the shape, e.g. {@code [2, 3]} */
+    /**
+     * Returns the shape, e.g. {@code [2, 3]}.
+     *
+     * @return the shape, e.g. {@code [2, 3]}
+     */
     public Shape shape() {
         return shape;
     }
 
-    /** @return the byte strides, e.g. {@code [24, 8]} for a C-contiguous 2×3 float64 array */
+    /**
+     * Returns the byte strides, e.g. {@code [24, 8]} for a C-contiguous 2×3 float64 array.
+     *
+     * @return the byte strides, e.g. {@code [24, 8]} for a C-contiguous 2×3 float64 array
+     */
     public Strides strides() {
         return strides;
     }
 
-    /** @return the number of dimensions (0 for a scalar array) */
+    /**
+     * Returns the number of dimensions (0 for a scalar array).
+     *
+     * @return the number of dimensions (0 for a scalar array)
+     */
     public int ndim() {
         return shape.dims.length;
     }
 
-    /** @return the number of elements */
+    /**
+     * Returns the number of elements.
+     *
+     * @return the number of elements
+     */
     public long size() {
         return shape.size();
     }
@@ -185,47 +205,83 @@ public final class NDArray {
         return shape.dimension(axis);
     }
 
-    /** @return the size of one element in bytes */
+    /**
+     * Returns the size of one element in bytes.
+     *
+     * @return the size of one element in bytes
+     */
     public int itemSize() {
         return dtype.size();
     }
 
-    /** @return the number of bytes the elements occupy: {@code size() * itemSize()} */
+    /**
+     * Returns the number of bytes the elements occupy: {@code size() * itemSize()}.
+     *
+     * @return the number of bytes the elements occupy: {@code size() * itemSize()}
+     */
     public long nbytes() {
         return shape.size() * dtype.size();
     }
 
-    /** @return {@code true} if elements may be written through this array */
+    /**
+     * Returns {@code true} if elements may be written through this array.
+     *
+     * @return {@code true} if elements may be written through this array
+     */
     public boolean isWriteable() {
         return writeable;
     }
 
-    /** @return layout and access flags (contiguity, writeability, alignment) */
+    /**
+     * Returns layout and access flags (contiguity, writeability, alignment).
+     *
+     * @return layout and access flags (contiguity, writeability, alignment)
+     */
     public ArrayFlags flags() {
         return ArrayFlags.of(flags);
     }
 
-    /** @return {@code true} if the array is C-contiguous */
+    /**
+     * Returns {@code true} if the array is C-contiguous.
+     *
+     * @return {@code true} if the array is C-contiguous
+     */
     public boolean isCContiguous() {
         return (flags & ArrayFlags.C_CONTIGUOUS) != 0;
     }
 
-    /** @return {@code true} if the array is Fortran-contiguous */
+    /**
+     * Returns {@code true} if the array is Fortran-contiguous.
+     *
+     * @return {@code true} if the array is Fortran-contiguous
+     */
     public boolean isFContiguous() {
         return (flags & ArrayFlags.F_CONTIGUOUS) != 0;
     }
 
-    /** @return the owner that decides how long this array's memory stays valid */
+    /**
+     * Returns the owner that decides how long this array's memory stays valid.
+     *
+     * @return the owner that decides how long this array's memory stays valid
+     */
     public MemoryOwner memoryOwner() {
         return buffer.owner();
     }
 
-    /** @return {@code true} if the array's memory may still be accessed */
+    /**
+     * Returns {@code true} if the array's memory may still be accessed.
+     *
+     * @return {@code true} if the array's memory may still be accessed
+     */
     public boolean isAlive() {
         return buffer.isAlive();
     }
 
-    /** @return {@code true} if the elements live in native (off-heap) memory */
+    /**
+     * Returns {@code true} if the elements live in native (off-heap) memory.
+     *
+     * @return {@code true} if the elements live in native (off-heap) memory
+     */
     public boolean isNative() {
         return buffer.isNative();
     }
@@ -719,12 +775,18 @@ public final class NDArray {
 
     // ------------------------------------------------------------------ double
 
-    /** @return the single element of a 0-D array, as a {@code double} */
+    /**
+     * Returns the single element of a 0-D array, as a {@code double}.
+     *
+     * @return the single element of a 0-D array, as a {@code double}
+     */
     public double getDouble() {
         return readDouble(at0());
     }
 
     /**
+     * Returns the element, as a {@code double}.
+     *
      * @param i index on axis 0
      * @return the element, as a {@code double}
      */
@@ -733,6 +795,8 @@ public final class NDArray {
     }
 
     /**
+     * Returns the element, as a {@code double}.
+     *
      * @param i index on axis 0
      * @param j index on axis 1
      * @return the element, as a {@code double}
@@ -742,6 +806,8 @@ public final class NDArray {
     }
 
     /**
+     * Returns the element, as a {@code double}.
+     *
      * @param i index on axis 0
      * @param j index on axis 1
      * @param k index on axis 2
@@ -752,6 +818,8 @@ public final class NDArray {
     }
 
     /**
+     * Returns the element, as a {@code double}.
+     *
      * @param index one index per axis
      * @return the element, as a {@code double}
      */
@@ -759,12 +827,18 @@ public final class NDArray {
         return readDouble(elementOffset(index));
     }
 
-    /** @param value new value of the single element of a 0-D array */
+    /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
+     * @param value new value of the single element of a 0-D array
+     */
     public void setDouble(double value) {
         writeDouble(at0(), value);
     }
 
     /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
      * @param i     index on axis 0
      * @param value new value
      */
@@ -773,6 +847,8 @@ public final class NDArray {
     }
 
     /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
      * @param i     index on axis 0
      * @param j     index on axis 1
      * @param value new value
@@ -782,6 +858,8 @@ public final class NDArray {
     }
 
     /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
      * @param i     index on axis 0
      * @param j     index on axis 1
      * @param k     index on axis 2
@@ -792,6 +870,8 @@ public final class NDArray {
     }
 
     /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
      * @param index one index per axis
      * @param value new value
      */
@@ -801,12 +881,18 @@ public final class NDArray {
 
     // ------------------------------------------------------------------ long
 
-    /** @return the single element of a 0-D array, as a {@code long} */
+    /**
+     * Returns the single element of a 0-D array, as a {@code long}.
+     *
+     * @return the single element of a 0-D array, as a {@code long}
+     */
     public long getLong() {
         return readLong(at0());
     }
 
     /**
+     * Returns the element, as a {@code long}.
+     *
      * @param i index on axis 0
      * @return the element, as a {@code long}
      */
@@ -815,6 +901,8 @@ public final class NDArray {
     }
 
     /**
+     * Returns the element, as a {@code long}.
+     *
      * @param i index on axis 0
      * @param j index on axis 1
      * @return the element, as a {@code long}
@@ -824,6 +912,8 @@ public final class NDArray {
     }
 
     /**
+     * Returns the element, as a {@code long}.
+     *
      * @param i index on axis 0
      * @param j index on axis 1
      * @param k index on axis 2
@@ -834,6 +924,8 @@ public final class NDArray {
     }
 
     /**
+     * Returns the element, as a {@code long}.
+     *
      * @param index one index per axis
      * @return the element, as a {@code long}
      */
@@ -841,12 +933,18 @@ public final class NDArray {
         return readLong(elementOffset(index));
     }
 
-    /** @param value new value of the single element of a 0-D array */
+    /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
+     * @param value new value of the single element of a 0-D array
+     */
     public void setLong(long value) {
         writeLong(at0(), value);
     }
 
     /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
      * @param i     index on axis 0
      * @param value new value
      */
@@ -855,6 +953,8 @@ public final class NDArray {
     }
 
     /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
      * @param i     index on axis 0
      * @param j     index on axis 1
      * @param value new value
@@ -864,6 +964,8 @@ public final class NDArray {
     }
 
     /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
      * @param i     index on axis 0
      * @param j     index on axis 1
      * @param k     index on axis 2
@@ -874,6 +976,8 @@ public final class NDArray {
     }
 
     /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
      * @param index one index per axis
      * @param value new value
      */
@@ -883,12 +987,18 @@ public final class NDArray {
 
     // ------------------------------------------------------------------ boolean
 
-    /** @return the single element of a 0-D array, as a {@code boolean} */
+    /**
+     * Returns the single element of a 0-D array, as a {@code boolean}.
+     *
+     * @return the single element of a 0-D array, as a {@code boolean}
+     */
     public boolean getBoolean() {
         return readBoolean(at0());
     }
 
     /**
+     * Returns {@code true} if the element is non-zero.
+     *
      * @param i index on axis 0
      * @return {@code true} if the element is non-zero
      */
@@ -897,6 +1007,8 @@ public final class NDArray {
     }
 
     /**
+     * Returns {@code true} if the element is non-zero.
+     *
      * @param i index on axis 0
      * @param j index on axis 1
      * @return {@code true} if the element is non-zero
@@ -906,6 +1018,8 @@ public final class NDArray {
     }
 
     /**
+     * Returns {@code true} if the element is non-zero.
+     *
      * @param i index on axis 0
      * @param j index on axis 1
      * @param k index on axis 2
@@ -916,6 +1030,8 @@ public final class NDArray {
     }
 
     /**
+     * Returns {@code true} if the element is non-zero.
+     *
      * @param index one index per axis
      * @return {@code true} if the element is non-zero
      */
@@ -923,12 +1039,18 @@ public final class NDArray {
         return readBoolean(elementOffset(index));
     }
 
-    /** @param value new value of the single element of a 0-D array */
+    /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
+     * @param value new value of the single element of a 0-D array
+     */
     public void setBoolean(boolean value) {
         writeLong(at0(), value ? 1 : 0);
     }
 
     /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
      * @param i     index on axis 0
      * @param value new value
      */
@@ -937,6 +1059,8 @@ public final class NDArray {
     }
 
     /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
      * @param i     index on axis 0
      * @param j     index on axis 1
      * @param value new value
@@ -946,6 +1070,8 @@ public final class NDArray {
     }
 
     /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
      * @param i     index on axis 0
      * @param j     index on axis 1
      * @param k     index on axis 2
@@ -956,6 +1082,8 @@ public final class NDArray {
     }
 
     /**
+     * Writes one element, converting the value as described in the class documentation.
+     *
      * @param index one index per axis
      * @param value new value
      */

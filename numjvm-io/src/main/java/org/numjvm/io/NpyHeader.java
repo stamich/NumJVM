@@ -57,7 +57,11 @@ public record NpyHeader(
     /** Spare header space NumPy reserves so the shape can grow in place. */
     static final int GROWTH_AXIS_MAX_DIGITS = 21;
 
-    /** @return the number of data bytes: {@code shape.size() * dtype.size()} */
+    /**
+     * Returns the number of data bytes: {@code shape.size() * dtype.size()}.
+     *
+     * @return the number of data bytes: {@code shape.size() * dtype.size()}
+     */
     public long dataBytes() {
         return Math.multiplyExact(shape.size(), (long) dtype.size());
     }

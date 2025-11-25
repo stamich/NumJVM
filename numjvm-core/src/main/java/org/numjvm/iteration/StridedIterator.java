@@ -93,22 +93,36 @@ public final class StridedIterator {
         return new StridedIterator(shape.clone(), st, offsets.clone());
     }
 
-    /** @return {@code false} if the shape has a zero-length axis, so there is nothing to visit */
+    /**
+     * Returns {@code false} if the shape has a zero-length axis, so there is nothing to visit.
+     *
+     * @return {@code false} if the shape has a zero-length axis, so there is nothing to visit
+     */
     public boolean hasElements() {
         return hasElements;
     }
 
-    /** @return the number of operands */
+    /**
+     * Returns the number of operands.
+     *
+     * @return the number of operands
+     */
     public int operands() {
         return nops;
     }
 
-    /** @return the length of every run: the innermost dimension, or 1 for a 0-D shape */
+    /**
+     * Returns the length of every run: the innermost dimension, or 1 for a 0-D shape.
+     *
+     * @return the length of every run: the innermost dimension, or 1 for a 0-D shape
+     */
     public long innerSize() {
         return innerSize;
     }
 
     /**
+     * Returns the byte stride of {@code op} along the innermost axis.
+     *
      * @param op operand number
      * @return the byte stride of {@code op} along the innermost axis
      */
@@ -117,6 +131,8 @@ public final class StridedIterator {
     }
 
     /**
+     * Returns the byte offset of {@code op}'s first element in the current run.
+     *
      * @param op operand number
      * @return the byte offset of {@code op}'s first element in the current run
      */

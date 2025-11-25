@@ -79,12 +79,16 @@ public final class SharedSecrets {
         NDArray allocate(MemoryAllocator allocator, DType dtype, Shape shape, Order order);
 
         /**
+         * Returns its buffer.
+         *
          * @param array an array
          * @return its buffer
          */
         Buffer buffer(NDArray array);
 
         /**
+         * Returns byte offset of its element {@code [0, ..., 0]}.
+         *
          * @param array an array
          * @return byte offset of its element {@code [0, ..., 0]}
          */
@@ -106,7 +110,11 @@ public final class SharedSecrets {
         scopeAccess = access;
     }
 
-    /** @return the scope accessor, initialising {@link NJScope} if necessary */
+    /**
+     * Returns the scope accessor, initialising {@link NJScope} if necessary.
+     *
+     * @return the scope accessor, initialising {@link NJScope} if necessary
+     */
     public static ScopeAccess scopeAccess() {
         ScopeAccess a = scopeAccess;
         if (a == null) {
@@ -125,7 +133,11 @@ public final class SharedSecrets {
         arrayAccess = access;
     }
 
-    /** @return the array accessor, initialising {@link NDArray} if necessary */
+    /**
+     * Returns the array accessor, initialising {@link NDArray} if necessary.
+     *
+     * @return the array accessor, initialising {@link NDArray} if necessary
+     */
     public static ArrayAccess arrayAccess() {
         ArrayAccess a = arrayAccess;
         if (a == null) {

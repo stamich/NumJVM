@@ -111,7 +111,11 @@ public final class NJScope implements MemoryOwner, AutoCloseable {
         return new NJScope(Mode.SHARED);
     }
 
-    /** @return whether this scope is confined to one thread or shared */
+    /**
+     * Returns whether this scope is confined to one thread or shared.
+     *
+     * @return whether this scope is confined to one thread or shared
+     */
     public Mode mode() {
         return mode;
     }
