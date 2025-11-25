@@ -34,6 +34,11 @@ jobs:
       - name: Run examples
         run: ./gradlew --quiet :examples:basic-arrays:run :examples:memory-scopes:run
 
+      - name: Consume the published artifacts from a separate build
+        run: |
+          ./gradlew --quiet publishToMavenLocal
+          ./gradlew --quiet -p release-check run
+
       - name: Publish test results
         if: always()
         uses: mikepenz/action-junit-report@v5

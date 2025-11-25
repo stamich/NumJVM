@@ -1,0 +1,30 @@
+package smoke;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import org.numjvm.NJ;
+import org.numjvm.io.Npy;
+import org.numjvm.kernels.ValidationKernels;
+import org.numjvm.ndarray.NDArray;
+
+/** Fails with a non-zero exit code if the published artifacts do not work together. */
+public final class ReleaseCheck {
+
+    private ReleaseCheck() {
+    }
+
+    public static void main(String[] args) throws Exception {
+        NDArray a = NJ.array(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+        NDArray sum = ValidationKernels.add(a, NJ.array(new double[]{1, 2, 3}).broadcastTo(2, 3));
+        Path file = Files.createTempFile("release-check", ".npy");
+        Npy.write(file, sum);
+        NDArray back = Npy.read(file);
+        Files.delete(file);
+        if (!NJ.arrayEquals(sum, back) || back.getDouble(1, 2) != 9.0) {
+            throw new AssertionError("round trip failed: " + back);
+        }
+        System.out.println("NumJVM " + NJ.version() + " artifacts OK");
+        System.out.println(back);
+    }
+}

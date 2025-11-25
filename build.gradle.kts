@@ -48,3 +48,64 @@ subprojects {
         }
     }
 }
+
+// ---------------------------------------------------------------------------- publishing
+//
+// numjvm-core and numjvm-io are published with sources and Javadoc. Releases are first
+// staged in build/staging-repo (./gradlew publish) and can be installed locally with
+// ./gradlew publishToMavenLocal; release-check/ consumes them like a user project would.
+
+val publishedModules = setOf("numjvm-core", "numjvm-io")
+
+configure(subprojects.filter { it.name in publishedModules }) {
+    apply(plugin = "maven-publish")
+
+    extensions.configure<JavaPluginExtension> {
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    tasks.named<Jar>("jar") {
+        manifest {
+            attributes(
+                "Implementation-Title" to project.name,
+                "Implementation-Version" to project.version,
+            )
+        }
+    }
+
+    extensions.configure<PublishingExtension> {
+        publications {
+            create<MavenPublication>("maven") {
+                from(components["java"])
+                pom {
+                    name = project.name
+                    description = provider { project.description }
+                    url = "https://github.com/stamich/NumJVM"
+                    licenses {
+                        license {
+                            name = "Apache License, Version 2.0"
+                            url = "https://www.apache.org/licenses/LICENSE-2.0"
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = "stamich"
+                            name = "Michal Stawarski"
+                        }
+                    }
+                    scm {
+                        connection = "scm:git:https://github.com/stamich/NumJVM.git"
+                        url = "https://github.com/stamich/NumJVM"
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                name = "staging"
+                url = uri(rootProject.layout.buildDirectory.dir("staging-repo"))
+            }
+        }
+    }
+}
