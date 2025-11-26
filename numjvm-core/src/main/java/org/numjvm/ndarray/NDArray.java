@@ -139,7 +139,9 @@ public final class NDArray {
         return false;
     }
 
-    /** Allocates a zero-filled contiguous array. */
+    /**
+     * Allocates a zero-filled contiguous array.
+     */
     static NDArray allocate(MemoryAllocator allocator, DType dtype, Shape shape, Order order) {
         long bytes = Sizes.bytesFor(shape.size(), dtype.size());
         Strides strides = order == Order.F
@@ -342,7 +344,9 @@ public final class NDArray {
                 .overlaps(new ByteExtent(a2 + theirs.start(), a2 + theirs.end()));
     }
 
-    /** A view on the same buffer; the caller hands over ownership of both arrays. */
+    /**
+     * A view on the same buffer; the caller hands over ownership of both arrays.
+     */
     private NDArray view(long newOffset, long[] dims, long[] newStrides, boolean newWriteable) {
         return new NDArray(buffer, dtype, newOffset, Shape.ofOwned(dims), Strides.ofOwned(newStrides), newWriteable);
     }
@@ -581,7 +585,9 @@ public final class NDArray {
         return n;
     }
 
-    /** Python's {@code PySlice_AdjustIndices}: returns {start, stop, length}. */
+    /**
+     * Python's {@code PySlice_AdjustIndices}: returns {start, stop, length}.
+     */
     static long[] adjust(Slice.Range r, long n) {
         long step = r.step();
         long start;
@@ -713,7 +719,9 @@ public final class NDArray {
         return offset + idx(i, 0) * st[0] + idx(j, 1) * st[1] + idx(k, 2) * st[2];
     }
 
-    /** Byte offset of the element at {@code index}; validates rank and every index. */
+    /**
+     * Byte offset of the element at {@code index}; validates rank and every index.
+     */
     long elementOffset(long[] index) {
         requireRank(index.length);
         long[] st = strides.values;

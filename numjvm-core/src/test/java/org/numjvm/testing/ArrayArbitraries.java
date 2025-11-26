@@ -23,7 +23,9 @@ public final class ArrayArbitraries {
     private ArrayArbitraries() {
     }
 
-    /** One array layout: where element [0, ..., 0] is and how to step from it. */
+    /**
+     * One array layout: where element [0, ..., 0] is and how to step from it.
+     */
     public record Layout(Shape shape, Strides strides, long offset, int itemSize) {
         @Override
         public String toString() {
@@ -32,7 +34,9 @@ public final class ArrayArbitraries {
         }
     }
 
-    /** Dimension lengths: 0 and 1 are frequent, larger values up to {@code maxDim}. */
+    /**
+     * Dimension lengths: 0 and 1 are frequent, larger values up to {@code maxDim}.
+     */
     public static Arbitrary<Long> dimensions(long maxDim) {
         return Arbitraries.frequencyOf(
                 net.jqwik.api.Tuple.of(1, Arbitraries.just(0L)),
@@ -40,28 +44,38 @@ public final class ArrayArbitraries {
                 net.jqwik.api.Tuple.of(8, Arbitraries.longs().between(2, maxDim)));
     }
 
-    /** Shapes of rank 0 to {@code maxRank}. */
+    /**
+     * Shapes of rank 0 to {@code maxRank}.
+     */
     public static Arbitrary<Shape> shapes(int maxRank, long maxDim) {
         return dimensions(maxDim).list().ofMinSize(0).ofMaxSize(maxRank)
                 .map(l -> Shape.of(l.stream().mapToLong(Long::longValue).toArray()));
     }
 
-    /** Small shapes (rank ≤ 4, dimensions ≤ 6), cheap enough to enumerate element by element. */
+    /**
+     * Small shapes (rank ≤ 4, dimensions ≤ 6), cheap enough to enumerate element by element.
+     */
     public static Arbitrary<Shape> smallShapes() {
         return shapes(4, 6);
     }
 
-    /** Shapes with at least one element. */
+    /**
+     * Shapes with at least one element.
+     */
     public static Arbitrary<Shape> nonEmptyShapes(int maxRank, long maxDim) {
         return shapes(maxRank, maxDim).filter(s -> s.size() > 0);
     }
 
-    /** Element sizes of the existing dtypes. */
+    /**
+     * Element sizes of the existing dtypes.
+     */
     public static Arbitrary<Integer> itemSizes() {
         return Arbitraries.of(1, 2, 4, 8, 16);
     }
 
-    /** Every dtype. */
+    /**
+     * Every dtype.
+     */
     public static Arbitrary<DType> dtypes() {
         return Arbitraries.of(DType.class);
     }
@@ -97,7 +111,9 @@ public final class ArrayArbitraries {
         return smallShapes().map(ArrayArbitraries::sequential);
     }
 
-    /** A float64 array of the given shape holding 0, 1, 2, ... in C order. */
+    /**
+     * A float64 array of the given shape holding 0, 1, 2, ... in C order.
+     */
     public static NDArray sequential(Shape shape) {
         double[] values = new double[Math.toIntExact(shape.size())];
         for (int i = 0; i < values.length; i++) {
@@ -106,7 +122,9 @@ public final class ArrayArbitraries {
         return shape.rank() == 0 ? NJ.scalar(0.0) : NJ.array(values, shape.dimensions());
     }
 
-    /** Values of an array in logical C order, read through its own strides. */
+    /**
+     * Values of an array in logical C order, read through its own strides.
+     */
     public static double[] values(NDArray a) {
         double[] out = new double[Math.toIntExact(a.size())];
         long[] dims = a.shape().dimensions();
@@ -123,7 +141,9 @@ public final class ArrayArbitraries {
         return out;
     }
 
-    /** Element offsets of a layout in C order, by enumerating every index. */
+    /**
+     * Element offsets of a layout in C order, by enumerating every index.
+     */
     public static long[] enumerateOffsets(Layout layout) {
         long[] dims = layout.shape().dimensions();
         long[] st = layout.strides().values();
@@ -146,7 +166,9 @@ public final class ArrayArbitraries {
         return out;
     }
 
-    /** Debug helper for property failure messages. */
+    /**
+     * Debug helper for property failure messages.
+     */
     public static String describe(long[] values) {
         return Arrays.toString(values);
     }

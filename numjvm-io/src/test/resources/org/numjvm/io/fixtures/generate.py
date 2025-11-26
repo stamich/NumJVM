@@ -24,12 +24,12 @@ def base(code):
 
 for code in DTYPES:
     a = base(code)
-    np.save(f"{code}.npy", a)                                      # native order (little-endian), C order
-    np.save(f"{code}_fortran.npy", np.asfortranarray(a))           # fortran_order: True
+    np.save(f"{code}.npy", a)  # native order (little-endian), C order
+    np.save(f"{code}_fortran.npy", np.asfortranarray(a))  # fortran_order: True
     if code not in ("b1", "i1", "u1"):
-        np.save(f"{code}_big.npy", a.astype(a.dtype.newbyteorder(">")))   # big-endian
+        np.save(f"{code}_big.npy", a.astype(a.dtype.newbyteorder(">")))  # big-endian
 
 np.save("scalar.npy", np.array(2.5))
 np.save("empty.npy", np.zeros((0, 3), dtype=np.int16))
-np.save("u8_max.npy", np.array([0, 2**63, 2**64 - 1], dtype=np.uint64))
+np.save("u8_max.npy", np.array([0, 2 ** 63, 2 ** 64 - 1], dtype=np.uint64))
 np.save("f2_values.npy", np.array([0.1, 65504.0, -np.inf, np.nan], dtype=np.float16))

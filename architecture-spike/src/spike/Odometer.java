@@ -59,7 +59,9 @@ final class Odometer {
         return offsets[op];
     }
 
-    /** Moves to the next inner run; returns {@code false} after the last one. */
+    /**
+     * Moves to the next inner run; returns {@code false} after the last one.
+     */
     boolean advance() {
         for (int d = outerRank - 1; d >= 0; d--) {
             long c = counter[d] + 1;

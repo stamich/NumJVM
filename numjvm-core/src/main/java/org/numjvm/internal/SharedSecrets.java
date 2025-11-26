@@ -18,7 +18,9 @@ import org.numjvm.ndarray.Strides;
  */
 public final class SharedSecrets {
 
-    /** Internal operations on {@link NJScope}. */
+    /**
+     * Internal operations on {@link NJScope}.
+     */
     public interface ScopeAccess {
 
         /**
@@ -51,7 +53,9 @@ public final class SharedSecrets {
         java.lang.foreign.Arena arena(NJScope scope);
     }
 
-    /** Internal operations on {@link NDArray}. */
+    /**
+     * Internal operations on {@link NDArray}.
+     */
     public interface ArrayAccess {
 
         /**

@@ -216,7 +216,9 @@ public final class Factories {
         return a;
     }
 
-    /** 1-D view over a freshly allocated C-contiguous array. */
+    /**
+     * 1-D view over a freshly allocated C-contiguous array.
+     */
     private static NDArray flat(NDArray a) {
         return SharedSecrets.arrayAccess().create(SharedSecrets.arrayAccess().buffer(a), a.dtype(), 0,
                 Shape.of(a.size()), Strides.of(a.itemSize()), true);

@@ -12,7 +12,9 @@ final class Reshaper {
     private Reshaper() {
     }
 
-    /** Resolves a single {@code -1} and checks that the element count is unchanged. */
+    /**
+     * Resolves a single {@code -1} and checks that the element count is unchanged.
+     */
     static long[] resolve(long[] requested, long size) {
         long[] dims = requested.clone();
         int unknown = -1;

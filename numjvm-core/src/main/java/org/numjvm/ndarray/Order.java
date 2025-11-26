@@ -5,9 +5,13 @@ package org.numjvm.ndarray;
  */
 public enum Order {
 
-    /** Row-major: the last axis varies fastest. The default everywhere in NumJVM. */
+    /**
+     * Row-major: the last axis varies fastest. The default everywhere in NumJVM.
+     */
     C,
 
-    /** Column-major (Fortran): the first axis varies fastest. */
+    /**
+     * Column-major (Fortran): the first axis varies fastest.
+     */
     F
 }

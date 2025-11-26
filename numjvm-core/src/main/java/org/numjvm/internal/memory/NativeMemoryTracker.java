@@ -15,7 +15,9 @@ import java.util.concurrent.atomic.LongAccumulator;
  */
 public final class NativeMemoryTracker {
 
-    /** Process-wide tracker used by all native allocators. */
+    /**
+     * Process-wide tracker used by all native allocators.
+     */
     public static final NativeMemoryTracker GLOBAL = new NativeMemoryTracker();
 
     private static final Cleaner CLEANER = Cleaner.create(r -> {

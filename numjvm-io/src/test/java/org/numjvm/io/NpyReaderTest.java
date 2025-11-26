@@ -40,7 +40,9 @@ class NpyReaderTest {
         }
     }
 
-    /** Real and imaginary parts of element k of a complex array, read from raw memory. */
+    /**
+     * Real and imaginary parts of element k of a complex array, read from raw memory.
+     */
     private static double[] complexAt(NDArray a, int i, int j) {
         boolean single = a.dtype() == DType.COMPLEX64;
         NDArray parts = SharedSecrets.arrayAccess().create(SharedSecrets.arrayAccess().buffer(a),

@@ -118,7 +118,9 @@ class StridesTest {
         }
     }
 
-    /** Enumerates every index; returns {min offset, max offset} or null if no elements. */
+    /**
+     * Enumerates every index; returns {min offset, max offset} or null if no elements.
+     */
     static long[] bruteForce(long[] dims, long[] strides, long offset) {
         long size = 1;
         for (long d : dims) {

@@ -24,7 +24,9 @@ package org.numjvm.ndarray;
  */
 public sealed interface Slice permits Slice.All, Slice.Index, Slice.Range, Slice.NewAxis, Slice.Ellipsis {
 
-    /** The whole axis, {@code :}. */
+    /**
+     * The whole axis, {@code :}.
+     */
     record All() implements Slice {
         @Override
         public String toString() {
@@ -72,7 +74,9 @@ public sealed interface Slice permits Slice.All, Slice.Index, Slice.Range, Slice
         }
     }
 
-    /** A new axis of length 1, NumPy's {@code None} / {@code np.newaxis}. */
+    /**
+     * A new axis of length 1, NumPy's {@code None} / {@code np.newaxis}.
+     */
     record NewAxis() implements Slice {
         @Override
         public String toString() {
@@ -80,7 +84,9 @@ public sealed interface Slice permits Slice.All, Slice.Index, Slice.Range, Slice
         }
     }
 
-    /** As many full axes as needed to index every axis, {@code ...}. At most one per index. */
+    /**
+     * As many full axes as needed to index every axis, {@code ...}. At most one per index.
+     */
     record Ellipsis() implements Slice {
         @Override
         public String toString() {

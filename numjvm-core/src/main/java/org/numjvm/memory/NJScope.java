@@ -48,11 +48,17 @@ import org.numjvm.ndarray.Strides;
  */
 public final class NJScope implements MemoryOwner, AutoCloseable {
 
-    /** Which threads may use a scope. */
+    /**
+     * Which threads may use a scope.
+     */
     public enum Mode {
-        /** Only the creating thread. */
+        /**
+         * Only the creating thread.
+         */
         CONFINED,
-        /** Any thread. */
+        /**
+         * Any thread.
+         */
         SHARED
     }
 

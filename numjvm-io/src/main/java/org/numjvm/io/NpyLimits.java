@@ -10,7 +10,9 @@ package org.numjvm.io;
  */
 public record NpyLimits(int maxHeaderBytes, int maxRank, long maxDataBytes) {
 
-    /** NumPy's own default for {@code np.load(max_header_size=...)}. */
+    /**
+     * NumPy's own default for {@code np.load(max_header_size=...)}.
+     */
     public static final int DEFAULT_MAX_HEADER_BYTES = 10_000;
 
     /**

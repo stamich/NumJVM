@@ -32,7 +32,9 @@ class BroadcastingTest {
         return Shape.of(java.util.Arrays.stream(s.trim().split(" ")).mapToLong(Long::parseLong).toArray());
     }
 
-    /** The table from the M0 specification (section 15.3), plus NumPy's documentation example. */
+    /**
+     * The table from the M0 specification (section 15.3), plus NumPy's documentation example.
+     */
     @ParameterizedTest(name = "{0} with {1} -> {2}")
     @CsvSource({
             "3,       3,      3",

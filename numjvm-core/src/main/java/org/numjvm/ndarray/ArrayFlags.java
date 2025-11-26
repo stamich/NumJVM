@@ -17,13 +17,21 @@ package org.numjvm.ndarray;
  */
 public final class ArrayFlags {
 
-    /** Bit set when the array is C-contiguous. */
+    /**
+     * Bit set when the array is C-contiguous.
+     */
     public static final int C_CONTIGUOUS = 1;
-    /** Bit set when the array is Fortran-contiguous. */
+    /**
+     * Bit set when the array is Fortran-contiguous.
+     */
     public static final int F_CONTIGUOUS = 1 << 1;
-    /** Bit set when elements may be written. */
+    /**
+     * Bit set when elements may be written.
+     */
     public static final int WRITEABLE = 1 << 2;
-    /** Bit set when every element is aligned to the dtype's alignment. */
+    /**
+     * Bit set when every element is aligned to the dtype's alignment.
+     */
     public static final int ALIGNED = 1 << 3;
 
     private final int bits;
@@ -66,7 +74,9 @@ public final class ArrayFlags {
         return bits;
     }
 
-    /** NumPy's rule: the offset and every stride of an axis longer than 1 are multiples of the alignment. */
+    /**
+     * NumPy's rule: the offset and every stride of an axis longer than 1 are multiples of the alignment.
+     */
     private static boolean isAligned(long[] dims, long[] strides, long offset, int alignment, int baseAlignment) {
         if (baseAlignment < alignment) {
             return false;

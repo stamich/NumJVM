@@ -26,7 +26,9 @@ final class SpikeArray {
         this.strides = strides;
     }
 
-    /** C-contiguous array on the heap ({@code long[]}-backed) or in an automatic arena. */
+    /**
+     * C-contiguous array on the heap ({@code long[]}-backed) or in an automatic arena.
+     */
     static SpikeArray zeros(boolean nativeMemory, long... shape) {
         long n = size(shape);
         MemorySegment s = nativeMemory
@@ -71,7 +73,9 @@ final class SpikeArray {
 
     // ------------------------------------------------------------------ element access
 
-    /** Rank-specialised accessor: no varargs array, no allocation. */
+    /**
+     * Rank-specialised accessor: no varargs array, no allocation.
+     */
     double get(long i) {
         return segment.get(F64, offset + check(i, shape[0]) * strides[0]);
     }
@@ -85,7 +89,9 @@ final class SpikeArray {
                 + check(j, shape[1]) * strides[1] + check(k, shape[2]) * strides[2]);
     }
 
-    /** General accessor; the varargs form allocates an array per call at the call site. */
+    /**
+     * General accessor; the varargs form allocates an array per call at the call site.
+     */
     double getVarargs(long... idx) {
         long off = offset;
         for (int d = 0; d < idx.length; d++) {
@@ -122,7 +128,9 @@ final class SpikeArray {
         return new SpikeArray(segment, offset, newShape.clone(), cStrides(newShape));
     }
 
-    /** Every {@code step}-th element along axis 0, starting at {@code start}; step may be negative. */
+    /**
+     * Every {@code step}-th element along axis 0, starting at {@code start}; step may be negative.
+     */
     SpikeArray stepAxis0(long start, long count, long step) {
         long[] sh = shape.clone();
         long[] st = strides.clone();
@@ -131,7 +139,9 @@ final class SpikeArray {
         return new SpikeArray(segment, offset + start * strides[0], sh, st);
     }
 
-    /** Broadcast to {@code target}: right-aligned, size-1 or missing axes get stride 0. */
+    /**
+     * Broadcast to {@code target}: right-aligned, size-1 or missing axes get stride 0.
+     */
     SpikeArray broadcastTo(long... target) {
         long[] st = new long[target.length];
         int lead = target.length - shape.length;
@@ -161,7 +171,9 @@ final class SpikeArray {
         return true;
     }
 
-    /** Values in logical C order, via the odometer. */
+    /**
+     * Values in logical C order, via the odometer.
+     */
     double[] toArray() {
         double[] out = new double[(int) size()];
         if (out.length == 0) {

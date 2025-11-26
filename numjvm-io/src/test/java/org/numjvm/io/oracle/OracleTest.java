@@ -149,7 +149,9 @@ class OracleTest {
         };
     }
 
-    /** The oracle's generator: (i * 2654435761) mod 2^32 / 2^32. */
+    /**
+     * The oracle's generator: (i * 2654435761) mod 2^32 / 2^32.
+     */
     static NDArray hashUnit(int n) {
         NDArray a = NJ.zeros(n);
         for (int i = 0; i < n; i++) {
@@ -187,7 +189,9 @@ class OracleTest {
         return l.stream().mapToInt(o -> ((Number) o).intValue()).toArray();
     }
 
-    /** The bytes of an array in C order: exact comparison for every dtype, including complex and NaN. */
+    /**
+     * The bytes of an array in C order: exact comparison for every dtype, including complex and NaN.
+     */
     static byte[] bytes(NDArray a) {
         NDArray c = a.copy();
         MemorySegment s = SharedSecrets.arrayAccess().buffer(c).segment();

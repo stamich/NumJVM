@@ -29,14 +29,14 @@ import org.numjvm.ndarray.Shape;
  * {@code descr}, {@code fortran_order} and {@code shape}. Nothing is evaluated, and
  * structured dtypes and Python objects (pickles) are rejected.
  *
- * @param majorVersion  format major version, 1 to 3
- * @param minorVersion  format minor version, 0
- * @param descr         the dtype descriptor as written, e.g. {@code "<f8"}
- * @param dtype         the parsed dtype
- * @param byteOrder     byte order of the data; native for one-byte types
- * @param fortranOrder  {@code true} if the data is in column-major order
- * @param shape         the array shape
- * @param dataOffset    position of the first data byte in the file
+ * @param majorVersion format major version, 1 to 3
+ * @param minorVersion format minor version, 0
+ * @param descr        the dtype descriptor as written, e.g. {@code "<f8"}
+ * @param dtype        the parsed dtype
+ * @param byteOrder    byte order of the data; native for one-byte types
+ * @param fortranOrder {@code true} if the data is in column-major order
+ * @param shape        the array shape
+ * @param dataOffset   position of the first data byte in the file
  */
 public record NpyHeader(
         int majorVersion,
@@ -48,13 +48,19 @@ public record NpyHeader(
         Shape shape,
         long dataOffset) {
 
-    /** The magic string at the start of every {@code .npy} file. */
+    /**
+     * The magic string at the start of every {@code .npy} file.
+     */
     static final byte[] MAGIC = {(byte) 0x93, 'N', 'U', 'M', 'P', 'Y'};
 
-    /** Data alignment of NumPy's writer. */
+    /**
+     * Data alignment of NumPy's writer.
+     */
     static final int ARRAY_ALIGN = 64;
 
-    /** Spare header space NumPy reserves so the shape can grow in place. */
+    /**
+     * Spare header space NumPy reserves so the shape can grow in place.
+     */
     static final int GROWTH_AXIS_MAX_DIGITS = 21;
 
     /**
@@ -229,7 +235,9 @@ public record NpyHeader(
 
     // ------------------------------------------------------------------ literal parser
 
-    /** Recursive-descent parser for the literal subset used in .npy headers. */
+    /**
+     * Recursive-descent parser for the literal subset used in .npy headers.
+     */
     static final class LiteralParser {
         private final String s;
         private int pos;

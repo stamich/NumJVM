@@ -1,16 +1,16 @@
 # NumJVM architecture spike (M-1)
 
-Throwaway code that answers the questions the M0 API depends on. Nothing here is
-part of the library and nothing here is published. The conclusions are recorded in
+Throwaway code that answers the questions the M0 API depends on. Nothing here is part of the library and nothing here is
+published. The conclusions are recorded in
 [`results.md`](results.md) and in the ADRs under [`../docs/adr`](../docs/adr).
 
-| Step | Question | Code |
-| --- | --- | --- |
-| S1 | Heap vs native allocation cost, heap segment alignment | `MemorySpike` |
-| S2 | Minimal float64 array with byte strides and an allocation-free iterator | `SpikeArray`, `Odometer`, `SpikeArrayCheck` |
-| S3 | Strided `add` with broadcasting, pairwise `sum`, fast path vs generic loop | `StridedAdd`, `SumReduction`, `KernelSpike` |
-| S4 | Lifetime of 100k short-lived off-heap arrays under `Arena.ofAuto()` | `LifetimeSoak` |
-| S5 | JMH harness and NumPy baseline for the same operations | `benchmarks/` |
+| Step | Question                                                                   | Code                                        |
+|------|----------------------------------------------------------------------------|---------------------------------------------|
+| S1   | Heap vs native allocation cost, heap segment alignment                     | `MemorySpike`                               |
+| S2   | Minimal float64 array with byte strides and an allocation-free iterator    | `SpikeArray`, `Odometer`, `SpikeArrayCheck` |
+| S3   | Strided `add` with broadcasting, pairwise `sum`, fast path vs generic loop | `StridedAdd`, `SumReduction`, `KernelSpike` |
+| S4   | Lifetime of 100k short-lived off-heap arrays under `Arena.ofAuto()`        | `LifetimeSoak`                              |
+| S5   | JMH harness and NumPy baseline for the same operations                     | `benchmarks/`                               |
 
 ## Running
 

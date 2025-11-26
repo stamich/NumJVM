@@ -30,7 +30,9 @@ class NpyWriterTest {
     @TempDir
     Path dir;
 
-    /** Reading a NumPy file and writing it again reproduces NumPy's bytes exactly. */
+    /**
+     * Reading a NumPy file and writing it again reproduces NumPy's bytes exactly.
+     */
     @ParameterizedTest
     @ValueSource(strings = {"b1", "i1", "i2", "i4", "i8", "u1", "u2", "u4", "u8", "f2", "f4", "f8", "c8", "c16",
             "b1_fortran", "i8_fortran", "f4_fortran", "c16_fortran", "scalar", "empty", "u8_max", "f2_values"})

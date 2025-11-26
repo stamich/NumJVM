@@ -8,7 +8,9 @@ import org.numjvm.io.Npy;
 import org.numjvm.kernels.ValidationKernels;
 import org.numjvm.ndarray.NDArray;
 
-/** Fails with a non-zero exit code if the published artifacts do not work together. */
+/**
+ * Fails with a non-zero exit code if the published artifacts do not work together.
+ */
 public final class ReleaseCheck {
 
     private ReleaseCheck() {

@@ -55,7 +55,9 @@ public final class SpikeArrayCheck {
         System.out.println("all checks passed");
     }
 
-    /** Element access must be allocation-free once compiled; varargs access is not. */
+    /**
+     * Element access must be allocation-free once compiled; varargs access is not.
+     */
     private static void allocationCheck() {
         SpikeArray a = SpikeArray.arange(1 << 16, false).reshape(256, 256);
         Bench.Result fixed = Bench.measure(2_000_000, i -> Bench.sinkDouble = a.get(i & 255, (i >>> 8) & 255));

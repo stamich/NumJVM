@@ -22,7 +22,9 @@ class CopyTest {
 
     private static final SharedSecrets.ArrayAccess ACCESS = SharedSecrets.arrayAccess();
 
-    /** A 2x3 float64 array [[0,1,2],[3,4,5]] and views of it built from raw metadata. */
+    /**
+     * A 2x3 float64 array [[0,1,2],[3,4,5]] and views of it built from raw metadata.
+     */
     private static NDArray base() {
         return NJ.array(new double[]{0, 1, 2, 3, 4, 5}, 2, 3);
     }

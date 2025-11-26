@@ -14,7 +14,9 @@ final class StridedAdd {
     private StridedAdd() {
     }
 
-    /** Broadcasting add; allocates a C-contiguous result. */
+    /**
+     * Broadcasting add; allocates a C-contiguous result.
+     */
     static SpikeArray add(SpikeArray a, SpikeArray b, boolean nativeOut) {
         long[] shape = broadcastShape(a.shape, b.shape);
         SpikeArray out = SpikeArray.zeros(nativeOut, shape);
@@ -30,7 +32,9 @@ final class StridedAdd {
         return out;
     }
 
-    /** Forces the generic path, for comparing the two on identical inputs. */
+    /**
+     * Forces the generic path, for comparing the two on identical inputs.
+     */
     static SpikeArray addGeneric(SpikeArray a, SpikeArray b, boolean nativeOut) {
         long[] shape = broadcastShape(a.shape, b.shape);
         SpikeArray out = SpikeArray.zeros(nativeOut, shape);

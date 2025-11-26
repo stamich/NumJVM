@@ -60,7 +60,7 @@ public final class NpyReader {
      *
      * @param path the file
      * @return the array
-     * @throws NpyFormatException if the file is malformed, truncated or over a limit
+     * @throws NpyFormatException   if the file is malformed, truncated or over a limit
      * @throws UncheckedIOException if reading fails
      */
     public NDArray read(Path path) {
@@ -138,7 +138,9 @@ public final class NpyReader {
         return array;
     }
 
-    /** Reverses every group of {@code unit} bytes; {@code length} is a multiple of {@code unit}. */
+    /**
+     * Reverses every group of {@code unit} bytes; {@code length} is a multiple of {@code unit}.
+     */
     static void swapBytes(byte[] b, int length, int unit) {
         for (int base = 0; base < length; base += unit) {
             for (int i = 0, j = unit - 1; i < j; i++, j--) {

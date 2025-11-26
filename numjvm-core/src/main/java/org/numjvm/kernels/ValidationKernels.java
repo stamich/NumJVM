@@ -31,7 +31,9 @@ public final class ValidationKernels {
 
     private static final ValueLayout.OfDouble F64 = ValueLayout.JAVA_DOUBLE_UNALIGNED;
 
-    /** Block size of the pairwise summation, as in NumPy. */
+    /**
+     * Block size of the pairwise summation, as in NumPy.
+     */
     static final int PAIRWISE_BLOCK = 128;
 
     private ValidationKernels() {
@@ -44,7 +46,7 @@ public final class ValidationKernels {
      * @param a first operand, float64
      * @param b second operand, float64
      * @return the sum, with the broadcast shape of {@code a} and {@code b}
-     * @throws DTypeException if an operand is not float64
+     * @throws DTypeException                      if an operand is not float64
      * @throws org.numjvm.exception.ShapeException if the shapes cannot be broadcast
      */
     public static NDArray add(NDArray a, NDArray b) {
@@ -142,7 +144,9 @@ public final class ValidationKernels {
         }
     }
 
-    /** NumPy's {@code pairwise_sum} for doubles at byte stride {@code stride}. */
+    /**
+     * NumPy's {@code pairwise_sum} for doubles at byte stride {@code stride}.
+     */
     static double pairwise(MemorySegment s, long off, long n, long stride) {
         if (n < 8) {
             double res = 0.0;

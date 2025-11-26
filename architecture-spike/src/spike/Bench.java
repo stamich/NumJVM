@@ -12,7 +12,9 @@ import java.lang.management.ManagementFactory;
  */
 final class Bench {
 
-    /** Sink that prevents the JIT from eliminating measured work. */
+    /**
+     * Sink that prevents the JIT from eliminating measured work.
+     */
     static volatile double sinkDouble;
     static volatile Object sinkObject;
 
@@ -22,13 +24,17 @@ final class Bench {
     private Bench() {
     }
 
-    /** Operation measured by the harness. */
+    /**
+     * Operation measured by the harness.
+     */
     @FunctionalInterface
     interface Op {
         void run(int iteration);
     }
 
-    /** Result of one measurement: nanoseconds and heap bytes per operation. */
+    /**
+     * Result of one measurement: nanoseconds and heap bytes per operation.
+     */
     record Result(double nsPerOp, double bytesPerOp) {
         @Override
         public String toString() {
@@ -66,7 +72,9 @@ final class Bench {
         return new Result(ns[rounds / 2], bytes[rounds / 2]);
     }
 
-    /** Picks an operation count so that one round takes roughly the same time. */
+    /**
+     * Picks an operation count so that one round takes roughly the same time.
+     */
     static long opsFor(long elements) {
         long ops = 50_000_000L / Math.max(1, elements);
         return Math.max(3, Math.min(200_000, ops));

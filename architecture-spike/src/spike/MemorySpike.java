@@ -42,7 +42,9 @@ public final class MemorySpike {
         }
     }
 
-    /** Locates the size where automatic native allocation becomes cheaper than heap. */
+    /**
+     * Locates the size where automatic native allocation becomes cheaper than heap.
+     */
     static void crossover() {
         System.out.println("== S1.4 heap vs auto crossover (bytes per array)");
         System.out.printf("%-10s %-14s %-14s %-14s%n", "bytes", "heap ns/op", "auto ns/op", "confined ns/op");

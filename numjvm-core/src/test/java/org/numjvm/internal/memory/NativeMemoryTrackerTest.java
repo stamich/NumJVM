@@ -91,7 +91,9 @@ class NativeMemoryTrackerTest {
         assertTrue(s.peakNativeBytes() >= s.liveNativeBytes());
     }
 
-    /** Runs GC until the tracker reaches {@code target} or 10 seconds pass. */
+    /**
+     * Runs GC until the tracker reaches {@code target} or 10 seconds pass.
+     */
     static boolean awaitLiveBytes(NativeMemoryTracker t, long target) throws InterruptedException {
         long deadline = System.nanoTime() + 10_000_000_000L;
         while (System.nanoTime() < deadline) {

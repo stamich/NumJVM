@@ -23,7 +23,9 @@ class NpyHeaderTest {
 
     private static final NpyLimits LIMITS = NpyLimits.defaults();
 
-    /** Builds a file prefix around a header dict, as version {@code major}. */
+    /**
+     * Builds a file prefix around a header dict, as version {@code major}.
+     */
     static byte[] file(int major, String dict) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         out.writeBytes(new byte[]{(byte) 0x93, 'N', 'U', 'M', 'P', 'Y', (byte) major, 0});
@@ -143,7 +145,9 @@ class NpyHeaderTest {
         assertThrows(IllegalArgumentException.class, () -> new NpyLimits(0, 64, 1));
     }
 
-    /** Byte-for-byte what NumPy 2's np.save writes for these arrays. */
+    /**
+     * Byte-for-byte what NumPy 2's np.save writes for these arrays.
+     */
     @Test
     void encodesExactlyLikeNumPy() {
         assertEquals("\u0093NUMPY\u0001\u0000v\u0000{'descr': '<f8', 'fortran_order': False, 'shape': (2, 3), }"

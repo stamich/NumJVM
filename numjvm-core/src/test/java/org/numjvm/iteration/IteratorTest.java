@@ -24,7 +24,9 @@ import org.numjvm.testing.ArrayArbitraries.Layout;
 
 class IteratorTest {
 
-    /** All (offset of operand 0, offset of operand 1, ...) tuples in visiting order. */
+    /**
+     * All (offset of operand 0, offset of operand 1, ...) tuples in visiting order.
+     */
     private static List<long[]> visit(StridedIterator it) {
         List<long[]> out = new ArrayList<>();
         if (!it.hasElements()) {

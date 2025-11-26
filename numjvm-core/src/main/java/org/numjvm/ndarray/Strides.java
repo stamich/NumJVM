@@ -36,7 +36,9 @@ public final class Strides {
         return bytes.length == 0 ? SCALAR : new Strides(bytes.clone());
     }
 
-    /** Wraps an array the caller will not modify afterwards. */
+    /**
+     * Wraps an array the caller will not modify afterwards.
+     */
     static Strides ofOwned(long[] bytes) {
         return bytes.length == 0 ? SCALAR : new Strides(bytes);
     }

@@ -11,20 +11,34 @@ import org.numjvm.ndarray.Slice;
  */
 public final class Layouts {
 
-    /** Element counts from the M0 specification. */
+    /**
+     * Element counts from the M0 specification.
+     */
     static final String[] SIZES = {"16", "128", "1024", "65536", "1048576", "16777216"};
 
-    /** The layouts compared by the benchmarks. */
+    /**
+     * The layouts compared by the benchmarks.
+     */
     public enum Layout {
-        /** Row-major, contiguous. */
+        /**
+         * Row-major, contiguous.
+         */
         C,
-        /** Column-major, contiguous. */
+        /**
+         * Column-major, contiguous.
+         */
         F,
-        /** A transposed view of a row-major array: strides swapped, no copy. */
+        /**
+         * A transposed view of a row-major array: strides swapped, no copy.
+         */
         TRANSPOSED,
-        /** Every other column of a twice-as-wide array: inner stride 16 bytes. */
+        /**
+         * Every other column of a twice-as-wide array: inner stride 16 bytes.
+         */
         STRIDED,
-        /** One row broadcast to all rows: stride 0 on the outer axis. */
+        /**
+         * One row broadcast to all rows: stride 0 on the outer axis.
+         */
         BROADCASTED
     }
 

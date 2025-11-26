@@ -38,7 +38,9 @@ public class MemoryAccessBenchmark {
         contiguous = Layouts.make(size, Layouts.Layout.C);
     }
 
-    /** The non-contiguous layouts; only {@link #stridedRead} uses this state. */
+    /**
+     * The non-contiguous layouts; only {@link #stridedRead} uses this state.
+     */
     @State(Scope.Thread)
     public static class Strided {
 

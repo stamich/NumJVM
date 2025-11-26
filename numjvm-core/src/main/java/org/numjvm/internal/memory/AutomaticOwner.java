@@ -8,7 +8,9 @@ import org.numjvm.memory.MemoryOwner;
  */
 public final class AutomaticOwner implements MemoryOwner {
 
-    /** The single instance. */
+    /**
+     * The single instance.
+     */
     public static final AutomaticOwner INSTANCE = new AutomaticOwner();
 
     private AutomaticOwner() {

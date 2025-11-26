@@ -39,7 +39,9 @@ public final class LifetimeSoak {
     static final AtomicLong LIVE_NATIVE = new AtomicLong();
     static final Cleaner CLEANER = Cleaner.create();
 
-    /** Stands in for the future Buffer: owns the segment, carries the accounting hook. */
+    /**
+     * Stands in for the future Buffer: owns the segment, carries the accounting hook.
+     */
     record Holder(MemorySegment segment) {
     }
 

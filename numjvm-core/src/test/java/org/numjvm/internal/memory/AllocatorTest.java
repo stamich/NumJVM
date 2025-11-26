@@ -39,7 +39,9 @@ class AllocatorTest {
         assertAlignedAccessWorks(b.segment(), dtype);
     }
 
-    /** Reads every element with the dtype's aligned layout; would throw on misalignment. */
+    /**
+     * Reads every element with the dtype's aligned layout; would throw on misalignment.
+     */
     private static void assertAlignedAccessWorks(MemorySegment s, DType dtype) {
         ValueLayout layout = switch (dtype.alignment()) {
             case 1 -> ValueLayout.JAVA_BYTE;

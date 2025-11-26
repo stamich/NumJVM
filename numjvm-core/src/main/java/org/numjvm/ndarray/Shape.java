@@ -17,7 +17,9 @@ import org.numjvm.exception.ShapeException;
  */
 public final class Shape {
 
-    /** Maximum number of dimensions, matching NumPy 2's {@code NPY_MAXDIMS}. */
+    /**
+     * Maximum number of dimensions, matching NumPy 2's {@code NPY_MAXDIMS}.
+     */
     public static final int MAX_RANK = 64;
 
     private static final Shape SCALAR = new Shape(new long[0], 1);
@@ -54,7 +56,9 @@ public final class Shape {
         return SCALAR;
     }
 
-    /** Wraps an array the caller will not modify afterwards. */
+    /**
+     * Wraps an array the caller will not modify afterwards.
+     */
     static Shape ofOwned(long[] dims) {
         return dims.length == 0 ? SCALAR : validated(dims);
     }

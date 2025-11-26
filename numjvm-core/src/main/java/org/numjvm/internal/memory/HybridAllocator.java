@@ -18,16 +18,24 @@ import org.numjvm.exception.MemoryException;
  */
 public final class HybridAllocator implements MemoryAllocator {
 
-    /** System property holding the heap threshold in bytes. */
+    /**
+     * System property holding the heap threshold in bytes.
+     */
     public static final String THRESHOLD_PROPERTY = "numjvm.memory.heapThreshold";
 
-    /** Default heap threshold: 1 MiB. */
+    /**
+     * Default heap threshold: 1 MiB.
+     */
     public static final long DEFAULT_HEAP_THRESHOLD = 1L << 20;
 
-    /** System property holding the optional soft limit on live native bytes. */
+    /**
+     * System property holding the optional soft limit on live native bytes.
+     */
     public static final String SOFT_LIMIT_PROPERTY = "numjvm.memory.nativeSoftLimit";
 
-    /** Value of {@link #nativeSoftLimit()} when no soft limit is set. */
+    /**
+     * Value of {@link #nativeSoftLimit()} when no soft limit is set.
+     */
     public static final long NO_LIMIT = -1;
 
     private static volatile HybridAllocator defaultInstance;

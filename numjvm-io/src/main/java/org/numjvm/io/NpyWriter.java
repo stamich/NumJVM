@@ -35,7 +35,7 @@ public final class NpyWriter {
      *
      * @param path  the file
      * @param array the array
-     * @throws NpyFormatException if the dtype has no NumPy equivalent (bfloat16)
+     * @throws NpyFormatException   if the dtype has no NumPy equivalent (bfloat16)
      * @throws UncheckedIOException if writing fails
      */
     public static void write(Path path, NDArray array) {

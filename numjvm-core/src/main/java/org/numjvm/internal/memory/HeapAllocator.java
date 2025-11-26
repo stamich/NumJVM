@@ -14,13 +14,19 @@ import org.numjvm.exception.MemoryException;
  */
 public final class HeapAllocator implements MemoryAllocator {
 
-    /** The single instance. */
+    /**
+     * The single instance.
+     */
     public static final HeapAllocator INSTANCE = new HeapAllocator();
 
-    /** Largest heap buffer: the largest {@code long[]} the JVM allows, in bytes (about 16 GiB). */
+    /**
+     * Largest heap buffer: the largest {@code long[]} the JVM allows, in bytes (about 16 GiB).
+     */
     public static final long MAX_BYTES = (long) (Integer.MAX_VALUE - 8) * Long.BYTES;
 
-    /** Alignment of byte 0 of every heap buffer. */
+    /**
+     * Alignment of byte 0 of every heap buffer.
+     */
     public static final int ALIGNMENT = Long.BYTES;
 
     private HeapAllocator() {

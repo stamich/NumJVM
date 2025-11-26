@@ -83,7 +83,9 @@ final class ArrayFormatter {
         return sb.append(")").toString();
     }
 
-    /** Indices shown along an axis: all, or the edge items with -1 marking the ellipsis. */
+    /**
+     * Indices shown along an axis: all, or the edge items with -1 marking the ellipsis.
+     */
     private static long[] shownIndices(long n, boolean summarise) {
         if (!summarise || n <= 2L * EDGE_ITEMS) {
             long[] all = new long[(int) n];
@@ -216,7 +218,9 @@ final class ArrayFormatter {
         return FloatFormat.of(new double[]{re}, component).format(re).strip() + sign + imag + "j";
     }
 
-    /** Index tuples of the elements that will be printed. */
+    /**
+     * Index tuples of the elements that will be printed.
+     */
     private static List<long[]> shownElements(NDArray a, boolean summarise) {
         List<long[]> out = new ArrayList<>();
         int ndim = a.ndim();
@@ -246,7 +250,9 @@ final class ArrayFormatter {
         }
     }
 
-    /** Column-aligned floating-point formatting for one array. */
+    /**
+     * Column-aligned floating-point formatting for one array.
+     */
     private static final class FloatFormat {
         private final boolean scientific;
         private final DType type;
@@ -325,7 +331,9 @@ final class ArrayFormatter {
             return Double.isNaN(v) ? "nan" : v > 0 ? "inf" : "-inf";
         }
 
-        /** {integer part with sign, fractional digits} of the shortest round-tripping decimal. */
+        /**
+         * {integer part with sign, fractional digits} of the shortest round-tripping decimal.
+         */
         private static String[] positionalParts(double v, DType type) {
             BigDecimal d = shortest(v, type);
             BigDecimal rounded = d.setScale(Math.min(PRECISION, Math.max(0, d.scale())), RoundingMode.HALF_EVEN);
@@ -337,7 +345,9 @@ final class ArrayFormatter {
             return new String[]{(negative ? "-" : "") + ip, fp};
         }
 
-        /** {leading digit with sign, mantissa fraction, signed exponent} for scientific notation. */
+        /**
+         * {leading digit with sign, mantissa fraction, signed exponent} for scientific notation.
+         */
         private static String[] scientificParts(double v, DType type) {
             if (v == 0) {
                 return new String[]{Double.doubleToRawLongBits(v) < 0 ? "-0" : "0", "", "+0"};
@@ -353,7 +363,9 @@ final class ArrayFormatter {
             return new String[]{(v < 0 ? "-" : "") + lead, frac, exp};
         }
 
-        /** Shortest decimal that converts back to the same value of {@code type}. */
+        /**
+         * Shortest decimal that converts back to the same value of {@code type}.
+         */
         private static BigDecimal shortest(double v, DType type) {
             if (type == DType.FLOAT64) {
                 return new BigDecimal(Double.toString(v));

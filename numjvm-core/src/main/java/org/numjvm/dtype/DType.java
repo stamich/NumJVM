@@ -25,38 +25,66 @@ import org.numjvm.exception.DTypeException;
  */
 public enum DType {
 
-    /** Boolean, one byte, 0 or 1. */
+    /**
+     * Boolean, one byte, 0 or 1.
+     */
     BOOL(1, DTypeKind.BOOL, "b1"),
-    /** Signed 8-bit integer. */
+    /**
+     * Signed 8-bit integer.
+     */
     INT8(1, DTypeKind.SIGNED_INTEGER, "i1"),
-    /** Signed 16-bit integer. */
+    /**
+     * Signed 16-bit integer.
+     */
     INT16(2, DTypeKind.SIGNED_INTEGER, "i2"),
-    /** Signed 32-bit integer. */
+    /**
+     * Signed 32-bit integer.
+     */
     INT32(4, DTypeKind.SIGNED_INTEGER, "i4"),
-    /** Signed 64-bit integer. */
+    /**
+     * Signed 64-bit integer.
+     */
     INT64(8, DTypeKind.SIGNED_INTEGER, "i8"),
-    /** Unsigned 8-bit integer. */
+    /**
+     * Unsigned 8-bit integer.
+     */
     UINT8(1, DTypeKind.UNSIGNED_INTEGER, "u1"),
-    /** Unsigned 16-bit integer. */
+    /**
+     * Unsigned 16-bit integer.
+     */
     UINT16(2, DTypeKind.UNSIGNED_INTEGER, "u2"),
-    /** Unsigned 32-bit integer. */
+    /**
+     * Unsigned 32-bit integer.
+     */
     UINT32(4, DTypeKind.UNSIGNED_INTEGER, "u4"),
-    /** Unsigned 64-bit integer. Java has no unsigned 64-bit primitive; values travel as raw bits. */
+    /**
+     * Unsigned 64-bit integer. Java has no unsigned 64-bit primitive; values travel as raw bits.
+     */
     UINT64(8, DTypeKind.UNSIGNED_INTEGER, "u8"),
-    /** IEEE 754 binary16 (half precision). */
+    /**
+     * IEEE 754 binary16 (half precision).
+     */
     FLOAT16(2, DTypeKind.FLOATING, "f2"),
     /**
      * bfloat16: the upper 16 bits of an IEEE 754 binary32. Not a NumPy dtype
      * ({@code NUMJVM_SPECIFIC}); it has no {@code .npy} descriptor.
      */
     BFLOAT16(2, DTypeKind.FLOATING, null),
-    /** IEEE 754 binary32 (single precision). */
+    /**
+     * IEEE 754 binary32 (single precision).
+     */
     FLOAT32(4, DTypeKind.FLOATING, "f4"),
-    /** IEEE 754 binary64 (double precision). The default floating-point dtype. */
+    /**
+     * IEEE 754 binary64 (double precision). The default floating-point dtype.
+     */
     FLOAT64(8, DTypeKind.FLOATING, "f8"),
-    /** Complex number with two binary32 components (real, imaginary). */
+    /**
+     * Complex number with two binary32 components (real, imaginary).
+     */
     COMPLEX64(8, DTypeKind.COMPLEX, "c8"),
-    /** Complex number with two binary64 components (real, imaginary). */
+    /**
+     * Complex number with two binary64 components (real, imaginary).
+     */
     COMPLEX128(16, DTypeKind.COMPLEX, "c16");
 
     private static final DType[] VALUES = values();

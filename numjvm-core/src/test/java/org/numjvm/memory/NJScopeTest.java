@@ -25,7 +25,9 @@ class NJScopeTest {
         return SharedSecrets.scopeAccess().allocator(scope).allocate(bytes);
     }
 
-    /** Reads one double the way array accessors do, translating FFM errors. */
+    /**
+     * Reads one double the way array accessors do, translating FFM errors.
+     */
     private static double read(Buffer b) {
         try {
             return b.segment().get(ValueLayout.JAVA_DOUBLE_UNALIGNED, 0);

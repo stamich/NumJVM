@@ -108,7 +108,9 @@ class ValidationKernelsTest {
         assertThrows(DTypeException.class, () -> ValidationKernels.sumFloat64(NJ.arange(5)));
     }
 
-    /** Integer-valued data has an exact sum, n(n-1)/2, for every block boundary. */
+    /**
+     * Integer-valued data has an exact sum, n(n-1)/2, for every block boundary.
+     */
     @ParameterizedTest
     @ValueSource(longs = {1, 7, 8, 9, 127, 128, 129, 1000, 65_536, 1_048_577})
     void sumIsExactForIntegers(long n) {
@@ -138,7 +140,9 @@ class ValidationKernelsTest {
         assertEquals(reference, sum, Math.abs(reference) * 1e-12);
     }
 
-    /** (i * 2654435761) mod 2^32, scaled to [0, 1): exact in double precision. */
+    /**
+     * (i * 2654435761) mod 2^32, scaled to [0, 1): exact in double precision.
+     */
     public static double hashUnit(long i) {
         return ((i * 2654435761L) & 0xFFFF_FFFFL) / 4294967296.0;
     }

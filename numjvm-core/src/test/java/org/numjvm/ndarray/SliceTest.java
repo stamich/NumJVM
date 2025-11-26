@@ -130,7 +130,9 @@ class SliceTest {
         assertEquals("...", Slice.ellipsis().toString());
     }
 
-    /** 864 start/stop/step combinations on np.arange(7), expected values produced by NumPy. */
+    /**
+     * 864 start/stop/step combinations on np.arange(7), expected values produced by NumPy.
+     */
     @Test
     void matchesNumPyForEveryBoundCombination() throws IOException {
         NDArray a = NJ.arange(0.0, 7.0, 1.0);

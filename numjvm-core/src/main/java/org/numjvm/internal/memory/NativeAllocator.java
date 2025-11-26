@@ -22,7 +22,9 @@ import org.numjvm.memory.MemoryOwner;
  */
 public final class NativeAllocator implements MemoryAllocator {
 
-    /** Alignment of byte 0 of every native buffer, chosen for SIMD and native libraries. */
+    /**
+     * Alignment of byte 0 of every native buffer, chosen for SIMD and native libraries.
+     */
     public static final int ALIGNMENT = 64;
 
     private static final NativeAllocator AUTOMATIC =

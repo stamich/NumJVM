@@ -39,7 +39,7 @@ public final class Npy {
      *
      * @param path the file
      * @return the array, in native byte order, C- or Fortran-contiguous as stored
-     * @throws NpyFormatException if the file is malformed, truncated or unsupported
+     * @throws NpyFormatException           if the file is malformed, truncated or unsupported
      * @throws java.io.UncheckedIOException if reading fails
      */
     public static NDArray read(Path path) {
@@ -62,7 +62,7 @@ public final class Npy {
      *
      * @param path  the file
      * @param array the array; any dtype except bfloat16, any layout
-     * @throws NpyFormatException if the dtype has no NumPy equivalent
+     * @throws NpyFormatException           if the dtype has no NumPy equivalent
      * @throws java.io.UncheckedIOException if writing fails
      * @see NpyWriter
      */
@@ -82,7 +82,7 @@ public final class Npy {
      * @param path  the file
      * @param scope the scope that owns the mapping
      * @return a read-only array backed by the file
-     * @throws NpyFormatException if the file is malformed, truncated or not in native byte order
+     * @throws NpyFormatException           if the file is malformed, truncated or not in native byte order
      * @throws java.io.UncheckedIOException if the file cannot be opened or mapped
      */
     public static NDArray map(Path path, NJScope scope) {

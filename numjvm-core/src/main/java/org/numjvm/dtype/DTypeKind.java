@@ -5,19 +5,29 @@ package org.numjvm.dtype;
  */
 public enum DTypeKind {
 
-    /** Boolean, NumPy kind {@code 'b'}. */
+    /**
+     * Boolean, NumPy kind {@code 'b'}.
+     */
     BOOL('b'),
 
-    /** Signed two's-complement integer, NumPy kind {@code 'i'}. */
+    /**
+     * Signed two's-complement integer, NumPy kind {@code 'i'}.
+     */
     SIGNED_INTEGER('i'),
 
-    /** Unsigned integer, NumPy kind {@code 'u'}. */
+    /**
+     * Unsigned integer, NumPy kind {@code 'u'}.
+     */
     UNSIGNED_INTEGER('u'),
 
-    /** IEEE 754 (or bfloat16) floating point, NumPy kind {@code 'f'}. */
+    /**
+     * IEEE 754 (or bfloat16) floating point, NumPy kind {@code 'f'}.
+     */
     FLOATING('f'),
 
-    /** Complex number stored as two floating-point components, NumPy kind {@code 'c'}. */
+    /**
+     * Complex number stored as two floating-point components, NumPy kind {@code 'c'}.
+     */
     COMPLEX('c');
 
     private final char numpyKind;
