@@ -1,5 +1,16 @@
 # NumJVM
 
+[![build](https://github.com/stamich/NumJVM/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/stamich/NumJVM/actions/workflows/build.yml)
+[![NumPy oracle](https://github.com/stamich/NumJVM/actions/workflows/oracle-tests.yml/badge.svg?branch=main)](https://github.com/stamich/NumJVM/actions/workflows/oracle-tests.yml)
+[![sonar](https://github.com/stamich/NumJVM/actions/workflows/sonar.yml/badge.svg?branch=main)](https://github.com/stamich/NumJVM/actions/workflows/sonar.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=stamich_NumJVM&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=stamich_NumJVM)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=stamich_NumJVM&metric=coverage)](https://sonarcloud.io/summary/new_code?id=stamich_NumJVM)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=stamich_NumJVM&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=stamich_NumJVM)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=stamich_NumJVM&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=stamich_NumJVM)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=stamich_NumJVM&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=stamich_NumJVM)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=stamich_NumJVM&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=stamich_NumJVM)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+
 Numerical computing for the Java Virtual Machine: N-dimensional arrays with NumPy
 semantics, built on the Java 25 Foreign Function & Memory API. No Python, NumPy or
 native libraries are needed at run time.
@@ -82,9 +93,13 @@ Requires JDK 25. The Gradle wrapper downloads Gradle, and the build can provisio
 JDK 25 toolchain if none is installed.
 
 ```bash
-./gradlew build                 # compile, unit, property and oracle tests
+./gradlew build                 # compile, unit, property and oracle tests, coverage
 ./gradlew :numjvm-bench:jmh -PjmhArgs="KernelBenchmark -p size=65536 -prof gc"
 ```
+
+Coverage reports (JaCoCo) are written to `numjvm-*/build/reports/jacoco/test/`. Static
+analysis runs on [SonarCloud](https://sonarcloud.io/summary/new_code?id=stamich_NumJVM); see
+[`CONTRIBUTING.md`](CONTRIBUTING.md#code-quality-sonarcloud).
 
 The NumPy oracle needs Python only to regenerate or re-verify its fixtures; see
 [`numjvm-tests-oracle`](numjvm-tests-oracle/README.md).

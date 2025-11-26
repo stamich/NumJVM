@@ -6,12 +6,14 @@
 
 plugins {
     base
+    alias(libs.plugins.sonarqube)
 }
 
 val javaVersion = 25
 
 subprojects {
     apply(plugin = "java")
+    apply(plugin = "jacoco")
 
     extensions.configure<JavaPluginExtension> {
         toolchain {
@@ -46,6 +48,48 @@ subprojects {
             events("failed", "skipped")
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         }
+    }
+
+    // Coverage: every test run produces build/reports/jacoco/test/jacocoTestReport.xml,
+    // which the SonarQube plugin picks up automatically.
+    extensions.configure<JacocoPluginExtension> {
+        toolVersion = rootProject.libs.versions.jacoco.get()
+    }
+    val jacocoTestReport = tasks.named<JacocoReport>("jacocoTestReport") {
+        reports {
+            xml.required = true
+            html.required = true
+        }
+    }
+    tasks.named<Test>("test") {
+        finalizedBy(jacocoTestReport)
+    }
+}
+
+// --------------------------------------------------------------------------- SonarQube
+//
+// Analysis runs on SonarCloud from .github/workflows/sonar.yml:
+//
+//   SONAR_TOKEN=... ./gradlew build sonar
+//
+// The defaults below point at SonarCloud. For a self-hosted SonarQube server, set
+// SONAR_HOST_URL and override the keys, e.g. -Dsonar.projectKey=numjvm.
+// Only the published libraries are analysed; benchmarks and examples are skipped.
+
+sonar {
+    properties {
+        property("sonar.projectKey", "stamich_NumJVM")
+        property("sonar.organization", "stamich")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.projectName", "NumJVM")
+    }
+}
+
+val sonarSkipped = setOf("numjvm-bench", "examples", "basic-arrays", "memory-scopes")
+
+configure(subprojects.filter { it.name in sonarSkipped }) {
+    extensions.configure<org.sonarqube.gradle.SonarExtension> {
+        isSkipProject = true
     }
 }
 

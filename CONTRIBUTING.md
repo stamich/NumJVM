@@ -22,6 +22,31 @@ it that way. Test-only dependencies are JUnit 5 and jqwik.
 - No per-element allocation in element access or kernels. Benchmarks with `-prof gc`
   are the check.
 
+## Code quality (SonarCloud)
+
+Every pull request and every push to `main` is analysed on
+[SonarCloud](https://sonarcloud.io/summary/new_code?id=stamich_NumJVM) by
+[`.github/workflows/sonar.yml`](.github/workflows/sonar.yml). Coverage comes from
+JaCoCo, which runs after every `test` task.
+
+One-time setup (repository owner):
+
+1. Import the repository in SonarCloud under the organization `stamich`. The project key
+   must be `stamich_NumJVM` (set in the root `build.gradle.kts`).
+2. In the SonarCloud project, *Administration → Analysis Method*: switch off Automatic
+   Analysis.
+3. Create a token in SonarCloud (*My Account → Security*) and add it to the GitHub
+   repository as the Actions secret `SONAR_TOKEN`.
+
+Running an analysis locally:
+
+```bash
+SONAR_TOKEN=... ./gradlew build sonar
+```
+
+For a self-hosted SonarQube server, set `SONAR_HOST_URL` and pass your keys, e.g.
+`./gradlew build sonar -Dsonar.projectKey=numjvm -Dsonar.organization=`.
+
 ## Decisions
 
 Significant design decisions are recorded as ADRs in [`docs/adr`](docs/adr). Open a new
@@ -30,4 +55,5 @@ ADR (or supersede an existing one) in the same pull request that changes the des
 ## Commits and pull requests
 
 One logical change per commit, with a subject line in the imperative mood. Pull
-requests must be green on both CI workflows (build and NumPy oracle).
+requests must be green on all CI workflows (build, NumPy oracle and SonarCloud) and pass
+the SonarCloud quality gate.
