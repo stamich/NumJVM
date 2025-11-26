@@ -1,1935 +1,1935 @@
 {
-  "cases": [
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_transpose_f8_2x3x4.npy",
-        "fortran": true,
-        "shape": [
-          4,
-          3,
-          2
-        ]
-      },
-      "id": "transpose_f8_2x3x4",
-      "inputs": [
-        "in_f8_2x3x4.npy"
-      ],
-      "op": "transpose",
-      "params": {},
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_transpose_f8_3x4.npy",
-        "fortran": true,
-        "shape": [
-          4,
-          3
-        ]
-      },
-      "id": "transpose_f8_3x4",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "transpose",
-      "params": {},
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<i4",
-        "file": "expected_transpose_i4_3x4.npy",
-        "fortran": true,
-        "shape": [
-          4,
-          3
-        ]
-      },
-      "id": "transpose_i4_3x4",
-      "inputs": [
-        "in_i4_3x4.npy"
-      ],
-      "op": "transpose",
-      "params": {},
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "|b1",
-        "file": "expected_transpose_b1_2x3.npy",
-        "fortran": true,
-        "shape": [
-          3,
-          2
-        ]
-      },
-      "id": "transpose_b1_2x3",
-      "inputs": [
-        "in_b1_2x3.npy"
-      ],
-      "op": "transpose",
-      "params": {},
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<c16",
-        "file": "expected_transpose_c16_2x2.npy",
-        "fortran": true,
-        "shape": [
-          2,
-          2
-        ]
-      },
-      "id": "transpose_c16_2x2",
-      "inputs": [
-        "in_c16_2x2.npy"
-      ],
-      "op": "transpose",
-      "params": {},
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_transpose_f8_scalar.npy",
-        "fortran": false,
-        "shape": []
-      },
-      "id": "transpose_f8_scalar",
-      "inputs": [
-        "in_f8_scalar.npy"
-      ],
-      "op": "transpose",
-      "params": {},
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_transpose_f8_empty_0x3.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          0
-        ]
-      },
-      "id": "transpose_f8_empty_0x3",
-      "inputs": [
-        "in_f8_empty_0x3.npy"
-      ],
-      "op": "transpose",
-      "params": {},
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_permute_dims_102.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          2,
-          4
-        ]
-      },
-      "id": "permute_dims_102",
-      "inputs": [
-        "in_f8_2x3x4.npy"
-      ],
-      "op": "permute_dims",
-      "params": {
-        "axes": [
-          1,
-          0,
-          2
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_permute_dims_neg.npy",
-        "fortran": false,
-        "shape": [
-          4,
-          2,
-          3
-        ]
-      },
-      "id": "permute_dims_neg",
-      "inputs": [
-        "in_f8_2x3x4.npy"
-      ],
-      "op": "permute_dims",
-      "params": {
-        "axes": [
-          -1,
-          0,
-          1
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_swap_axes_0_2.npy",
-        "fortran": true,
-        "shape": [
-          4,
-          3,
-          2
-        ]
-      },
-      "id": "swap_axes_0_2",
-      "inputs": [
-        "in_f8_2x3x4.npy"
-      ],
-      "op": "swap_axes",
-      "params": {
-        "axes": [
-          0,
-          2
-        ]
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_slice_rev.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "id": "slice_rev",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          "::-1"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_slice_rev_both.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "id": "slice_rev_both",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          "::-1",
-          "::-1"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_slice_step2.npy",
-        "fortran": false,
-        "shape": [
-          2,
-          3,
-          2
-        ]
-      },
-      "id": "slice_step2",
-      "inputs": [
-        "in_f8_2x3x4.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          ":",
-          ":",
-          "::2"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_slice_neg_step_bounds.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          2
-        ]
-      },
-      "id": "slice_neg_step_bounds",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          ":",
-          "3:0:-2"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_slice_row.npy",
-        "fortran": false,
-        "shape": [
-          4
-        ]
-      },
-      "id": "slice_row",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          "1"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_slice_neg_index.npy",
-        "fortran": false,
-        "shape": [
-          4
-        ]
-      },
-      "id": "slice_neg_index",
-      "inputs": [
-        "in_f8_2x3x4.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          "-1",
-          "-2"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_slice_element.npy",
-        "fortran": false,
-        "shape": []
-      },
-      "id": "slice_element",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          "2",
-          "1"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_slice_ellipsis_last.npy",
-        "fortran": false,
-        "shape": [
-          2,
-          3
-        ]
-      },
-      "id": "slice_ellipsis_last",
-      "inputs": [
-        "in_f8_2x3x4.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          "...",
-          "0"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_slice_ellipsis_newaxis.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          4,
-          1
-        ]
-      },
-      "id": "slice_ellipsis_newaxis",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          "...",
-          "None"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<i4",
-        "file": "expected_slice_newaxis_front.npy",
-        "fortran": false,
-        "shape": [
-          1,
-          3,
-          2
-        ]
-      },
-      "id": "slice_newaxis_front",
-      "inputs": [
-        "in_i4_3x4.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          "None",
-          ":",
-          "1:3"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_slice_clipped.npy",
-        "fortran": false,
-        "shape": [
-          2,
-          2
-        ]
-      },
-      "id": "slice_clipped",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          "1:100",
-          "-100:2"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_slice_empty_range.npy",
-        "fortran": false,
-        "shape": [
-          0,
-          4
-        ]
-      },
-      "id": "slice_empty_range",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          "2:2"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "|b1",
-        "file": "expected_slice_bool_cols.npy",
-        "fortran": false,
-        "shape": [
-          2,
-          2
-        ]
-      },
-      "id": "slice_bool_cols",
-      "inputs": [
-        "in_b1_2x3.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          ":",
-          "::2"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<c16",
-        "file": "expected_slice_complex_rev.npy",
-        "fortran": false,
-        "shape": [
-          2,
-          2
-        ]
-      },
-      "id": "slice_complex_rev",
-      "inputs": [
-        "in_c16_2x2.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          "::-1"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "|u1",
-        "file": "expected_slice_uint8_tail.npy",
-        "fortran": false,
-        "shape": [
-          3
-        ]
-      },
-      "id": "slice_uint8_tail",
-      "inputs": [
-        "in_u1_5.npy"
-      ],
-      "op": "slice",
-      "params": {
-        "index": [
-          "-3:"
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_reshape_f8_2x3x4_6x4.npy",
-        "fortran": false,
-        "shape": [
-          6,
-          4
-        ]
-      },
-      "id": "reshape_f8_2x3x4_6x4",
-      "inputs": [
-        "in_f8_2x3x4.npy"
-      ],
-      "op": "reshape",
-      "params": {
-        "shape": [
-          6,
-          4
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_reshape_f8_2x3x4_4x-1.npy",
-        "fortran": false,
-        "shape": [
-          4,
-          6
-        ]
-      },
-      "id": "reshape_f8_2x3x4_4x-1",
-      "inputs": [
-        "in_f8_2x3x4.npy"
-      ],
-      "op": "reshape",
-      "params": {
-        "shape": [
-          4,
-          -1
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_reshape_f8_2x3x4_24.npy",
-        "fortran": false,
-        "shape": [
-          24
-        ]
-      },
-      "id": "reshape_f8_2x3x4_24",
-      "inputs": [
-        "in_f8_2x3x4.npy"
-      ],
-      "op": "reshape",
-      "params": {
-        "shape": [
-          24
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_reshape_f8_2x3x4_2x1x12.npy",
-        "fortran": false,
-        "shape": [
-          2,
-          1,
-          12
-        ]
-      },
-      "id": "reshape_f8_2x3x4_2x1x12",
-      "inputs": [
-        "in_f8_2x3x4.npy"
-      ],
-      "op": "reshape",
-      "params": {
-        "shape": [
-          2,
-          1,
-          12
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_reshape_f8_3x4_12x1.npy",
-        "fortran": false,
-        "shape": [
-          12,
-          1
-        ]
-      },
-      "id": "reshape_f8_3x4_12x1",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "reshape",
-      "params": {
-        "shape": [
-          12,
-          1
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_reshape_f8_scalar_1x1.npy",
-        "fortran": false,
-        "shape": [
-          1,
-          1
-        ]
-      },
-      "id": "reshape_f8_scalar_1x1",
-      "inputs": [
-        "in_f8_scalar.npy"
-      ],
-      "op": "reshape",
-      "params": {
-        "shape": [
-          1,
-          1
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_reshape_f8_empty_0x3_3x0.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          0
-        ]
-      },
-      "id": "reshape_f8_empty_0x3_3x0",
-      "inputs": [
-        "in_f8_empty_0x3.npy"
-      ],
-      "op": "reshape",
-      "params": {
-        "shape": [
-          3,
-          0
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<i4",
-        "file": "expected_reshape_i4_3x4_2x6.npy",
-        "fortran": false,
-        "shape": [
-          2,
-          6
-        ]
-      },
-      "id": "reshape_i4_3x4_2x6",
-      "inputs": [
-        "in_i4_3x4.npy"
-      ],
-      "op": "reshape",
-      "params": {
-        "shape": [
-          2,
-          6
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_reshape_transposed_copy.npy",
-        "fortran": false,
-        "shape": [
-          12
-        ]
-      },
-      "id": "reshape_transposed_copy",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "reshape_transposed",
-      "params": {
-        "shape": [
-          12
-        ]
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "error": true
-      },
-      "id": "reshape_view_transposed",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "reshape_view_transposed",
-      "params": {
-        "shape": [
-          12
-        ]
-      },
-      "tag": "NUMJVM_SPECIFIC"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_broadcast_to_f8_row4.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "id": "broadcast_to_f8_row4",
-      "inputs": [
-        "in_f8_row4.npy"
-      ],
-      "op": "broadcast_to",
-      "params": {
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_broadcast_to_f8_col3.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "id": "broadcast_to_f8_col3",
-      "inputs": [
-        "in_f8_col3.npy"
-      ],
-      "op": "broadcast_to",
-      "params": {
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_broadcast_to_f8_scalar.npy",
-        "fortran": false,
-        "shape": [
-          2,
-          2
-        ]
-      },
-      "id": "broadcast_to_f8_scalar",
-      "inputs": [
-        "in_f8_scalar.npy"
-      ],
-      "op": "broadcast_to",
-      "params": {
-        "shape": [
-          2,
-          2
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<i4",
-        "file": "expected_broadcast_to_i4_3x4.npy",
-        "fortran": false,
-        "shape": [
-          2,
-          3,
-          4
-        ]
-      },
-      "id": "broadcast_to_i4_3x4",
-      "inputs": [
-        "in_i4_3x4.npy"
-      ],
-      "op": "broadcast_to",
-      "params": {
-        "shape": [
-          2,
-          3,
-          4
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_broadcast_to_f8_empty_0x3.npy",
-        "fortran": false,
-        "shape": [
-          2,
-          0,
-          3
-        ]
-      },
-      "id": "broadcast_to_f8_empty_0x3",
-      "inputs": [
-        "in_f8_empty_0x3.npy"
-      ],
-      "op": "broadcast_to",
-      "params": {
-        "shape": [
-          2,
-          0,
-          3
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "shape": [
-          8,
-          7,
-          6,
-          5
-        ]
-      },
-      "id": "broadcast_shapes_8x1x6x1_7x1x5",
-      "inputs": [],
-      "op": "broadcast_shapes",
-      "params": {
-        "shapes": [
-          [
-            8,
-            1,
-            6,
-            1
-          ],
-          [
-            7,
-            1,
-            5
-          ]
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "id": "broadcast_shapes_3x1_1x4",
-      "inputs": [],
-      "op": "broadcast_shapes",
-      "params": {
-        "shapes": [
-          [
-            3,
-            1
-          ],
-          [
-            1,
-            4
-          ]
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "shape": [
-          5,
-          3,
-          4
-        ]
-      },
-      "id": "broadcast_shapes_5x1x4_1x3x1",
-      "inputs": [],
-      "op": "broadcast_shapes",
-      "params": {
-        "shapes": [
-          [
-            5,
-            1,
-            4
-          ],
-          [
-            1,
-            3,
-            1
-          ]
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "shape": [
-          2,
-          3
-        ]
-      },
-      "id": "broadcast_shapes_scalar_2x3",
-      "inputs": [],
-      "op": "broadcast_shapes",
-      "params": {
-        "shapes": [
-          [],
-          [
-            2,
-            3
-          ]
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "shape": [
-          0,
-          3
-        ]
-      },
-      "id": "broadcast_shapes_0x3_1x3",
-      "inputs": [],
-      "op": "broadcast_shapes",
-      "params": {
-        "shapes": [
-          [
-            0,
-            3
-          ],
-          [
-            1,
-            3
-          ]
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "shape": [
-          2,
-          3,
-          4
-        ]
-      },
-      "id": "broadcast_shapes_4_3x1_2x1x1",
-      "inputs": [],
-      "op": "broadcast_shapes",
-      "params": {
-        "shapes": [
-          [
-            4
-          ],
-          [
-            3,
-            1
-          ],
-          [
-            2,
-            1,
-            1
-          ]
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "error": true
-      },
-      "id": "broadcast_shapes_mismatch",
-      "inputs": [],
-      "op": "broadcast_shapes",
-      "params": {
-        "shapes": [
-          [
-            2,
-            3
-          ],
-          [
-            4,
-            3
-          ]
-        ]
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_copy_c_of_transpose.npy",
-        "fortran": false,
-        "shape": [
-          4,
-          3,
-          2
-        ]
-      },
-      "id": "copy_c_of_transpose",
-      "inputs": [
-        "in_f8_2x3x4.npy"
-      ],
-      "op": "copy",
-      "params": {
-        "order": "C",
-        "view": "transpose"
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_copy_f.npy",
-        "fortran": true,
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "id": "copy_f",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "copy",
-      "params": {
-        "order": "F",
-        "view": "none"
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "error": true
-      },
-      "id": "astype_complex_to_real",
-      "inputs": [
-        "in_c16_2x2.npy"
-      ],
-      "op": "astype",
-      "params": {
-        "dtype": "<f8"
-      },
-      "tag": "NUMJVM_SPECIFIC"
-    },
-    {
-      "expect": {
-        "dtype": "<i4",
-        "file": "expected_astype_f8_3x4_i4.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "id": "astype_f8_3x4_i4",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "astype",
-      "params": {
-        "dtype": "<i4"
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "dtype": "<f4",
-        "file": "expected_astype_f8_hash_7x11_f4.npy",
-        "fortran": false,
-        "shape": [
-          7,
-          11
-        ]
-      },
-      "id": "astype_f8_hash_7x11_f4",
-      "inputs": [
-        "in_f8_hash_7x11.npy"
-      ],
-      "op": "astype",
-      "params": {
-        "dtype": "<f4"
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "dtype": "<f2",
-        "file": "expected_astype_f8_hash_7x11_f2.npy",
-        "fortran": false,
-        "shape": [
-          7,
-          11
-        ]
-      },
-      "id": "astype_f8_hash_7x11_f2",
-      "inputs": [
-        "in_f8_hash_7x11.npy"
-      ],
-      "op": "astype",
-      "params": {
-        "dtype": "<f2"
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "dtype": "|u1",
-        "file": "expected_astype_i8_neg_u1.npy",
-        "fortran": false,
-        "shape": [
-          5
-        ]
-      },
-      "id": "astype_i8_neg_u1",
-      "inputs": [
-        "in_i8_neg.npy"
-      ],
-      "op": "astype",
-      "params": {
-        "dtype": "|u1"
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "dtype": "<u8",
-        "file": "expected_astype_i8_neg_u8.npy",
-        "fortran": false,
-        "shape": [
-          5
-        ]
-      },
-      "id": "astype_i8_neg_u8",
-      "inputs": [
-        "in_i8_neg.npy"
-      ],
-      "op": "astype",
-      "params": {
-        "dtype": "<u8"
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "dtype": "<i8",
-        "file": "expected_astype_u8_big_i8.npy",
-        "fortran": false,
-        "shape": [
-          4
-        ]
-      },
-      "id": "astype_u8_big_i8",
-      "inputs": [
-        "in_u8_big.npy"
-      ],
-      "op": "astype",
-      "params": {
-        "dtype": "<i8"
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_astype_u8_big_f8.npy",
-        "fortran": false,
-        "shape": [
-          4
-        ]
-      },
-      "id": "astype_u8_big_f8",
-      "inputs": [
-        "in_u8_big.npy"
-      ],
-      "op": "astype",
-      "params": {
-        "dtype": "<f8"
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_astype_b1_2x3_f8.npy",
-        "fortran": false,
-        "shape": [
-          2,
-          3
-        ]
-      },
-      "id": "astype_b1_2x3_f8",
-      "inputs": [
-        "in_b1_2x3.npy"
-      ],
-      "op": "astype",
-      "params": {
-        "dtype": "<f8"
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "dtype": "|b1",
-        "file": "expected_astype_f8_3x4_b1.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "id": "astype_f8_3x4_b1",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "astype",
-      "params": {
-        "dtype": "|b1"
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_astype_f4_2x2_f8.npy",
-        "fortran": false,
-        "shape": [
-          2,
-          2
-        ]
-      },
-      "id": "astype_f4_2x2_f8",
-      "inputs": [
-        "in_f4_2x2.npy"
-      ],
-      "op": "astype",
-      "params": {
-        "dtype": "<f8"
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "dtype": "<c16",
-        "file": "expected_astype_f8_3x4_c16.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "id": "astype_f8_3x4_c16",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "astype",
-      "params": {
-        "dtype": "<c16"
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "dtype": "<c8",
-        "file": "expected_astype_c16_2x2_c8.npy",
-        "fortran": false,
-        "shape": [
-          2,
-          2
-        ]
-      },
-      "id": "astype_c16_2x2_c8",
-      "inputs": [
-        "in_c16_2x2.npy"
-      ],
-      "op": "astype",
-      "params": {
-        "dtype": "<c8"
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_add_contiguous.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "id": "add_contiguous",
-      "inputs": [
-        "in_f8_3x4.npy",
-        "in_f8_3x4.npy"
-      ],
-      "op": "add",
-      "params": {},
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_add_row_broadcast.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "id": "add_row_broadcast",
-      "inputs": [
-        "in_f8_3x4.npy",
-        "in_f8_row4.npy"
-      ],
-      "op": "add",
-      "params": {},
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_add_col_row.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "id": "add_col_row",
-      "inputs": [
-        "in_f8_col3.npy",
-        "in_f8_row4.npy"
-      ],
-      "op": "add",
-      "params": {},
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_add_scalar.npy",
-        "fortran": false,
-        "shape": [
-          3,
-          4
-        ]
-      },
-      "id": "add_scalar",
-      "inputs": [
-        "in_f8_scalar.npy",
-        "in_f8_3x4.npy"
-      ],
-      "op": "add",
-      "params": {},
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "dtype": "<f8",
-        "file": "expected_add_transposed.npy",
-        "fortran": true,
-        "shape": [
-          11,
-          7
-        ]
-      },
-      "id": "add_transposed",
-      "inputs": [
-        "in_f8_hash_7x11.npy",
-        "in_f8_hash_7x11.npy"
-      ],
-      "op": "add_transposed",
-      "params": {},
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "error": true
-      },
-      "id": "add_incompatible",
-      "inputs": [
-        "in_f8_empty_0x3.npy",
-        "in_f8_row4.npy"
-      ],
-      "op": "add",
-      "params": {},
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 66.0
-      },
-      "id": "sum_f8_3x4",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "sum",
-      "params": {
-        "view": "none"
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 66.0
-      },
-      "id": "sum_f8_3x4_T",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "sum",
-      "params": {
-        "view": "transpose"
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 38.36744529334828
-      },
-      "id": "sum_f8_hash_7x11",
-      "inputs": [
-        "in_f8_hash_7x11.npy"
-      ],
-      "op": "sum",
-      "params": {
-        "view": "none"
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 38.36744529334828
-      },
-      "id": "sum_f8_hash_7x11_T",
-      "inputs": [
-        "in_f8_hash_7x11.npy"
-      ],
-      "op": "sum",
-      "params": {
-        "view": "transpose"
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 2.5
-      },
-      "id": "sum_f8_scalar",
-      "inputs": [
-        "in_f8_scalar.npy"
-      ],
-      "op": "sum",
-      "params": {
-        "view": "none"
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 2.5
-      },
-      "id": "sum_f8_scalar_T",
-      "inputs": [
-        "in_f8_scalar.npy"
-      ],
-      "op": "sum",
-      "params": {
-        "view": "transpose"
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 0.0
-      },
-      "id": "sum_f8_empty_0x3",
-      "inputs": [
-        "in_f8_empty_0x3.npy"
-      ],
-      "op": "sum",
-      "params": {
-        "view": "none"
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 0.0
-      },
-      "id": "sum_f8_empty_0x3_T",
-      "inputs": [
-        "in_f8_empty_0x3.npy"
-      ],
-      "op": "sum",
-      "params": {
-        "view": "transpose"
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 0.0
-      },
-      "id": "sum_hash_1",
-      "inputs": [],
-      "op": "sum_generated",
-      "params": {
-        "generator": "hash_unit",
-        "n": 1
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 2.9787137222010642
-      },
-      "id": "sum_hash_7",
-      "inputs": [],
-      "op": "sum_generated",
-      "params": {
-        "generator": "hash_unit",
-        "n": 7
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 3.304951629601419
-      },
-      "id": "sum_hash_8",
-      "inputs": [],
-      "op": "sum_generated",
-      "params": {
-        "generator": "hash_unit",
-        "n": 8
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 4.249223523773253
-      },
-      "id": "sum_hash_9",
-      "inputs": [],
-      "op": "sum_generated",
-      "params": {
-        "generator": "hash_unit",
-        "n": 9
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 62.88992815860547
-      },
-      "id": "sum_hash_127",
-      "inputs": [],
-      "op": "sum_generated",
-      "params": {
-        "generator": "hash_unit",
-        "n": 127
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 63.380244478583336
-      },
-      "id": "sum_hash_128",
-      "inputs": [],
-      "op": "sum_generated",
-      "params": {
-        "generator": "hash_unit",
-        "n": 128
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 63.48859478533268
-      },
-      "id": "sum_hash_129",
-      "inputs": [],
-      "op": "sum_generated",
-      "params": {
-        "generator": "hash_unit",
-        "n": 129
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 499.9763923538849
-      },
-      "id": "sum_hash_1000",
-      "inputs": [],
-      "op": "sum_generated",
-      "params": {
-        "generator": "hash_unit",
-        "n": 1000
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 32767.762321472168
-      },
-      "id": "sum_hash_65536",
-      "inputs": [],
-      "op": "sum_generated",
-      "params": {
-        "generator": "hash_unit",
-        "n": 65536
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 524287.1971435547
-      },
-      "id": "sum_hash_1048576",
-      "inputs": [],
-      "op": "sum_generated",
-      "params": {
-        "generator": "hash_unit",
-        "n": 1048576
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "value": 8388609.154296875
-      },
-      "id": "sum_hash_16777216",
-      "inputs": [],
-      "op": "sum_generated",
-      "params": {
-        "generator": "hash_unit",
-        "n": 16777216
-      },
-      "tag": "ARRAY_API"
-    },
-    {
-      "expect": {
-        "flags": {
-          "c": true,
-          "f": true
-        }
-      },
-      "id": "flags_row",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "flags",
-      "params": {
-        "index": [
-          "1"
-        ]
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "flags": {
-          "c": false,
-          "f": false
-        }
-      },
-      "id": "flags_col",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "flags",
-      "params": {
-        "index": [
-          ":",
-          "1:2"
-        ]
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "flags": {
-          "c": false,
-          "f": false
-        }
-      },
-      "id": "flags_strided",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "flags",
-      "params": {
-        "index": [
-          ":",
-          "::2"
-        ]
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "flags": {
-          "c": false,
-          "f": false
-        }
-      },
-      "id": "flags_rev",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "flags",
-      "params": {
-        "index": [
-          "::-1"
-        ]
-      },
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "repr": "array([[ 0.,  1.,  2.,  3.],\n       [ 4.,  5.,  6.,  7.],\n       [ 8.,  9., 10., 11.]])"
-      },
-      "id": "repr_f8_3x4",
-      "inputs": [
-        "in_f8_3x4.npy"
-      ],
-      "op": "repr",
-      "params": {},
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "repr": "array([[0.        , 0.61803399, 0.23606797, 0.85410196, 0.47213595,\n        0.09016993, 0.70820392, 0.32623791, 0.94427189, 0.56230588,\n        0.18033987],\n       [0.79837385, 0.41640784, 0.03444183, 0.65247581, 0.2705098 ,\n        0.88854379, 0.50657778, 0.12461176, 0.74264575, 0.36067974,\n        0.97871372],\n       [0.59674771, 0.2147817 , 0.83281568, 0.45084967, 0.06888366,\n        0.68691764, 0.30495163, 0.92298562, 0.5410196 , 0.15905359,\n        0.77708758],\n       [0.39512156, 0.01315555, 0.63118954, 0.24922352, 0.86725751,\n        0.4852915 , 0.10332548, 0.72135947, 0.33939346, 0.95742744,\n        0.57546143],\n       [0.19349542, 0.8115294 , 0.42956339, 0.04759738, 0.66563137,\n        0.28366535, 0.90169934, 0.51973333, 0.13776731, 0.7558013 ,\n        0.37383529],\n       [0.99186927, 0.60990326, 0.22793725, 0.84597123, 0.46400522,\n        0.08203921, 0.70007319, 0.31810718, 0.93614117, 0.55417515,\n        0.17220914],\n       [0.79024313, 0.40827711, 0.0263111 , 0.64434509, 0.26237907,\n        0.88041306, 0.49844705, 0.11648103, 0.73451502, 0.35254901,\n        0.97058299]])"
-      },
-      "id": "repr_f8_hash_7x11",
-      "inputs": [
-        "in_f8_hash_7x11.npy"
-      ],
-      "op": "repr",
-      "params": {},
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "repr": "array([           -5,            -1,             0,             7,\n       1099511627776])"
-      },
-      "id": "repr_i8_neg",
-      "inputs": [
-        "in_i8_neg.npy"
-      ],
-      "op": "repr",
-      "params": {},
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "repr": "array([  0,  60, 120, 180, 240], dtype=uint8)"
-      },
-      "id": "repr_u1_5",
-      "inputs": [
-        "in_u1_5.npy"
-      ],
-      "op": "repr",
-      "params": {},
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "repr": "array([                   0,                    1,  9223372036854775808,\n       18446744073709551615], dtype=uint64)"
-      },
-      "id": "repr_u8_big",
-      "inputs": [
-        "in_u8_big.npy"
-      ],
-      "op": "repr",
-      "params": {},
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "repr": "array([[ True, False,  True],\n       [False,  True, False]])"
-      },
-      "id": "repr_b1_2x3",
-      "inputs": [
-        "in_b1_2x3.npy"
-      ],
-      "op": "repr",
-      "params": {},
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "repr": "array([ 1.00e-01,  1.50e+00,  6.55e+04, -2.00e+00], dtype=float16)"
-      },
-      "id": "repr_f2_4",
-      "inputs": [
-        "in_f2_4.npy"
-      ],
-      "op": "repr",
-      "params": {},
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "repr": "array([[0.1, 0.2],\n       [0.3, 0.4]], dtype=float32)"
-      },
-      "id": "repr_f4_2x2",
-      "inputs": [
-        "in_f4_2x2.npy"
-      ],
-      "op": "repr",
-      "params": {},
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "repr": "array([[0.+4.j, 1.+5.j],\n       [2.+6.j, 3.+7.j]])"
-      },
-      "id": "repr_c16_2x2",
-      "inputs": [
-        "in_c16_2x2.npy"
-      ],
-      "op": "repr",
-      "params": {},
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "repr": "array([1.+2.j, 3.-4.j, 0.+0.j], dtype=complex64)"
-      },
-      "id": "repr_c8_3",
-      "inputs": [
-        "in_c8_3.npy"
-      ],
-      "op": "repr",
-      "params": {},
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "repr": "array(2.5)"
-      },
-      "id": "repr_f8_scalar",
-      "inputs": [
-        "in_f8_scalar.npy"
-      ],
-      "op": "repr",
-      "params": {},
-      "tag": "NUMPY_COMPATIBILITY"
-    },
-    {
-      "expect": {
-        "repr": "array([], shape=(0, 3), dtype=float64)"
-      },
-      "id": "repr_f8_empty_0x3",
-      "inputs": [
-        "in_f8_empty_0x3.npy"
-      ],
-      "op": "repr",
-      "params": {},
-      "tag": "NUMPY_COMPATIBILITY"
+ "cases": [
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_transpose_f8_2x3x4.npy",
+    "fortran": true,
+    "shape": [
+     4,
+     3,
+     2
+    ]
+   },
+   "id": "transpose_f8_2x3x4",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "transpose",
+   "params": {},
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_transpose_f8_3x4.npy",
+    "fortran": true,
+    "shape": [
+     4,
+     3
+    ]
+   },
+   "id": "transpose_f8_3x4",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "transpose",
+   "params": {},
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_transpose_i4_3x4.npy",
+    "fortran": true,
+    "shape": [
+     4,
+     3
+    ]
+   },
+   "id": "transpose_i4_3x4",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "transpose",
+   "params": {},
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_transpose_b1_2x3.npy",
+    "fortran": true,
+    "shape": [
+     3,
+     2
+    ]
+   },
+   "id": "transpose_b1_2x3",
+   "inputs": [
+    "in_b1_2x3.npy"
+   ],
+   "op": "transpose",
+   "params": {},
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_transpose_c16_2x2.npy",
+    "fortran": true,
+    "shape": [
+     2,
+     2
+    ]
+   },
+   "id": "transpose_c16_2x2",
+   "inputs": [
+    "in_c16_2x2.npy"
+   ],
+   "op": "transpose",
+   "params": {},
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_transpose_f8_scalar.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "transpose_f8_scalar",
+   "inputs": [
+    "in_f8_scalar.npy"
+   ],
+   "op": "transpose",
+   "params": {},
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_transpose_f8_empty_0x3.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     0
+    ]
+   },
+   "id": "transpose_f8_empty_0x3",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "transpose",
+   "params": {},
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_permute_dims_102.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     2,
+     4
+    ]
+   },
+   "id": "permute_dims_102",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "permute_dims",
+   "params": {
+    "axes": [
+     1,
+     0,
+     2
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_permute_dims_neg.npy",
+    "fortran": false,
+    "shape": [
+     4,
+     2,
+     3
+    ]
+   },
+   "id": "permute_dims_neg",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "permute_dims",
+   "params": {
+    "axes": [
+     -1,
+     0,
+     1
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_swap_axes_0_2.npy",
+    "fortran": true,
+    "shape": [
+     4,
+     3,
+     2
+    ]
+   },
+   "id": "swap_axes_0_2",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "swap_axes",
+   "params": {
+    "axes": [
+     0,
+     2
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_slice_rev.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "slice_rev",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     "::-1"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_slice_rev_both.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "slice_rev_both",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     "::-1",
+     "::-1"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_slice_step2.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     3,
+     2
+    ]
+   },
+   "id": "slice_step2",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     ":",
+     ":",
+     "::2"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_slice_neg_step_bounds.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     2
+    ]
+   },
+   "id": "slice_neg_step_bounds",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     ":",
+     "3:0:-2"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_slice_row.npy",
+    "fortran": false,
+    "shape": [
+     4
+    ]
+   },
+   "id": "slice_row",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     "1"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_slice_neg_index.npy",
+    "fortran": false,
+    "shape": [
+     4
+    ]
+   },
+   "id": "slice_neg_index",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     "-1",
+     "-2"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_slice_element.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "slice_element",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     "2",
+     "1"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_slice_ellipsis_last.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     3
+    ]
+   },
+   "id": "slice_ellipsis_last",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     "...",
+     "0"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_slice_ellipsis_newaxis.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4,
+     1
+    ]
+   },
+   "id": "slice_ellipsis_newaxis",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     "...",
+     "None"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_slice_newaxis_front.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     3,
+     2
+    ]
+   },
+   "id": "slice_newaxis_front",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     "None",
+     ":",
+     "1:3"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_slice_clipped.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     2
+    ]
+   },
+   "id": "slice_clipped",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     "1:100",
+     "-100:2"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_slice_empty_range.npy",
+    "fortran": false,
+    "shape": [
+     0,
+     4
+    ]
+   },
+   "id": "slice_empty_range",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     "2:2"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_slice_bool_cols.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     2
+    ]
+   },
+   "id": "slice_bool_cols",
+   "inputs": [
+    "in_b1_2x3.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     ":",
+     "::2"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_slice_complex_rev.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     2
+    ]
+   },
+   "id": "slice_complex_rev",
+   "inputs": [
+    "in_c16_2x2.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     "::-1"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|u1",
+    "file": "expected_slice_uint8_tail.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "slice_uint8_tail",
+   "inputs": [
+    "in_u1_5.npy"
+   ],
+   "op": "slice",
+   "params": {
+    "index": [
+     "-3:"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reshape_f8_2x3x4_6x4.npy",
+    "fortran": false,
+    "shape": [
+     6,
+     4
+    ]
+   },
+   "id": "reshape_f8_2x3x4_6x4",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reshape",
+   "params": {
+    "shape": [
+     6,
+     4
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reshape_f8_2x3x4_4x-1.npy",
+    "fortran": false,
+    "shape": [
+     4,
+     6
+    ]
+   },
+   "id": "reshape_f8_2x3x4_4x-1",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reshape",
+   "params": {
+    "shape": [
+     4,
+     -1
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reshape_f8_2x3x4_24.npy",
+    "fortran": false,
+    "shape": [
+     24
+    ]
+   },
+   "id": "reshape_f8_2x3x4_24",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reshape",
+   "params": {
+    "shape": [
+     24
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reshape_f8_2x3x4_2x1x12.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     1,
+     12
+    ]
+   },
+   "id": "reshape_f8_2x3x4_2x1x12",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reshape",
+   "params": {
+    "shape": [
+     2,
+     1,
+     12
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reshape_f8_3x4_12x1.npy",
+    "fortran": false,
+    "shape": [
+     12,
+     1
+    ]
+   },
+   "id": "reshape_f8_3x4_12x1",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "reshape",
+   "params": {
+    "shape": [
+     12,
+     1
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reshape_f8_scalar_1x1.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     1
+    ]
+   },
+   "id": "reshape_f8_scalar_1x1",
+   "inputs": [
+    "in_f8_scalar.npy"
+   ],
+   "op": "reshape",
+   "params": {
+    "shape": [
+     1,
+     1
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reshape_f8_empty_0x3_3x0.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     0
+    ]
+   },
+   "id": "reshape_f8_empty_0x3_3x0",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "reshape",
+   "params": {
+    "shape": [
+     3,
+     0
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_reshape_i4_3x4_2x6.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     6
+    ]
+   },
+   "id": "reshape_i4_3x4_2x6",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "reshape",
+   "params": {
+    "shape": [
+     2,
+     6
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reshape_transposed_copy.npy",
+    "fortran": false,
+    "shape": [
+     12
+    ]
+   },
+   "id": "reshape_transposed_copy",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "reshape_transposed",
+   "params": {
+    "shape": [
+     12
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "error": true
+   },
+   "id": "reshape_view_transposed",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "reshape_view_transposed",
+   "params": {
+    "shape": [
+     12
+    ]
+   },
+   "tag": "NUMJVM_SPECIFIC"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_broadcast_to_f8_row4.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "broadcast_to_f8_row4",
+   "inputs": [
+    "in_f8_row4.npy"
+   ],
+   "op": "broadcast_to",
+   "params": {
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_broadcast_to_f8_col3.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "broadcast_to_f8_col3",
+   "inputs": [
+    "in_f8_col3.npy"
+   ],
+   "op": "broadcast_to",
+   "params": {
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_broadcast_to_f8_scalar.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     2
+    ]
+   },
+   "id": "broadcast_to_f8_scalar",
+   "inputs": [
+    "in_f8_scalar.npy"
+   ],
+   "op": "broadcast_to",
+   "params": {
+    "shape": [
+     2,
+     2
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_broadcast_to_i4_3x4.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     3,
+     4
+    ]
+   },
+   "id": "broadcast_to_i4_3x4",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "broadcast_to",
+   "params": {
+    "shape": [
+     2,
+     3,
+     4
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_broadcast_to_f8_empty_0x3.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     0,
+     3
+    ]
+   },
+   "id": "broadcast_to_f8_empty_0x3",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "broadcast_to",
+   "params": {
+    "shape": [
+     2,
+     0,
+     3
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "shape": [
+     8,
+     7,
+     6,
+     5
+    ]
+   },
+   "id": "broadcast_shapes_8x1x6x1_7x1x5",
+   "inputs": [],
+   "op": "broadcast_shapes",
+   "params": {
+    "shapes": [
+     [
+      8,
+      1,
+      6,
+      1
+     ],
+     [
+      7,
+      1,
+      5
+     ]
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "broadcast_shapes_3x1_1x4",
+   "inputs": [],
+   "op": "broadcast_shapes",
+   "params": {
+    "shapes": [
+     [
+      3,
+      1
+     ],
+     [
+      1,
+      4
+     ]
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "shape": [
+     5,
+     3,
+     4
+    ]
+   },
+   "id": "broadcast_shapes_5x1x4_1x3x1",
+   "inputs": [],
+   "op": "broadcast_shapes",
+   "params": {
+    "shapes": [
+     [
+      5,
+      1,
+      4
+     ],
+     [
+      1,
+      3,
+      1
+     ]
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "shape": [
+     2,
+     3
+    ]
+   },
+   "id": "broadcast_shapes_scalar_2x3",
+   "inputs": [],
+   "op": "broadcast_shapes",
+   "params": {
+    "shapes": [
+     [],
+     [
+      2,
+      3
+     ]
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "shape": [
+     0,
+     3
+    ]
+   },
+   "id": "broadcast_shapes_0x3_1x3",
+   "inputs": [],
+   "op": "broadcast_shapes",
+   "params": {
+    "shapes": [
+     [
+      0,
+      3
+     ],
+     [
+      1,
+      3
+     ]
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "shape": [
+     2,
+     3,
+     4
+    ]
+   },
+   "id": "broadcast_shapes_4_3x1_2x1x1",
+   "inputs": [],
+   "op": "broadcast_shapes",
+   "params": {
+    "shapes": [
+     [
+      4
+     ],
+     [
+      3,
+      1
+     ],
+     [
+      2,
+      1,
+      1
+     ]
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "error": true
+   },
+   "id": "broadcast_shapes_mismatch",
+   "inputs": [],
+   "op": "broadcast_shapes",
+   "params": {
+    "shapes": [
+     [
+      2,
+      3
+     ],
+     [
+      4,
+      3
+     ]
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_copy_c_of_transpose.npy",
+    "fortran": false,
+    "shape": [
+     4,
+     3,
+     2
+    ]
+   },
+   "id": "copy_c_of_transpose",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "copy",
+   "params": {
+    "order": "C",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_copy_f.npy",
+    "fortran": true,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "copy_f",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "copy",
+   "params": {
+    "order": "F",
+    "view": "none"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "error": true
+   },
+   "id": "astype_complex_to_real",
+   "inputs": [
+    "in_c16_2x2.npy"
+   ],
+   "op": "astype",
+   "params": {
+    "dtype": "<f8"
+   },
+   "tag": "NUMJVM_SPECIFIC"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_astype_f8_3x4_i4.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "astype_f8_3x4_i4",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "astype",
+   "params": {
+    "dtype": "<i4"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_astype_f8_hash_7x11_f4.npy",
+    "fortran": false,
+    "shape": [
+     7,
+     11
+    ]
+   },
+   "id": "astype_f8_hash_7x11_f4",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "astype",
+   "params": {
+    "dtype": "<f4"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_astype_f8_hash_7x11_f2.npy",
+    "fortran": false,
+    "shape": [
+     7,
+     11
+    ]
+   },
+   "id": "astype_f8_hash_7x11_f2",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "astype",
+   "params": {
+    "dtype": "<f2"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|u1",
+    "file": "expected_astype_i8_neg_u1.npy",
+    "fortran": false,
+    "shape": [
+     5
+    ]
+   },
+   "id": "astype_i8_neg_u1",
+   "inputs": [
+    "in_i8_neg.npy"
+   ],
+   "op": "astype",
+   "params": {
+    "dtype": "|u1"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_astype_i8_neg_u8.npy",
+    "fortran": false,
+    "shape": [
+     5
+    ]
+   },
+   "id": "astype_i8_neg_u8",
+   "inputs": [
+    "in_i8_neg.npy"
+   ],
+   "op": "astype",
+   "params": {
+    "dtype": "<u8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_astype_u8_big_i8.npy",
+    "fortran": false,
+    "shape": [
+     4
+    ]
+   },
+   "id": "astype_u8_big_i8",
+   "inputs": [
+    "in_u8_big.npy"
+   ],
+   "op": "astype",
+   "params": {
+    "dtype": "<i8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_astype_u8_big_f8.npy",
+    "fortran": false,
+    "shape": [
+     4
+    ]
+   },
+   "id": "astype_u8_big_f8",
+   "inputs": [
+    "in_u8_big.npy"
+   ],
+   "op": "astype",
+   "params": {
+    "dtype": "<f8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_astype_b1_2x3_f8.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     3
+    ]
+   },
+   "id": "astype_b1_2x3_f8",
+   "inputs": [
+    "in_b1_2x3.npy"
+   ],
+   "op": "astype",
+   "params": {
+    "dtype": "<f8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_astype_f8_3x4_b1.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "astype_f8_3x4_b1",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "astype",
+   "params": {
+    "dtype": "|b1"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_astype_f4_2x2_f8.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     2
+    ]
+   },
+   "id": "astype_f4_2x2_f8",
+   "inputs": [
+    "in_f4_2x2.npy"
+   ],
+   "op": "astype",
+   "params": {
+    "dtype": "<f8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_astype_f8_3x4_c16.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "astype_f8_3x4_c16",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "astype",
+   "params": {
+    "dtype": "<c16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_astype_c16_2x2_c8.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     2
+    ]
+   },
+   "id": "astype_c16_2x2_c8",
+   "inputs": [
+    "in_c16_2x2.npy"
+   ],
+   "op": "astype",
+   "params": {
+    "dtype": "<c8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_add_contiguous.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "add_contiguous",
+   "inputs": [
+    "in_f8_3x4.npy",
+    "in_f8_3x4.npy"
+   ],
+   "op": "add",
+   "params": {},
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_add_row_broadcast.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "add_row_broadcast",
+   "inputs": [
+    "in_f8_3x4.npy",
+    "in_f8_row4.npy"
+   ],
+   "op": "add",
+   "params": {},
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_add_col_row.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "add_col_row",
+   "inputs": [
+    "in_f8_col3.npy",
+    "in_f8_row4.npy"
+   ],
+   "op": "add",
+   "params": {},
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_add_scalar.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "add_scalar",
+   "inputs": [
+    "in_f8_scalar.npy",
+    "in_f8_3x4.npy"
+   ],
+   "op": "add",
+   "params": {},
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_add_transposed.npy",
+    "fortran": true,
+    "shape": [
+     11,
+     7
+    ]
+   },
+   "id": "add_transposed",
+   "inputs": [
+    "in_f8_hash_7x11.npy",
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "add_transposed",
+   "params": {},
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "error": true
+   },
+   "id": "add_incompatible",
+   "inputs": [
+    "in_f8_empty_0x3.npy",
+    "in_f8_row4.npy"
+   ],
+   "op": "add",
+   "params": {},
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 66.0
+   },
+   "id": "sum_f8_3x4",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "sum",
+   "params": {
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 66.0
+   },
+   "id": "sum_f8_3x4_T",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "sum",
+   "params": {
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 38.36744529334828
+   },
+   "id": "sum_f8_hash_7x11",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "sum",
+   "params": {
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 38.36744529334828
+   },
+   "id": "sum_f8_hash_7x11_T",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "sum",
+   "params": {
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 2.5
+   },
+   "id": "sum_f8_scalar",
+   "inputs": [
+    "in_f8_scalar.npy"
+   ],
+   "op": "sum",
+   "params": {
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 2.5
+   },
+   "id": "sum_f8_scalar_T",
+   "inputs": [
+    "in_f8_scalar.npy"
+   ],
+   "op": "sum",
+   "params": {
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 0.0
+   },
+   "id": "sum_f8_empty_0x3",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "sum",
+   "params": {
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 0.0
+   },
+   "id": "sum_f8_empty_0x3_T",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "sum",
+   "params": {
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 0.0
+   },
+   "id": "sum_hash_1",
+   "inputs": [],
+   "op": "sum_generated",
+   "params": {
+    "generator": "hash_unit",
+    "n": 1
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 2.9787137222010642
+   },
+   "id": "sum_hash_7",
+   "inputs": [],
+   "op": "sum_generated",
+   "params": {
+    "generator": "hash_unit",
+    "n": 7
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 3.304951629601419
+   },
+   "id": "sum_hash_8",
+   "inputs": [],
+   "op": "sum_generated",
+   "params": {
+    "generator": "hash_unit",
+    "n": 8
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 4.249223523773253
+   },
+   "id": "sum_hash_9",
+   "inputs": [],
+   "op": "sum_generated",
+   "params": {
+    "generator": "hash_unit",
+    "n": 9
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 62.88992815860547
+   },
+   "id": "sum_hash_127",
+   "inputs": [],
+   "op": "sum_generated",
+   "params": {
+    "generator": "hash_unit",
+    "n": 127
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 63.380244478583336
+   },
+   "id": "sum_hash_128",
+   "inputs": [],
+   "op": "sum_generated",
+   "params": {
+    "generator": "hash_unit",
+    "n": 128
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 63.48859478533268
+   },
+   "id": "sum_hash_129",
+   "inputs": [],
+   "op": "sum_generated",
+   "params": {
+    "generator": "hash_unit",
+    "n": 129
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 499.9763923538849
+   },
+   "id": "sum_hash_1000",
+   "inputs": [],
+   "op": "sum_generated",
+   "params": {
+    "generator": "hash_unit",
+    "n": 1000
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 32767.762321472168
+   },
+   "id": "sum_hash_65536",
+   "inputs": [],
+   "op": "sum_generated",
+   "params": {
+    "generator": "hash_unit",
+    "n": 65536
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 524287.1971435547
+   },
+   "id": "sum_hash_1048576",
+   "inputs": [],
+   "op": "sum_generated",
+   "params": {
+    "generator": "hash_unit",
+    "n": 1048576
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "value": 8388609.154296875
+   },
+   "id": "sum_hash_16777216",
+   "inputs": [],
+   "op": "sum_generated",
+   "params": {
+    "generator": "hash_unit",
+    "n": 16777216
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "flags": {
+     "c": true,
+     "f": true
     }
-  ],
-  "numpy_version_used": "2.x"
+   },
+   "id": "flags_row",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "flags",
+   "params": {
+    "index": [
+     "1"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "flags": {
+     "c": false,
+     "f": false
+    }
+   },
+   "id": "flags_col",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "flags",
+   "params": {
+    "index": [
+     ":",
+     "1:2"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "flags": {
+     "c": false,
+     "f": false
+    }
+   },
+   "id": "flags_strided",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "flags",
+   "params": {
+    "index": [
+     ":",
+     "::2"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "flags": {
+     "c": false,
+     "f": false
+    }
+   },
+   "id": "flags_rev",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "flags",
+   "params": {
+    "index": [
+     "::-1"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "repr": "array([[ 0.,  1.,  2.,  3.],\n       [ 4.,  5.,  6.,  7.],\n       [ 8.,  9., 10., 11.]])"
+   },
+   "id": "repr_f8_3x4",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "repr",
+   "params": {},
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "repr": "array([[0.        , 0.61803399, 0.23606797, 0.85410196, 0.47213595,\n        0.09016993, 0.70820392, 0.32623791, 0.94427189, 0.56230588,\n        0.18033987],\n       [0.79837385, 0.41640784, 0.03444183, 0.65247581, 0.2705098 ,\n        0.88854379, 0.50657778, 0.12461176, 0.74264575, 0.36067974,\n        0.97871372],\n       [0.59674771, 0.2147817 , 0.83281568, 0.45084967, 0.06888366,\n        0.68691764, 0.30495163, 0.92298562, 0.5410196 , 0.15905359,\n        0.77708758],\n       [0.39512156, 0.01315555, 0.63118954, 0.24922352, 0.86725751,\n        0.4852915 , 0.10332548, 0.72135947, 0.33939346, 0.95742744,\n        0.57546143],\n       [0.19349542, 0.8115294 , 0.42956339, 0.04759738, 0.66563137,\n        0.28366535, 0.90169934, 0.51973333, 0.13776731, 0.7558013 ,\n        0.37383529],\n       [0.99186927, 0.60990326, 0.22793725, 0.84597123, 0.46400522,\n        0.08203921, 0.70007319, 0.31810718, 0.93614117, 0.55417515,\n        0.17220914],\n       [0.79024313, 0.40827711, 0.0263111 , 0.64434509, 0.26237907,\n        0.88041306, 0.49844705, 0.11648103, 0.73451502, 0.35254901,\n        0.97058299]])"
+   },
+   "id": "repr_f8_hash_7x11",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "repr",
+   "params": {},
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "repr": "array([           -5,            -1,             0,             7,\n       1099511627776])"
+   },
+   "id": "repr_i8_neg",
+   "inputs": [
+    "in_i8_neg.npy"
+   ],
+   "op": "repr",
+   "params": {},
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "repr": "array([  0,  60, 120, 180, 240], dtype=uint8)"
+   },
+   "id": "repr_u1_5",
+   "inputs": [
+    "in_u1_5.npy"
+   ],
+   "op": "repr",
+   "params": {},
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "repr": "array([                   0,                    1,  9223372036854775808,\n       18446744073709551615], dtype=uint64)"
+   },
+   "id": "repr_u8_big",
+   "inputs": [
+    "in_u8_big.npy"
+   ],
+   "op": "repr",
+   "params": {},
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "repr": "array([[ True, False,  True],\n       [False,  True, False]])"
+   },
+   "id": "repr_b1_2x3",
+   "inputs": [
+    "in_b1_2x3.npy"
+   ],
+   "op": "repr",
+   "params": {},
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "repr": "array([ 1.00e-01,  1.50e+00,  6.55e+04, -2.00e+00], dtype=float16)"
+   },
+   "id": "repr_f2_4",
+   "inputs": [
+    "in_f2_4.npy"
+   ],
+   "op": "repr",
+   "params": {},
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "repr": "array([[0.1, 0.2],\n       [0.3, 0.4]], dtype=float32)"
+   },
+   "id": "repr_f4_2x2",
+   "inputs": [
+    "in_f4_2x2.npy"
+   ],
+   "op": "repr",
+   "params": {},
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "repr": "array([[0.+4.j, 1.+5.j],\n       [2.+6.j, 3.+7.j]])"
+   },
+   "id": "repr_c16_2x2",
+   "inputs": [
+    "in_c16_2x2.npy"
+   ],
+   "op": "repr",
+   "params": {},
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "repr": "array([1.+2.j, 3.-4.j, 0.+0.j], dtype=complex64)"
+   },
+   "id": "repr_c8_3",
+   "inputs": [
+    "in_c8_3.npy"
+   ],
+   "op": "repr",
+   "params": {},
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "repr": "array(2.5)"
+   },
+   "id": "repr_f8_scalar",
+   "inputs": [
+    "in_f8_scalar.npy"
+   ],
+   "op": "repr",
+   "params": {},
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "repr": "array([], shape=(0, 3), dtype=float64)"
+   },
+   "id": "repr_f8_empty_0x3",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "repr",
+   "params": {},
+   "tag": "NUMPY_COMPATIBILITY"
+  }
+ ],
+ "numpy_version_used": "2.x"
 }
