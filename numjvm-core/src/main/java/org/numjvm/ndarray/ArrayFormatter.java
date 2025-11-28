@@ -1,6 +1,7 @@
 package org.numjvm.ndarray;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -373,7 +374,7 @@ final class ArrayFormatter {
             if (type == DType.FLOAT32) {
                 return new BigDecimal(Float.toString((float) v));
             }
-            BigDecimal exact = new BigDecimal(v);
+            BigDecimal exact = exactDecimal(v);
             for (int p = 1; p < 17; p++) {
                 BigDecimal candidate = exact.round(new MathContext(p, RoundingMode.HALF_EVEN));
                 if (roundTrip(candidate.doubleValue(), type) == v) {
@@ -390,5 +391,39 @@ final class ArrayFormatter {
                 default -> (float) x;
             };
         }
+    }
+
+    /**
+     * Returns the exact decimal value of a finite {@code double}, built from its IEEE 754
+     * fields as significand × 2<sup>exponent</sup> in integer arithmetic. The result equals
+     * {@code new BigDecimal(v)}, including its scale.
+     */
+    static BigDecimal exactDecimal(double v) {
+        long bits = Double.doubleToRawLongBits(v);
+        int biased = (int) ((bits >>> 52) & 0x7FF);
+        if (biased == 0x7FF) {
+            throw new NumberFormatException("not a finite number: " + v);
+        }
+        long significand = bits & 0x000F_FFFF_FFFF_FFFFL;
+        int exponent;
+        if (biased == 0) {
+            exponent = -1074;
+        } else {
+            significand |= 1L << 52;
+            exponent = biased - 1075;
+        }
+        if (significand == 0) {
+            return BigDecimal.ZERO;
+        }
+        int zeros = Long.numberOfTrailingZeros(significand);
+        significand >>= zeros;
+        exponent += zeros;
+        BigInteger m = BigInteger.valueOf(bits < 0 ? -significand : significand);
+        if (exponent >= 0) {
+            return new BigDecimal(m.shiftLeft(exponent));
+        }
+        // m / 2^k == m * 5^k / 10^k
+        int k = -exponent;
+        return new BigDecimal(m.multiply(BigInteger.valueOf(5).pow(k)), k);
     }
 }
