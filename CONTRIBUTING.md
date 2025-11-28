@@ -27,13 +27,8 @@ Every pull request and every push to `main` is analysed on
 [`.github/workflows/sonar.yml`](.github/workflows/sonar.yml). Coverage comes from JaCoCo, which runs after every `test`
 task.
 
-One-time setup (repository owner):
-
-1. Import the repository in SonarCloud under the organization `stamich`. The project key must be `stamich_NumJVM` (set
-   in the root `build.gradle.kts`).
-2. In the SonarCloud project, *Administration → Analysis Method*: switch off Automatic Analysis.
-3. Create a token in SonarCloud (*My Account → Security*) and add it to the GitHub repository as the Actions secret
-   `SONAR_TOKEN`.
+Only the main code of `numjvm-core` and `numjvm-io` is analysed, with their tests as test code; see
+[`docs/quality`](docs/quality/README.md) for the scope, the one-time setup and the quality gate.
 
 Running an analysis locally:
 
