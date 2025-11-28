@@ -56,3 +56,11 @@ jobs:
       - name: Analysis skipped
         if: env.SONAR_TOKEN == ''
         run: echo "::notice::SONAR_TOKEN is not available; SonarCloud analysis skipped."
+
+      # Public SonarCloud data, so this works without the token too (it then shows the
+      # results of Automatic Analysis). Informational only; never fails the job.
+      - name: Open findings in the job summary
+        continue-on-error: true
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: python3 scripts/sonar_findings.py ${PR_NUMBER:+--pull-request "$PR_NUMBER"} >> "$GITHUB_STEP_SUMMARY"
