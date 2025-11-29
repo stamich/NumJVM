@@ -40,6 +40,10 @@ rejects a CI analysis while Automatic Analysis is on.
 Until the secret exists, the `sonar` workflow builds and tests but skips the upload, and the ratings shown on SonarCloud
 come from Automatic Analysis.
 
+If the `sonar` workflow fails in its *Analyse* step, the step repeats the scanner's reason as an error annotation on the
+run. The usual one is "You are running CI analysis while Automatic Analysis is enabled": the secret is in place but
+step 1 above has not been done.
+
 ## D2 — Quality gate
 
 NumJVM uses SonarCloud's built-in gate, **Sonar way**, on new code:
@@ -65,3 +69,18 @@ It is enforced in three places:
    - `SonarCloud Code Analysis` (the check SonarCloud's GitHub app posts on pull requests).
 
    This is a repository setting, not a file, so the repository owner sets it once.
+
+## CI hardening
+
+- Every third-party action is pinned to a full commit SHA, with the release in a comment
+  (`uses: actions/checkout@<sha>  # v7.0.1`). Updating an action means updating SHA and comment together; there is
+  no automated update bot for now.
+- Python dependencies of the oracle are pinned with hashes and installed with
+  `pip install --only-binary :all: --require-hashes`: no other version, and no source distribution with a setup script.
+- All actions run on Node 24; jobs run on a fixed image, `ubuntu-24.04`, so a change of `ubuntu-latest` cannot
+  change a build unannounced.
+- Least privilege: workflows default to `contents: read`; only the build job may write check runs (test results)
+  and only the sonar job may read pull requests.
+- `actions/checkout` does not persist the job's token in the working copy (`persist-credentials: false`); no job
+  pushes.
+- `gradle/actions/setup-gradle` validates the Gradle wrapper checksum before running it.

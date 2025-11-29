@@ -18,24 +18,26 @@ concurrency:
 jobs:
   oracle:
     name: NumPy oracle
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6  # v6.0.1
         with:
           distribution: temurin
           java-version: 25
 
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6  # v6.4.0
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
         with:
           python-version: "3.13"
 
       - name: Install NumPy
-        run: python -m pip install -r numjvm-tests-oracle/requirements.txt
+        run: python -m pip install --only-binary ":all:" --require-hashes -r numjvm-tests-oracle/requirements.txt
 
       - name: Fixtures are reproducible with the current NumPy
         run: python numjvm-tests-oracle/generate_cases.py --check
