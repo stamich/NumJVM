@@ -39,3 +39,29 @@ rejects a CI analysis while Automatic Analysis is on.
 
 Until the secret exists, the `sonar` workflow builds and tests but skips the upload, and the ratings shown on SonarCloud
 come from Automatic Analysis.
+
+## D2 — Quality gate
+
+NumJVM uses SonarCloud's built-in gate, **Sonar way**, on new code:
+
+| Condition on new code | Threshold |
+|-----------------------|-----------|
+| Reliability, Security and Maintainability ratings | A |
+| Security hotspots reviewed | 100 % |
+| Coverage | ≥ 80 % |
+| Duplicated lines | ≤ 3 % |
+
+It is enforced in three places:
+
+1. **The `sonar` workflow fails when the gate fails.** The analysis sets `sonar.qualitygate.wait=true`, so
+   `./gradlew sonar` waits for SonarCloud's verdict (up to 5 minutes) and exits with an error on a failed gate.
+2. **`./gradlew check` fails below 80 % line coverage** of `numjvm-core` or `numjvm-io`
+   (`jacocoTestCoverageVerification`), so coverage is also checked locally and in the `build` workflow, which
+   reports both modules' coverage on every run.
+3. **Branch protection on `main`** makes the checks required. In the repository settings, *Branches → Branch
+   protection rules → main*, enable *Require status checks to pass before merging* and select:
+   - `Build and test (JDK 25)` and `NumPy oracle`;
+   - `SonarCloud analysis` (this workflow's job);
+   - `SonarCloud Code Analysis` (the check SonarCloud's GitHub app posts on pull requests).
+
+   This is a repository setting, not a file, so the repository owner sets it once.

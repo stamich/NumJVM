@@ -28,7 +28,9 @@ Every pull request and every push to `main` is analysed on
 task.
 
 Only the main code of `numjvm-core` and `numjvm-io` is analysed, with their tests as test code; see
-[`docs/quality`](docs/quality/README.md) for the scope, the one-time setup and the quality gate.
+[`docs/quality`](docs/quality/README.md) for the scope, the one-time setup and the quality gate. New code must pass
+the gate (A ratings, every hotspot reviewed, at least 80 % coverage); `./gradlew check` already fails when a library
+module drops below 80 % line coverage.
 
 Running an analysis locally:
 

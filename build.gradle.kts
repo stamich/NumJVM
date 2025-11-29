@@ -58,6 +58,7 @@ subprojects {
     val jacocoTestReport = tasks.named<JacocoReport>("jacocoTestReport") {
         reports {
             xml.required = true
+            csv.required = true
             html.required = true
         }
     }
@@ -89,6 +90,9 @@ sonar {
         property("sonar.sourceEncoding", "UTF-8")
         property("sonar.links.scm", "https://github.com/stamich/NumJVM")
         property("sonar.links.ci", "https://github.com/stamich/NumJVM/actions")
+        // Decision D2: the analysis step fails when the quality gate fails.
+        property("sonar.qualitygate.wait", "true")
+        property("sonar.qualitygate.timeout", "300")
     }
 }
 
@@ -114,6 +118,22 @@ configure(subprojects.filter { it.name in publishedModules }) {
     extensions.configure<JavaPluginExtension> {
         withSourcesJar()
         withJavadocJar()
+    }
+
+    // Decision D2: at least 80 % line coverage for the published libraries, checked by
+    // `./gradlew check` (and so by `build`) as well as by the SonarCloud quality gate.
+    val coverageVerification = tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+        violationRules {
+            rule {
+                limit {
+                    counter = "LINE"
+                    minimum = "0.80".toBigDecimal()
+                }
+            }
+        }
+    }
+    tasks.named("check") {
+        dependsOn(coverageVerification)
     }
 
     tasks.named<Jar>("jar") {

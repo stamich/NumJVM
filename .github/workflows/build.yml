@@ -31,6 +31,9 @@ jobs:
       - name: Build
         run: ./gradlew build --stacktrace
 
+      - name: Coverage summary
+        run: python3 scripts/coverage_summary.py numjvm-core numjvm-io
+
       - name: Run examples
         run: ./gradlew --quiet :examples:basic-arrays:run :examples:memory-scopes:run
 
