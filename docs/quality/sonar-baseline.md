@@ -48,9 +48,22 @@ states the intent and avoids the rule.
 check now writes into its own `build/` directory. `release-check/` is outside the analysis scope (D1), so this finding
 disappears with CI-based analysis anyway; it is fixed because the fix is one line.
 
+### Dependency verification
+
+CI-based analysis also inspects the build scripts and reports dependencies resolved without verification
+(`kotlin:S6474`, `text:S8569`). `gradle/verification-metadata.xml` records the SHA-256 checksum of every artifact and
+plugin the build resolves, and Gradle refuses an artifact whose checksum differs. After adding or upgrading a
+dependency, regenerate it with `./gradlew --write-verification-metadata sha256 build` and review the diff.
+
 ## Security review
 
 No security hotspots were open. The rules that raise hotspots in the analysed code (file and network access,
 regular expressions, weak randomness, process execution) were checked by hand against `numjvm-io`, which is the
 only module that touches files: `.npy` reading enforces `NpyLimits` and parses headers with a restricted literal
 parser, and nothing executes code from data.
+
+## Expected result
+
+With all seven findings fixed, the expected ratings are Reliability A, Security A and Maintainability A. They are
+confirmed by the first CI-based analysis after `SONAR_TOKEN` is added; from then on the quality gate (Q5) keeps
+new code at that level.

@@ -19,7 +19,9 @@ public final class ReleaseCheck {
     public static void main(String[] args) throws Exception {
         NDArray a = NJ.array(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
         NDArray sum = ValidationKernels.add(a, NJ.array(new double[]{1, 2, 3}).broadcastTo(2, 3));
-        Path file = Files.createTempFile("release-check", ".npy");
+        // The project's own build directory, not the shared temporary directory, which
+        // other local users could write to.
+        Path file = Files.createDirectories(Path.of("build", "release-check")).resolve("round-trip.npy");
         Npy.write(file, sum);
         NDArray back = Npy.read(file);
         Files.delete(file);
