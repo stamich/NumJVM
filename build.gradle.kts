@@ -90,6 +90,8 @@ sonar {
         property("sonar.sourceEncoding", "UTF-8")
         property("sonar.links.scm", "https://github.com/stamich/NumJVM")
         property("sonar.links.ci", "https://github.com/stamich/NumJVM/actions")
+        // Decision D3: generated inner loops are analysed, but not counted as duplication.
+        property("sonar.cpd.exclusions", "**/build/generated/**")
         // Decision D2: the analysis step fails when the quality gate fails.
         property("sonar.qualitygate.wait", "true")
         property("sonar.qualitygate.timeout", "300")

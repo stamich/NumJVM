@@ -30,7 +30,7 @@ public final class KernelRegistry {
 
     private static Map<String, Table> build() {
         Registrar r = new Registrar();
-        Float64Loops.register(r);
+        GeneratedLoops.register(r);
         Map<String, Table> tables = new LinkedHashMap<>();
         r.tables.forEach((op, t) -> tables.put(op, t.freeze()));
         return Collections.unmodifiableMap(tables);

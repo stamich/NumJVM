@@ -1,0 +1,30 @@
+
+    /**
+     * {@code ${OP}}: ${DOC}. Loop {@code ${SIGNATURE}}.
+     *
+     * @param a  input memory
+     * @param pa byte offset of the input's first element
+     * @param sa input byte stride
+     * @param o  output memory
+     * @param po byte offset of the output's first element
+     * @param so output byte stride
+     * @param n  number of elements
+     */
+    public static void ${METHOD}(MemorySegment a, long pa, long sa, MemorySegment o, long po, long so, long n) {
+        if (so == ${OSIZE} && sa == ${ISIZE}) {
+            for (long i = 0; i < n; i++) {
+                ${CT} x = ${READ_A_I};
+                ${WRITE_I};
+            }
+        } else if (so == ${OSIZE} && sa == 0) {
+            ${CT} x = ${READ_A};
+            for (long i = 0; i < n; i++) {
+                ${WRITE_I};
+            }
+        } else {
+            for (long i = 0; i < n; i++, pa += sa, po += so) {
+                ${CT} x = ${READ_A};
+                ${WRITE};
+            }
+        }
+    }

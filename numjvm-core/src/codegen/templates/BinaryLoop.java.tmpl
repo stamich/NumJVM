@@ -1,0 +1,43 @@
+
+    /**
+     * {@code ${OP}}: ${DOC}. Loop {@code ${SIGNATURE}}.
+     *
+     * @param a  first input memory
+     * @param pa byte offset of the first input's first element
+     * @param sa first input byte stride
+     * @param b  second input memory
+     * @param pb byte offset of the second input's first element
+     * @param sb second input byte stride
+     * @param o  output memory
+     * @param po byte offset of the output's first element
+     * @param so output byte stride
+     * @param n  number of elements
+     */
+    public static void ${METHOD}(MemorySegment a, long pa, long sa, MemorySegment b, long pb, long sb,
+            MemorySegment o, long po, long so, long n) {
+        if (so == ${OSIZE} && sa == ${ISIZE} && sb == ${ISIZE}) {
+            for (long i = 0; i < n; i++) {
+                ${CT} x = ${READ_A_I};
+                ${CT} y = ${READ_B_I};
+                ${WRITE_I};
+            }
+        } else if (so == ${OSIZE} && sa == 0 && sb == ${ISIZE}) {
+            ${CT} x = ${READ_A};
+            for (long i = 0; i < n; i++) {
+                ${CT} y = ${READ_B_I};
+                ${WRITE_I};
+            }
+        } else if (so == ${OSIZE} && sa == ${ISIZE} && sb == 0) {
+            ${CT} y = ${READ_B};
+            for (long i = 0; i < n; i++) {
+                ${CT} x = ${READ_A_I};
+                ${WRITE_I};
+            }
+        } else {
+            for (long i = 0; i < n; i++, pa += sa, pb += sb, po += so) {
+                ${CT} x = ${READ_A};
+                ${CT} y = ${READ_B};
+                ${WRITE};
+            }
+        }
+    }

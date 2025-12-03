@@ -41,6 +41,13 @@ SONAR_TOKEN=... ./gradlew build sonar
 For a self-hosted SonarQube server, set `SONAR_HOST_URL` and pass your keys, e.g.
 `./gradlew build sonar -Dsonar.projectKey=numjvm -Dsonar.organization=`.
 
+## Generated inner loops
+
+The scalar inner loops in `org.numjvm.internal.loops` (`Int8Loops`, `Float64Loops`, ...) are generated, not written
+by hand (decision D3). To change them, edit the templates in `numjvm-core/src/codegen/templates` or the operation table
+in `numjvm-core/src/codegen/java/org/numjvm/codegen/Ops.java`; the `generateKernels` task regenerates them into
+`numjvm-core/build/generated/sources/kernels` before every compilation. Generated sources are never committed.
+
 ## Decisions
 
 Significant design decisions are recorded as ADRs in [`docs/adr`](docs/adr). Open a new ADR (or supersede an existing

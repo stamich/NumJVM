@@ -6,5 +6,9 @@
  * length. {@link org.numjvm.internal.loops.LoopExecutor} builds the
  * {@link org.numjvm.iteration.IterationPlan} for the operands and calls the loop once per
  * run; the loop itself selects a contiguous, broadcast-scalar or strided path.
+ *
+ * <p>The loops themselves ({@code Int8Loops}, {@code Float64Loops}, ...) are generated at
+ * build time from the templates in {@code numjvm-core/src/codegen} (decision D3) into
+ * {@code build/generated/sources/kernels}, and registered by {@code GeneratedLoops}.
  */
 package org.numjvm.internal.loops;
