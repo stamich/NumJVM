@@ -168,4 +168,20 @@ class ValidationKernelsTest {
         double n = a.size();
         assertEquals(n * (n - 1) / 2, ValidationKernels.sumFloat64(a.transpose()), 0.0);
     }
+
+    @Test
+    void sumOfATransposeEqualsSumOfItsOriginalBitForBit() {
+        // the plan sums a transposed contiguous array in memory order, as one pairwise run
+        NDArray a = NJ.arange(0.0, 1.0, 1.0 / 10007).reshape(-1);
+        long n = a.size() - a.size() % 97;
+        NDArray m = a.slice(org.numjvm.ndarray.Slice.range(0, n)).reshapeView(97, n / 97);
+        assertEquals(ValidationKernels.sumFloat64(m), ValidationKernels.sumFloat64(m.transpose()));
+        assertEquals(ValidationKernels.sumFloat64(m), ValidationKernels.sumFloat64(m.copy(org.numjvm.ndarray.Order.F)));
+    }
+
+    @Test
+    void sumOfABroadcastView() {
+        assertEquals(12 * 1.5, ValidationKernels.sumFloat64(NJ.scalar(1.5).broadcastTo(3, 4)));
+        assertEquals(3 * 6.0, ValidationKernels.sumFloat64(NJ.arange(0.0, 4.0, 1.0).broadcastTo(3, 4)));
+    }
 }

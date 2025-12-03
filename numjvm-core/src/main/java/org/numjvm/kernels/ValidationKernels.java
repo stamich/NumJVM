@@ -7,10 +7,13 @@ import org.numjvm.Experimental;
 import org.numjvm.dtype.DType;
 import org.numjvm.exception.DTypeException;
 import org.numjvm.internal.SharedSecrets;
+import org.numjvm.internal.loops.Float64Loops;
+import org.numjvm.internal.loops.LoopExecutor;
 import org.numjvm.internal.memory.Buffer;
 import org.numjvm.internal.memory.HybridAllocator;
 import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.internal.memory.MemoryErrors;
+import org.numjvm.iteration.IterationPlan;
 import org.numjvm.iteration.StridedIterator;
 import org.numjvm.memory.NJScope;
 import org.numjvm.ndarray.NDArray;
@@ -23,8 +26,8 @@ import org.numjvm.shape.Broadcasting;
  *
  * <p>They exist to validate the M0 architecture, not as the arithmetic API: the
  * elementwise engine with dtype promotion, ufuncs and reductions arrives in M1 and will
- * replace this class. Both follow ADR-003: a contiguous fast path plus a generic loop
- * over {@link StridedIterator}.
+ * replace this class. Both run over an {@link IterationPlan} (ADR-004), so every layout
+ * that is contiguous in some axis order takes the contiguous path.
  */
 @Experimental
 public final class ValidationKernels {
@@ -70,51 +73,19 @@ public final class ValidationKernels {
         requireFloat64(b, "add");
         Shape shape = Broadcasting.broadcastShapes(a.shape(), b.shape());
         NDArray out = SharedSecrets.arrayAccess().allocate(allocator, DType.FLOAT64, shape, Order.C);
-        if (out.size() == 0) {
-            return out;
-        }
-        SharedSecrets.ArrayAccess access = SharedSecrets.arrayAccess();
-        MemorySegment sa = access.buffer(a).segment();
-        MemorySegment sb = access.buffer(b).segment();
-        MemorySegment so = access.buffer(out).segment();
-        try {
-            if (a.isCContiguous() && b.isCContiguous() && a.shape().equals(shape) && b.shape().equals(shape)) {
-                long oa = access.offset(a);
-                long ob = access.offset(b);
-                for (long i = 0, n = out.size(); i < n; i++) {
-                    long k = i << 3;
-                    so.set(F64, k, sa.get(F64, oa + k) + sb.get(F64, ob + k));
-                }
-                return out;
-            }
-            StridedIterator it = StridedIterator.of(shape.dimensions(),
-                    new long[][]{
-                            Broadcasting.broadcastStrides(a.shape(), a.strides(), shape).values(),
-                            Broadcasting.broadcastStrides(b.shape(), b.strides(), shape).values(),
-                            out.strides().values()},
-                    new long[]{access.offset(a), access.offset(b), 0});
-            do {
-                long pa = it.offset(0);
-                long pb = it.offset(1);
-                long po = it.offset(2);
-                long da = it.innerStride(0);
-                long db = it.innerStride(1);
-                long dout = it.innerStride(2);
-                for (long k = 0, n = it.innerSize(); k < n; k++, pa += da, pb += db, po += dout) {
-                    so.set(F64, po, sa.get(F64, pa) + sb.get(F64, pb));
-                }
-            } while (it.next());
-            return out;
-        } catch (IllegalStateException | WrongThreadException e) {
-            throw MemoryErrors.translate(e, deadOwner(a, b));
-        }
+        LoopExecutor.binary(Float64Loops::add, a, b, out);
+        return out;
     }
 
     /**
      * Sums all elements of a float64 array with NumPy's pairwise algorithm: blocks of
      * 128 elements are added with eight independent accumulators and blocks are combined
-     * recursively, giving O(log n) rounding error. Non-contiguous arrays are summed pairwise
-     * along their innermost axis, and the per-row results are added in order, as NumPy does.
+     * recursively, giving O(log n) rounding error.
+     *
+     * <p>The array is traversed through an {@link IterationPlan} (ADR-004), so a C- or
+     * F-contiguous array, or a transposed view of one, is summed pairwise as a single run in
+     * memory order. Other layouts are summed pairwise along each run of the plan, and the
+     * per-run results are added in order.
      *
      * @param a the array, float64
      * @return the sum; {@code 0.0} for an empty array
@@ -129,14 +100,14 @@ public final class ValidationKernels {
         Buffer buffer = access.buffer(a);
         MemorySegment s = buffer.segment();
         try {
-            if (a.isCContiguous()) {
-                return pairwise(s, access.offset(a), a.size(), 8);
-            }
-            StridedIterator it = StridedIterator.of(a.shape().dimensions(), new long[][]{a.strides().values()},
+            IterationPlan plan = IterationPlan.of(a.shape().dimensions(), new long[][]{a.strides().values()},
                     new long[]{access.offset(a)});
+            StridedIterator it = plan.iterator();
+            long n = it.innerSize();
+            long stride = it.innerStride(0);
             double total = 0.0;
             do {
-                total += pairwise(s, it.offset(0), it.innerSize(), it.innerStride(0));
+                total += pairwise(s, it.offset(0), n, stride);
             } while (it.next());
             return total;
         } catch (IllegalStateException | WrongThreadException e) {
@@ -195,7 +166,4 @@ public final class ValidationKernels {
         }
     }
 
-    private static org.numjvm.memory.MemoryOwner deadOwner(NDArray a, NDArray b) {
-        return !a.isAlive() ? a.memoryOwner() : b.memoryOwner();
-    }
 }
