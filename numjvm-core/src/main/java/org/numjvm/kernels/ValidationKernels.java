@@ -7,7 +7,8 @@ import org.numjvm.Experimental;
 import org.numjvm.dtype.DType;
 import org.numjvm.exception.DTypeException;
 import org.numjvm.internal.SharedSecrets;
-import org.numjvm.internal.loops.Float64Loops;
+import org.numjvm.internal.loops.BinaryLoop;
+import org.numjvm.internal.loops.KernelRegistry;
 import org.numjvm.internal.loops.LoopExecutor;
 import org.numjvm.internal.memory.Buffer;
 import org.numjvm.internal.memory.HybridAllocator;
@@ -33,6 +34,7 @@ import org.numjvm.shape.Broadcasting;
 public final class ValidationKernels {
 
     private static final ValueLayout.OfDouble F64 = ValueLayout.JAVA_DOUBLE_UNALIGNED;
+    private static final BinaryLoop ADD = KernelRegistry.binary("add", DType.FLOAT64, DType.FLOAT64);
 
     /**
      * Block size of the pairwise summation, as in NumPy.
@@ -73,7 +75,7 @@ public final class ValidationKernels {
         requireFloat64(b, "add");
         Shape shape = Broadcasting.broadcastShapes(a.shape(), b.shape());
         NDArray out = SharedSecrets.arrayAccess().allocate(allocator, DType.FLOAT64, shape, Order.C);
-        LoopExecutor.binary(Float64Loops::add, a, b, out);
+        LoopExecutor.binary(ADD, a, b, out);
         return out;
     }
 

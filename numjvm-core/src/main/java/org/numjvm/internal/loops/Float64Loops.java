@@ -3,6 +3,8 @@ package org.numjvm.internal.loops;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 
+import org.numjvm.dtype.DType;
+
 /**
  * Hand-written float64 inner loops: the reference shape that the generated loops follow.
  *
@@ -17,6 +19,16 @@ public final class Float64Loops {
     private static final long SIZE = 8;
 
     private Float64Loops() {
+    }
+
+    /**
+     * Registers this class's loops.
+     *
+     * @param r the registry being initialised
+     */
+    static void register(KernelRegistry.Registrar r) {
+        r.binary("add", DType.FLOAT64, DType.FLOAT64, DType.FLOAT64, Float64Loops::add);
+        r.unary("copy", DType.FLOAT64, DType.FLOAT64, Float64Loops::copy);
     }
 
     /**
