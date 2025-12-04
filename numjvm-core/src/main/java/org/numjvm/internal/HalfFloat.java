@@ -1,8 +1,9 @@
 package org.numjvm.internal;
 
 /**
- * bfloat16 conversions. (IEEE binary16 uses {@link Float#float16ToFloat(short)} and
- * {@link Float#floatToFloat16(float)}.)
+ * bfloat16 conversions, and correctly rounded conversions from {@code double} to both
+ * 16-bit float formats. (Between IEEE binary16 and {@code float}, use
+ * {@link Float#float16ToFloat(short)} and {@link Float#floatToFloat16(float)}.)
  */
 public final class HalfFloat {
 
@@ -32,5 +33,43 @@ public final class HalfFloat {
         }
         int roundingBias = 0x7FFF + ((bits >>> 16) & 1);
         return (short) ((bits + roundingBias) >>> 16);
+    }
+
+    /**
+     * Narrows a {@code double} to IEEE binary16 with a single round-to-nearest-even, as
+     * NumPy's {@code npy_double_to_half} does. Going through {@code (float) value} would
+     * round twice and differ for values just beyond a halfway point.
+     *
+     * @param value the value
+     * @return the 16 bits
+     */
+    public static short doubleToFloat16(double value) {
+        return Float.floatToFloat16(toFloatRoundToOdd(value));
+    }
+
+    /**
+     * Narrows a {@code double} to bfloat16 with a single round-to-nearest-even.
+     *
+     * @param value the value
+     * @return the 16 bits
+     */
+    public static short doubleToBFloat16(double value) {
+        return floatToBFloat16(toFloatRoundToOdd(value));
+    }
+
+    /**
+     * Rounds to {@code float} toward zero and sets the lowest bit when the result is
+     * inexact ("round to odd"). Rounding that result to a format with at least two bits
+     * less precision gives the same result as rounding {@code value} directly.
+     */
+    static float toFloatRoundToOdd(double value) {
+        float f = (float) value;
+        if (Double.isNaN(value) || (double) f == value) {
+            return f;
+        }
+        if (Math.abs((double) f) > Math.abs(value)) {
+            f = Math.nextAfter(f, 0.0);
+        }
+        return Float.intBitsToFloat(Float.floatToRawIntBits(f) | 1);
     }
 }

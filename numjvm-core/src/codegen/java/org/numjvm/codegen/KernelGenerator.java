@@ -79,6 +79,27 @@ public final class KernelGenerator {
                         .formatted(op.name(), t.dtype(), o.dtype(), t.cls(), method(op)));
                 count++;
             }
+            for (DTypeSpec u : DTypeSpec.REAL) {
+                if (u == t) {
+                    registrations.add("        r.unary(\"cast:%s\", DType.%s, DType.%s, %sLoops::copy);"
+                            .formatted(u.dtype().toLowerCase(), t.dtype(), u.dtype(), t.cls()));
+                } else {
+                    methods.append(cast(t, u.dtype(), u.size(), "to" + u.cls(),
+                            (seg, off) -> Casts.write(t, u, seg, off, "x")));
+                    registrations.add("        r.unary(\"cast:%s\", DType.%s, DType.%s, %sLoops::to%s);"
+                            .formatted(u.dtype().toLowerCase(), t.dtype(), u.dtype(), t.cls(), u.cls()));
+                }
+                count++;
+            }
+            for (boolean single : new boolean[]{true, false}) {
+                String c = single ? "COMPLEX64" : "COMPLEX128";
+                String cls = single ? "Complex64" : "Complex128";
+                methods.append(cast(t, c, single ? 8 : 16, "to" + cls,
+                        (seg, off) -> Casts.writeComplex(t, single, seg, off, "x")));
+                registrations.add("        r.unary(\"cast:%s\", DType.%s, DType.%s, %sLoops::to%s);"
+                        .formatted(c.toLowerCase(), t.dtype(), c, t.cls(), cls));
+                count++;
+            }
             methods.append(fill("CopyLoop", Map.of(
                     "SIGNATURE", "copy(" + t.dtype().toLowerCase() + ") -> " + t.dtype().toLowerCase(),
                     "ISIZE", String.valueOf(t.size()),
@@ -87,13 +108,15 @@ public final class KernelGenerator {
             registrations.add("        r.unary(\"copy\", DType.%s, DType.%s, %sLoops::copy);"
                     .formatted(t.dtype(), t.dtype(), t.cls()));
             count++;
-            String imports = t.read().contains("HalfFloat") ? "import org.numjvm.internal.HalfFloat;\n" : "";
+            String body = methods.toString();
+            String imports = (body.contains("Unsigned.") ? "import org.numjvm.dtype.Unsigned;\n" : "")
+                    + (body.contains("HalfFloat.") ? "import org.numjvm.internal.HalfFloat;\n" : "");
             String src = fill("LoopClass", Map.of(
                     "IMPORTS", imports,
                     "TYPENAME", t.dtype().toLowerCase(),
                     "CLASS", t.cls() + "Loops",
                     "REGISTRATIONS", String.join("\n", registrations),
-                    "METHODS", methods.toString()));
+                    "METHODS", body));
             Files.writeString(out.resolve(t.cls() + "Loops.java"), src, StandardCharsets.UTF_8);
             registerAll.append("        ").append(t.cls()).append("Loops.register(r);\n");
         }
@@ -137,6 +160,23 @@ public final class KernelGenerator {
         v.put("WRITE", o.write("o", "po", expr));
         v.put("WRITE_I", o.write("o", indexed("po", o.size()), expr));
         return fill(op.arity() == 2 ? "BinaryLoop" : "UnaryLoop", v);
+    }
+
+    private String cast(DTypeSpec t, String to, int outSize, String method,
+                        java.util.function.BinaryOperator<String> write) {
+        Map<String, String> v = new HashMap<>();
+        v.put("OP", "cast");
+        v.put("DOC", "conversion to " + to.toLowerCase() + " with the rules of astype");
+        v.put("SIGNATURE", "cast(" + t.dtype().toLowerCase() + ") -> " + to.toLowerCase());
+        v.put("METHOD", method);
+        v.put("CT", t.ct());
+        v.put("ISIZE", String.valueOf(t.size()));
+        v.put("OSIZE", String.valueOf(outSize));
+        v.put("READ_A", t.read("a", "pa"));
+        v.put("READ_A_I", t.read("a", indexed("pa", t.size())));
+        v.put("WRITE", write.apply("o", "po"));
+        v.put("WRITE_I", write.apply("o", indexed("po", outSize)));
+        return fill("UnaryLoop", v);
     }
 
     private static String indexed(String base, int size) {

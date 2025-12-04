@@ -34,11 +34,17 @@ Element accessors convert between dtypes and Java primitives:
 | write `double`    | integers: truncate toward zero, wrap to the width; bool: `!= 0`; floats: round to nearest |
 | write `long`      | integers: keep the low bits; floats: round to nearest                                     |
 
-`astype(target)` uses the same rules element by element, through `long` for integer/bool pairs (so 64-bit values
-survive) and through `double` otherwise. Real becomes complex with a zero imaginary part; complex to real is refused
-rather than silently dropping the imaginary part (NumPy warns and drops it).
+`astype(target)` runs a generated cast loop for each pair of dtypes (`cast:<target>` in the kernel registry). Integer
+and bool pairs keep the low bits, so 64-bit values survive. Every conversion to a floating-point type rounds **once**:
+int64 → float32 and uint64 → float32 are correctly rounded, and float64 → float16 or bfloat16 rounds directly from the
+double (through `float` with round-to-odd), as NumPy's `npy_double_to_half` does; rounding through `float` with
+round-to-nearest would round twice. Floats convert to integers by truncation toward zero; NaN and out-of-range values
+follow Java's saturating conversion to `long` and then wrap (NUMJVM_SPECIFIC: undefined in NumPy, which gives
+platform-dependent results). Real becomes complex with a zero imaginary part; complex to real is refused rather than
+silently dropping the imaginary part (NumPy warns and drops it).
 
-Float16 is converted through `float`; bfloat16 rounds to nearest even and keeps NaN quiet.
+Float16 arithmetic is computed in `float` and rounded to float16 once, as NumPy does; bfloat16 rounds to nearest even
+and keeps NaN quiet.
 
 ## uint64
 

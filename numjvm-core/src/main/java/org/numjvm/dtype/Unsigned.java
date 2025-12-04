@@ -28,6 +28,19 @@ public final class Unsigned {
     }
 
     /**
+     * Converts raw uint64 bits to the nearest {@code float}.
+     *
+     * @param bits the 64 bits of an unsigned value
+     * @return the value, correctly rounded
+     */
+    public static float toFloat(long bits) {
+        if (bits >= 0) {
+            return bits;
+        }
+        return (float) ((bits >>> 1) | (bits & 1)) * 2.0f;
+    }
+
+    /**
      * Formats raw uint64 bits as a decimal number.
      *
      * @param bits the 64 bits of an unsigned value

@@ -56,7 +56,8 @@ import org.numjvm.memory.MemoryOwner;
  *   <tr><td>{@code getBoolean}</td><td>any real dtype; {@code true} for any non-zero
  *       value, including NaN</td></tr>
  *   <tr><td>{@code setDouble}</td><td>integer dtypes truncate toward zero and wrap to
- *       the dtype's width; bool stores {@code value != 0}; float types round to nearest</td></tr>
+ *       the dtype's width; bool stores {@code value != 0}; float types round once to
+ *       nearest (float16 and bfloat16 directly from the {@code double})</td></tr>
  *   <tr><td>{@code setLong}</td><td>integer dtypes keep the low bits; float types round
  *       to nearest; bool stores {@code value != 0}</td></tr>
  *   <tr><td>{@code setBoolean}</td><td>stores 1 or 0 in any real dtype</td></tr>
@@ -655,11 +656,14 @@ public final class NDArray {
      * Returns a C-contiguous copy converted to another dtype ({@code NUMPY_COMPATIBILITY}:
      * NumPy's {@code astype} with {@code casting="unsafe"}).
      *
-     * <p>Integer and bool conversions go through {@code long}, so int64 and uint64 values
-     * keep all their bits; conversions involving a floating-point type go through
-     * {@code double} with the rules of {@code setDouble}. Real values become complex
-     * with a zero imaginary part; converting complex to real is rejected rather than
-     * silently discarding the imaginary part.
+     * <p>Integer and bool conversions keep the low bits of the value (int64 and uint64 keep
+     * all of them) and wrap to the target's width. Every conversion to a floating-point
+     * type rounds once to nearest, so int64 to float32 and float64 to float16 are
+     * correctly rounded as in NumPy. Floating-point values convert to integers by truncation
+     * toward zero; NaN and out-of-range values follow Java's saturating conversion to
+     * {@code long} and then wrap ({@code NUMJVM_SPECIFIC}: NumPy leaves them undefined).
+     * Real values become complex with a zero imaginary part; converting complex to real is
+     * rejected rather than silently discarding the imaginary part.
      *
      * @param target the dtype of the result
      * @return the converted copy; a plain copy if {@code target} equals this dtype

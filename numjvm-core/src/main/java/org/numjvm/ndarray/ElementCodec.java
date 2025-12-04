@@ -80,8 +80,8 @@ final class ElementCodec {
             case INT32, UINT32 -> s.set(I32, off, (int) (long) v);
             case INT64 -> s.set(I64, off, (long) v);
             case UINT64 -> s.set(I64, off, Unsigned.fromDouble(v));
-            case FLOAT16 -> s.set(I16, off, Float.floatToFloat16((float) v));
-            case BFLOAT16 -> s.set(I16, off, HalfFloat.floatToBFloat16((float) v));
+            case FLOAT16 -> s.set(I16, off, HalfFloat.doubleToFloat16(v));
+            case BFLOAT16 -> s.set(I16, off, HalfFloat.doubleToBFloat16(v));
             case FLOAT32 -> s.set(F32, off, (float) v);
             case FLOAT64 -> s.set(F64, off, v);
             case COMPLEX64, COMPLEX128 -> throw complex(t, "setDouble");
