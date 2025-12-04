@@ -20,6 +20,7 @@ class ExceptionHierarchyTest {
                 new DTypeException("x"),
                 new IndexException("x"),
                 new ReadOnlyArrayException("x"),
+                new ValueException("x"),
                 new MemoryException("x"),
                 new MemoryException("x", cause));
         for (RuntimeException e : all) {
