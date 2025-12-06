@@ -33,6 +33,11 @@ it does not (`NUMPY_COMPATIBILITY`):
 
 bfloat16 is not a NumPy dtype; its rules are those of the `ml_dtypes` package, which NumPy users use for it.
 
+With more than two operands the promotion is not a left-to-right fold. As in NumPy, the operand with the highest NumPy
+type number is the starting point (float16 has the highest, 23; bfloat16 ranks above it as a user-defined dtype would)
+and the others are promoted into it in order: `result_type(int16, uint16, float32)` is float32, while folding left to
+right would give float64. This rule was confirmed against NumPy 2.5 for every triple of the 14 NumPy dtypes.
+
 ### 2. Casting rules
 
 `can_cast(from, to, casting)` takes NumPy's five casting kinds:

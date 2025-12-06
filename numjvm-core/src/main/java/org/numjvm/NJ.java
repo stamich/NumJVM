@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.Properties;
 
+import org.numjvm.dtype.Casting;
 import org.numjvm.dtype.DType;
+import org.numjvm.dtype.TypePromotion;
 import org.numjvm.internal.Factories;
 import org.numjvm.internal.memory.HybridAllocator;
 import org.numjvm.internal.memory.NativeMemoryTracker;
@@ -293,6 +295,59 @@ public final class NJ {
      */
     public static boolean allClose(NDArray a, NDArray b, double rtol, double atol) {
         return Comparisons.allClose(a, b, rtol, atol);
+    }
+
+    // ------------------------------------------------------------------ type promotion
+
+    /**
+     * Returns the dtype an operation on these dtypes produces ({@code ARRAY_API}:
+     * {@code result_type}; rules in {@link TypePromotion} and ADR-005).
+     *
+     * @param dtypes one or more dtypes
+     * @return the promoted dtype
+     */
+    public static DType resultType(DType... dtypes) {
+        return TypePromotion.resultType(dtypes);
+    }
+
+    /**
+     * Returns the dtype an operation on these arrays produces ({@code ARRAY_API}:
+     * {@code result_type}). Only the dtypes matter; 0-D arrays are not weak scalars.
+     *
+     * @param arrays one or more arrays
+     * @return the promoted dtype
+     */
+    public static DType resultType(NDArray... arrays) {
+        DType[] dtypes = new DType[arrays.length];
+        for (int i = 0; i < arrays.length; i++) {
+            dtypes[i] = arrays[i].dtype();
+        }
+        return TypePromotion.resultType(dtypes);
+    }
+
+    /**
+     * Tells whether every value of {@code from} is representable in {@code to}
+     * ({@code ARRAY_API}: {@code can_cast}).
+     *
+     * @param from source dtype
+     * @param to   target dtype
+     * @return {@code true} for a safe conversion
+     */
+    public static boolean canCast(DType from, DType to) {
+        return TypePromotion.canCast(from, to);
+    }
+
+    /**
+     * Tells whether {@code from} can be converted to {@code to} under a casting mode
+     * ({@code NUMPY_COMPATIBILITY}: {@code np.can_cast}).
+     *
+     * @param from    source dtype
+     * @param to      target dtype
+     * @param casting the casting mode
+     * @return {@code true} if the conversion is allowed
+     */
+    public static boolean canCast(DType from, DType to, Casting casting) {
+        return TypePromotion.canCast(from, to, casting);
     }
 
     // ------------------------------------------------------------------ scopes and memory
