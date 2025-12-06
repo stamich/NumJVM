@@ -1788,6 +1788,5171 @@
   },
   {
    "expect": {
+    "dtype_name": "bool"
+   },
+   "id": "result_type_bool_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "bool"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int8"
+   },
+   "id": "result_type_bool_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "int8"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint8"
+   },
+   "id": "result_type_bool_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "uint8"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int16"
+   },
+   "id": "result_type_bool_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "int16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint16"
+   },
+   "id": "result_type_bool_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "uint16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_bool_int32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "int32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint32"
+   },
+   "id": "result_type_bool_uint32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "uint32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_bool_int64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "int64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint64"
+   },
+   "id": "result_type_bool_uint64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "uint64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float16"
+   },
+   "id": "result_type_bool_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "float16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_bool_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "float32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_bool_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "float64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_bool_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "complex64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_bool_complex128",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "complex128"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int8"
+   },
+   "id": "result_type_int8_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int8"
+   },
+   "id": "result_type_int8_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "int8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int16"
+   },
+   "id": "result_type_int8_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "uint8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int16"
+   },
+   "id": "result_type_int8_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "int16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_int8_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "uint16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_int8_int32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "int32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_int8_uint32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "uint32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_int8_int64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "int64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_int8_uint64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "uint64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float16"
+   },
+   "id": "result_type_int8_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "float16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_int8_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "float32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_int8_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "float64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_int8_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "complex64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_int8_complex128",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "complex128"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint8"
+   },
+   "id": "result_type_uint8_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int16"
+   },
+   "id": "result_type_uint8_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "int8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint8"
+   },
+   "id": "result_type_uint8_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "uint8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int16"
+   },
+   "id": "result_type_uint8_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "int16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint16"
+   },
+   "id": "result_type_uint8_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "uint16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_uint8_int32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "int32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint32"
+   },
+   "id": "result_type_uint8_uint32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "uint32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_uint8_int64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "int64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint64"
+   },
+   "id": "result_type_uint8_uint64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "uint64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float16"
+   },
+   "id": "result_type_uint8_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "float16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_uint8_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "float32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_uint8_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "float64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_uint8_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "complex64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_uint8_complex128",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "complex128"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int16"
+   },
+   "id": "result_type_int16_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int16"
+   },
+   "id": "result_type_int16_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "int8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int16"
+   },
+   "id": "result_type_int16_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "uint8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int16"
+   },
+   "id": "result_type_int16_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "int16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_int16_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "uint16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_int16_int32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "int32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_int16_uint32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "uint32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_int16_int64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "int64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_int16_uint64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "uint64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_int16_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "float16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_int16_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "float32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_int16_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "float64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_int16_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "complex64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_int16_complex128",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "complex128"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint16"
+   },
+   "id": "result_type_uint16_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint16",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_uint16_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint16",
+     "int8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint16"
+   },
+   "id": "result_type_uint16_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint16",
+     "uint8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_uint16_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint16",
+     "int16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint16"
+   },
+   "id": "result_type_uint16_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint16",
+     "uint16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_uint16_int32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint16",
+     "int32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint32"
+   },
+   "id": "result_type_uint16_uint32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint16",
+     "uint32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_uint16_int64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint16",
+     "int64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint64"
+   },
+   "id": "result_type_uint16_uint64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint16",
+     "uint64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_uint16_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint16",
+     "float16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_uint16_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint16",
+     "float32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_uint16_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint16",
+     "float64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_uint16_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint16",
+     "complex64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_uint16_complex128",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint16",
+     "complex128"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_int32_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_int32_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "int8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_int32_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "uint8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_int32_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "int16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_int32_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "uint16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_int32_int32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "int32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_int32_uint32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "uint32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_int32_int64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "int64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_int32_uint64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "uint64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_int32_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "float16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_int32_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "float32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_int32_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "float64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_int32_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "complex64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_int32_complex128",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "complex128"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint32"
+   },
+   "id": "result_type_uint32_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_uint32_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "int8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint32"
+   },
+   "id": "result_type_uint32_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "uint8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_uint32_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "int16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint32"
+   },
+   "id": "result_type_uint32_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "uint16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_uint32_int32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "int32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint32"
+   },
+   "id": "result_type_uint32_uint32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "uint32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_uint32_int64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "int64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint64"
+   },
+   "id": "result_type_uint32_uint64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "uint64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_uint32_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "float16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_uint32_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "float32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_uint32_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "float64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_uint32_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "complex64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_uint32_complex128",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "complex128"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_int64_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_int64_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "int8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_int64_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "uint8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_int64_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "int16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_int64_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "uint16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_int64_int32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "int32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_int64_uint32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "uint32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "int64"
+   },
+   "id": "result_type_int64_int64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "int64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_int64_uint64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "uint64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_int64_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "float16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_int64_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "float32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_int64_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "float64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_int64_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "complex64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_int64_complex128",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "complex128"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint64"
+   },
+   "id": "result_type_uint64_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint64",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_uint64_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint64",
+     "int8"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint64"
+   },
+   "id": "result_type_uint64_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint64",
+     "uint8"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_uint64_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint64",
+     "int16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint64"
+   },
+   "id": "result_type_uint64_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint64",
+     "uint16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_uint64_int32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint64",
+     "int32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint64"
+   },
+   "id": "result_type_uint64_uint32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint64",
+     "uint32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_uint64_int64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint64",
+     "int64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "uint64"
+   },
+   "id": "result_type_uint64_uint64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint64",
+     "uint64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_uint64_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint64",
+     "float16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_uint64_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint64",
+     "float32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_uint64_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint64",
+     "float64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_uint64_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint64",
+     "complex64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_uint64_complex128",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint64",
+     "complex128"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float16"
+   },
+   "id": "result_type_float16_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float16",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float16"
+   },
+   "id": "result_type_float16_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float16",
+     "int8"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float16"
+   },
+   "id": "result_type_float16_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float16",
+     "uint8"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_float16_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float16",
+     "int16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_float16_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float16",
+     "uint16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float16_int32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float16",
+     "int32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float16_uint32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float16",
+     "uint32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float16_int64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float16",
+     "int64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float16_uint64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float16",
+     "uint64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float16"
+   },
+   "id": "result_type_float16_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float16",
+     "float16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_float16_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float16",
+     "float32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float16_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float16",
+     "float64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_float16_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float16",
+     "complex64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_float16_complex128",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float16",
+     "complex128"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_float32_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float32",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_float32_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float32",
+     "int8"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_float32_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float32",
+     "uint8"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_float32_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float32",
+     "int16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_float32_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float32",
+     "uint16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float32_int32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float32",
+     "int32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float32_uint32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float32",
+     "uint32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float32_int64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float32",
+     "int64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float32_uint64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float32",
+     "uint64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_float32_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float32",
+     "float16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_float32_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float32",
+     "float32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float32_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float32",
+     "float64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_float32_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float32",
+     "complex64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_float32_complex128",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float32",
+     "complex128"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float64_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float64",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float64_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float64",
+     "int8"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float64_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float64",
+     "uint8"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float64_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float64",
+     "int16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float64_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float64",
+     "uint16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float64_int32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float64",
+     "int32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float64_uint32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float64",
+     "uint32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float64_int64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float64",
+     "int64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float64_uint64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float64",
+     "uint64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float64_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float64",
+     "float16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float64_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float64",
+     "float32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_float64_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float64",
+     "float64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_float64_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float64",
+     "complex64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_float64_complex128",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "float64",
+     "complex128"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_complex64_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex64",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_complex64_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex64",
+     "int8"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_complex64_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex64",
+     "uint8"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_complex64_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex64",
+     "int16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_complex64_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex64",
+     "uint16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex64_int32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex64",
+     "int32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex64_uint32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex64",
+     "uint32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex64_int64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex64",
+     "int64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex64_uint64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex64",
+     "uint64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_complex64_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex64",
+     "float16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_complex64_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex64",
+     "float32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex64_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex64",
+     "float64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_complex64_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex64",
+     "complex64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex64_complex128",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex64",
+     "complex128"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex128_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex128",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex128_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex128",
+     "int8"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex128_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex128",
+     "uint8"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex128_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex128",
+     "int16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex128_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex128",
+     "uint16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex128_int32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex128",
+     "int32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex128_uint32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex128",
+     "uint32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex128_int64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex128",
+     "int64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex128_uint64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex128",
+     "uint64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex128_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex128",
+     "float16"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex128_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex128",
+     "float32"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex128_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex128",
+     "float64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex128_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex128",
+     "complex64"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_complex128_complex128",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "complex128",
+     "complex128"
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_int16_uint16_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int16",
+     "uint16",
+     "float32"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_int8_uint16_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "uint16",
+     "float16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_int64_uint64_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int64",
+     "uint64",
+     "float16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_int8_uint8_float32_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int8",
+     "uint8",
+     "float32",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "int32"
+   },
+   "id": "result_type_uint8_int8_uint16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint8",
+     "int8",
+     "uint16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "bool"
+   },
+   "id": "result_type_bool_bool_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bool",
+     "bool",
+     "bool"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex128"
+   },
+   "id": "result_type_int32_float16_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "int32",
+     "float16",
+     "complex64"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_uint32_int8_float32_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "uint32",
+     "int8",
+     "float32",
+     "float16"
+    ]
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_bfloat16_float16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bfloat16",
+     "float16"
+    ]
+   },
+   "tag": "NUMJVM_SPECIFIC"
+  },
+  {
+   "expect": {
+    "dtype_name": "bfloat16"
+   },
+   "id": "result_type_bfloat16_int8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bfloat16",
+     "int8"
+    ]
+   },
+   "tag": "NUMJVM_SPECIFIC"
+  },
+  {
+   "expect": {
+    "dtype_name": "bfloat16"
+   },
+   "id": "result_type_bfloat16_uint8",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bfloat16",
+     "uint8"
+    ]
+   },
+   "tag": "NUMJVM_SPECIFIC"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_bfloat16_int16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bfloat16",
+     "int16"
+    ]
+   },
+   "tag": "NUMJVM_SPECIFIC"
+  },
+  {
+   "expect": {
+    "dtype_name": "float32"
+   },
+   "id": "result_type_bfloat16_float32",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bfloat16",
+     "float32"
+    ]
+   },
+   "tag": "NUMJVM_SPECIFIC"
+  },
+  {
+   "expect": {
+    "dtype_name": "float64"
+   },
+   "id": "result_type_bfloat16_float64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bfloat16",
+     "float64"
+    ]
+   },
+   "tag": "NUMJVM_SPECIFIC"
+  },
+  {
+   "expect": {
+    "dtype_name": "complex64"
+   },
+   "id": "result_type_bfloat16_complex64",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bfloat16",
+     "complex64"
+    ]
+   },
+   "tag": "NUMJVM_SPECIFIC"
+  },
+  {
+   "expect": {
+    "dtype_name": "bfloat16"
+   },
+   "id": "result_type_bfloat16_bool",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bfloat16",
+     "bool"
+    ]
+   },
+   "tag": "NUMJVM_SPECIFIC"
+  },
+  {
+   "expect": {
+    "dtype_name": "bfloat16"
+   },
+   "id": "result_type_bfloat16_bfloat16",
+   "inputs": [],
+   "op": "result_type",
+   "params": {
+    "dtypes": [
+     "bfloat16",
+     "bfloat16"
+    ]
+   },
+   "tag": "NUMJVM_SPECIFIC"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_no_bool",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "no",
+    "from": "bool"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": true,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_no_int8",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "no",
+    "from": "int8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_no_uint8",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "no",
+    "from": "uint8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": true,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_no_int16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "no",
+    "from": "int16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": true,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_no_uint16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "no",
+    "from": "uint16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": true,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_no_int32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "no",
+    "from": "int32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": true,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_no_uint32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "no",
+    "from": "uint32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": true,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_no_int64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "no",
+    "from": "int64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": true,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_no_uint64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "no",
+    "from": "uint64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": true,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_no_float16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "no",
+    "from": "float16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": true,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_no_float32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "no",
+    "from": "float32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": true,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_no_float64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "no",
+    "from": "float64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": true,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_no_complex64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "no",
+    "from": "complex64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_no_complex128",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "no",
+    "from": "complex128"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_equiv_bool",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "equiv",
+    "from": "bool"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": true,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_equiv_int8",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "equiv",
+    "from": "int8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_equiv_uint8",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "equiv",
+    "from": "uint8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": true,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_equiv_int16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "equiv",
+    "from": "int16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": true,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_equiv_uint16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "equiv",
+    "from": "uint16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": true,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_equiv_int32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "equiv",
+    "from": "int32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": true,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_equiv_uint32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "equiv",
+    "from": "uint32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": true,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_equiv_int64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "equiv",
+    "from": "int64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": true,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_equiv_uint64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "equiv",
+    "from": "uint64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": true,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_equiv_float16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "equiv",
+    "from": "float16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": true,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_equiv_float32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "equiv",
+    "from": "float32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": true,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_equiv_float64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "equiv",
+    "from": "float64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": false,
+     "complex64": true,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_equiv_complex64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "equiv",
+    "from": "complex64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_equiv_complex128",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "equiv",
+    "from": "complex128"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_safe_bool",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "safe",
+    "from": "bool"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_safe_int8",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "safe",
+    "from": "int8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": false,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_safe_uint8",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "safe",
+    "from": "uint8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": false,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_safe_int16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "safe",
+    "from": "int16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": false,
+     "float32": true,
+     "float64": true,
+     "int16": false,
+     "int32": true,
+     "int64": true,
+     "int8": false,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_safe_uint16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "safe",
+    "from": "uint16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": true,
+     "int16": false,
+     "int32": true,
+     "int64": true,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_safe_int32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "safe",
+    "from": "int32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": true,
+     "int16": false,
+     "int32": false,
+     "int64": true,
+     "int8": false,
+     "uint16": false,
+     "uint32": true,
+     "uint64": true,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_safe_uint32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "safe",
+    "from": "uint32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": true,
+     "int16": false,
+     "int32": false,
+     "int64": true,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_safe_int64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "safe",
+    "from": "int64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": true,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": true,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_safe_uint64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "safe",
+    "from": "uint64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_safe_float16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "safe",
+    "from": "float16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": false,
+     "float32": true,
+     "float64": true,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_safe_float32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "safe",
+    "from": "float32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": true,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_safe_float64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "safe",
+    "from": "float64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_safe_complex64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "safe",
+    "from": "complex64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": false,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_safe_complex128",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "safe",
+    "from": "complex128"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_same_kind_bool",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "same_kind",
+    "from": "bool"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_same_kind_int8",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "same_kind",
+    "from": "int8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_same_kind_uint8",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "same_kind",
+    "from": "uint8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_same_kind_int16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "same_kind",
+    "from": "int16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_same_kind_uint16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "same_kind",
+    "from": "uint16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_same_kind_int32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "same_kind",
+    "from": "int32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_same_kind_uint32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "same_kind",
+    "from": "uint32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_same_kind_int64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "same_kind",
+    "from": "int64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_same_kind_uint64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "same_kind",
+    "from": "uint64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_same_kind_float16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "same_kind",
+    "from": "float16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_same_kind_float32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "same_kind",
+    "from": "float32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_same_kind_float64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "same_kind",
+    "from": "float64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_same_kind_complex64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "same_kind",
+    "from": "complex64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": false,
+     "complex128": true,
+     "complex64": true,
+     "float16": false,
+     "float32": false,
+     "float64": false,
+     "int16": false,
+     "int32": false,
+     "int64": false,
+     "int8": false,
+     "uint16": false,
+     "uint32": false,
+     "uint64": false,
+     "uint8": false
+    }
+   },
+   "id": "can_cast_same_kind_complex128",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "same_kind",
+    "from": "complex128"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_unsafe_bool",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "unsafe",
+    "from": "bool"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_unsafe_int8",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "unsafe",
+    "from": "int8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_unsafe_uint8",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "unsafe",
+    "from": "uint8"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_unsafe_int16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "unsafe",
+    "from": "int16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_unsafe_uint16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "unsafe",
+    "from": "uint16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_unsafe_int32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "unsafe",
+    "from": "int32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_unsafe_uint32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "unsafe",
+    "from": "uint32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_unsafe_int64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "unsafe",
+    "from": "int64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_unsafe_uint64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "unsafe",
+    "from": "uint64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_unsafe_float16",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "unsafe",
+    "from": "float16"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_unsafe_float32",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "unsafe",
+    "from": "float32"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_unsafe_float64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "unsafe",
+    "from": "float64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_unsafe_complex64",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "unsafe",
+    "from": "complex64"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "can_cast": {
+     "bool": true,
+     "complex128": true,
+     "complex64": true,
+     "float16": true,
+     "float32": true,
+     "float64": true,
+     "int16": true,
+     "int32": true,
+     "int64": true,
+     "int8": true,
+     "uint16": true,
+     "uint32": true,
+     "uint64": true,
+     "uint8": true
+    }
+   },
+   "id": "can_cast_unsafe_complex128",
+   "inputs": [],
+   "op": "can_cast",
+   "params": {
+    "casting": "unsafe",
+    "from": "complex128"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
     "repr": "array([[ 0.,  1.,  2.,  3.],\n       [ 4.,  5.,  6.,  7.],\n       [ 8.,  9., 10., 11.]])"
    },
    "id": "repr_f8_3x4",

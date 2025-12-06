@@ -55,6 +55,24 @@ def inputs():
     }
 
 
+PROMOTION_DTYPES = ["bool", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64",
+                    "float16", "float32", "float64", "complex64", "complex128"]
+CASTINGS = ["no", "equiv", "safe", "same_kind", "unsafe"]
+
+
+def promotion_tag(a, b):
+    """ARRAY_API where the standard defines the result type, else NUMPY_COMPATIBILITY."""
+    ka, kb = np.dtype(a).kind, np.dtype(b).kind
+    if a == b or ka == kb:
+        return ARRAY_API
+    ints = {"i", "u"}
+    if ka in ints and kb in ints:
+        return ARRAY_API if "uint64" not in (a, b) else NUMPY
+    if {ka, kb} == {"f", "c"}:
+        return ARRAY_API
+    return NUMPY
+
+
 def slice_expr(spec):
     """'1:5:2', ':', '3', 'None', '...' -> Python index component."""
     if spec == "None":
@@ -166,6 +184,28 @@ def cases(arr):
             lambda a, specs=specs: {"c": bool(a[tuple(slice_expr(s) for s in specs)].flags.c_contiguous),
                                     "f": bool(a[tuple(slice_expr(s) for s in specs)].flags.f_contiguous)})
 
+    # --- type promotion (ADR-005) --------------------------------------------------------------
+    for a in PROMOTION_DTYPES:
+        for b in PROMOTION_DTYPES:
+            add(f"result_type_{a}_{b}", promotion_tag(a, b), "result_type", [], {"dtypes": [a, b]},
+                lambda a=a, b=b: np.result_type(a, b))
+    for seq in [["int16", "uint16", "float32"], ["int8", "uint16", "float16"], ["int64", "uint64", "float16"],
+                ["int8", "uint8", "float32", "bool"], ["uint8", "int8", "uint16"], ["bool", "bool", "bool"],
+                ["int32", "float16", "complex64"], ["uint32", "int8", "float32", "float16"]]:
+        add("result_type_" + "_".join(seq), NUMPY, "result_type", [], {"dtypes": seq},
+            lambda seq=seq: np.result_type(*seq))
+    # bfloat16 is not a NumPy dtype; NumJVM follows ml_dtypes (ADR-005)
+    for a, b, r in [("bfloat16", "float16", "float32"), ("bfloat16", "int8", "bfloat16"),
+                    ("bfloat16", "uint8", "bfloat16"), ("bfloat16", "int16", "float32"),
+                    ("bfloat16", "float32", "float32"), ("bfloat16", "float64", "float64"),
+                    ("bfloat16", "complex64", "complex64"), ("bfloat16", "bool", "bfloat16"),
+                    ("bfloat16", "bfloat16", "bfloat16")]:
+        add(f"result_type_{a}_{b}", NUMJVM, "result_type", [], {"dtypes": [a, b], "expected": r}, None)
+    for casting in CASTINGS:
+        for a in PROMOTION_DTYPES:
+            add(f"can_cast_{casting}_{a}", NUMPY, "can_cast", [], {"from": a, "casting": casting},
+                lambda a=a, casting=casting: {b: bool(np.can_cast(a, b, casting)) for b in PROMOTION_DTYPES})
+
     # --- printing ---------------------------------------------------------------------------
     for name in ["f8_3x4", "f8_hash_7x11", "i8_neg", "u1_5", "u8_big", "b1_2x3", "f2_4", "f4_2x2", "c16_2x2",
                  "c8_3", "f8_scalar", "f8_empty_0x3"]:
@@ -181,7 +221,9 @@ def generate(out_dir):
     manifest = []
     for cid, tag, op, ins, params, fn in cases(arr):
         entry = {"id": cid, "tag": tag, "op": op, "inputs": [f"in_{n}.npy" for n in ins], "params": params}
-        if fn is None:
+        if fn is None and "expected" in params:
+            entry["expect"] = {"dtype_name": params.pop("expected")}
+        elif fn is None:
             entry["expect"] = {"error": True}
         else:
             try:
@@ -195,12 +237,16 @@ def generate(out_dir):
                 np.save(os.path.join(out_dir, fname), result)
                 entry["expect"] = {"file": fname, "shape": list(result.shape), "dtype": result.dtype.str,
                                    "fortran": bool(result.flags.f_contiguous and not result.flags.c_contiguous)}
+            elif isinstance(result, np.dtype):
+                entry["expect"] = {"dtype_name": result.name}
             elif isinstance(result, float):
                 entry["expect"] = {"value": result}
             elif isinstance(result, str):
                 entry["expect"] = {"repr": result}
             elif isinstance(result, list):
                 entry["expect"] = {"shape": result}
+            elif isinstance(result, dict) and op == "can_cast":
+                entry["expect"] = {"can_cast": result}
             elif isinstance(result, dict):
                 entry["expect"] = {"flags": result}
             else:

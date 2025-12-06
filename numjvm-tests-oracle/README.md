@@ -17,6 +17,19 @@ Every case carries one tag:
   casts).
 - `NUMJVM_SPECIFIC`: a deliberate difference, checked against NumJVM's own rule.
 
+## Expectations
+
+A case's `expect` holds one of:
+
+| Key | Meaning |
+|-----|---------|
+| `file`, `shape`, `dtype`, `fortran` | an array result, stored as `expected_<id>.npy` and compared byte for byte |
+| `value` | a scalar result (sums), compared with a relative tolerance of 10⁻¹² |
+| `dtype_name` | a dtype (`result_type`) |
+| `can_cast` | `np.can_cast(from, to, casting)` for every target dtype |
+| `repr`, `flags`, `shape` | printing, contiguity flags, a broadcast shape |
+| `error` | NumJVM must throw a `NumJVMException` |
+
 ## Workflow
 
 `./gradlew test` never needs Python: `OracleTest` in `numjvm-io` replays the committed manifest with the JDK alone. The

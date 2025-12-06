@@ -20,7 +20,9 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.numjvm.NJ;
+import org.numjvm.dtype.Casting;
 import org.numjvm.dtype.DType;
+import org.numjvm.dtype.TypePromotion;
 import org.numjvm.exception.NumJVMException;
 import org.numjvm.internal.SharedSecrets;
 import org.numjvm.io.Npy;
@@ -105,6 +107,16 @@ class OracleTest {
             NDArray a = (NDArray) result;
             assertEquals(flags.get("c"), a.isCContiguous(), id + " C_CONTIGUOUS");
             assertEquals(flags.get("f"), a.isFContiguous(), id + " F_CONTIGUOUS");
+        } else if (expect.containsKey("dtype_name")) {
+            assertEquals(DType.fromName((String) expect.get("dtype_name")), result, id);
+        } else if (expect.containsKey("can_cast")) {
+            Map<String, Object> table = (Map<String, Object>) expect.get("can_cast");
+            DType from = DType.fromName((String) params.get("from"));
+            Casting casting = Casting.valueOf(((String) params.get("casting")).toUpperCase(java.util.Locale.ROOT));
+            for (Map.Entry<String, Object> e : table.entrySet()) {
+                assertEquals(e.getValue(), TypePromotion.canCast(from, DType.fromName(e.getKey()), casting),
+                        id + " -> " + e.getKey());
+            }
         } else if (expect.containsKey("shape")) {
             assertArrayEquals(longs((List<Object>) expect.get("shape")), ((Shape) result).dimensions(), id);
         } else {
@@ -145,6 +157,9 @@ class OracleTest {
                     "transpose".equals(p.get("view")) ? in.get(0).transpose() : in.get(0));
             case "sum_generated" -> ValidationKernels.sumFloat64(hashUnit(((Number) p.get("n")).intValue()));
             case "repr" -> in.get(0);
+            case "result_type" -> TypePromotion.resultType(((List<Object>) p.get("dtypes")).stream()
+                    .map(o -> DType.fromName((String) o)).toArray(DType[]::new));
+            case "can_cast" -> null;
             default -> throw new AssertionError("unknown op " + op);
         };
     }
