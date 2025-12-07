@@ -14,6 +14,7 @@ import org.numjvm.internal.memory.NativeMemoryTracker;
 import org.numjvm.memory.MemoryStats;
 import org.numjvm.memory.NJScope;
 import org.numjvm.ndarray.NDArray;
+import org.numjvm.ufunc.Ufuncs;
 
 /**
  * Entry point to NumJVM.
@@ -295,6 +296,42 @@ public final class NJ {
      */
     public static boolean allClose(NDArray a, NDArray b, double rtol, double atol) {
         return Comparisons.allClose(a, b, rtol, atol);
+    }
+
+    // ------------------------------------------------------------------ arithmetic
+
+    /**
+     * Element-wise {@code a + b} with broadcasting; logical or for bool
+     * ({@code ARRAY_API}: {@code add}; {@link Ufuncs#ADD}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape and the promoted dtype
+     */
+    public static NDArray add(NDArray a, NDArray b) {
+        return Ufuncs.ADD.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a + b} with a weak scalar ({@link Ufuncs#ADD}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray add(NDArray a, double b) {
+        return Ufuncs.ADD.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a + b} with a weak scalar ({@link Ufuncs#ADD}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray add(NDArray a, long b) {
+        return Ufuncs.ADD.apply(a, b);
     }
 
     // ------------------------------------------------------------------ type promotion

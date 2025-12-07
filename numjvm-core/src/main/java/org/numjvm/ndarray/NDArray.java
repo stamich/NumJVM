@@ -15,6 +15,7 @@ import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.internal.memory.MemoryErrors;
 import org.numjvm.internal.memory.Sizes;
 import org.numjvm.memory.MemoryOwner;
+import org.numjvm.ufunc.Ufuncs;
 
 /**
  * An N-dimensional array: a typed, strided view of a block of memory.
@@ -682,6 +683,39 @@ public final class NDArray {
      */
     public NDArray astype(DType target, Order order) {
         return Copier.copy(this, HybridAllocator.defaultInstance(), Objects.requireNonNull(target, "target"), order);
+    }
+
+    // ------------------------------------------------------------------ arithmetic
+
+    /**
+     * Returns {@code this + other}, element-wise with broadcasting
+     * ({@link org.numjvm.ufunc.Ufuncs#ADD}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape and the promoted dtype
+     */
+    public NDArray add(NDArray other) {
+        return Ufuncs.ADD.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this + other} with a weak scalar ({@link org.numjvm.ufunc.Ufuncs#ADD}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray add(double other) {
+        return Ufuncs.ADD.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this + other} with a weak scalar ({@link org.numjvm.ufunc.Ufuncs#ADD}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray add(long other) {
+        return Ufuncs.ADD.apply(this, other);
     }
 
     // ------------------------------------------------------------------ element access: helpers

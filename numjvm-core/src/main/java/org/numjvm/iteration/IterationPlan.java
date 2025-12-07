@@ -142,6 +142,45 @@ public final class IterationPlan {
     }
 
     /**
+     * Returns the order in which the axes of {@code shape} are laid out in memory by these
+     * operands, outermost first: the axis order an iteration plan would choose, before
+     * dropping length-1 axes and coalescing. A new array allocated in this order (NumPy's
+     * {@code order='K'}) lets every operation on these operands write sequentially.
+     *
+     * @param shape   the common shape
+     * @param strides byte strides per operand, broadcast to {@code shape}
+     * @return a permutation of {@code 0 .. shape.length - 1}; the identity for C-contiguous
+     *         operands and whenever they disagree
+     */
+    public static int[] memoryOrder(long[] shape, long[][] strides) {
+        int n = shape.length;
+        int[] perm = new int[n];
+        for (int i = 0; i < n; i++) {
+            perm[i] = n - 1 - i;
+        }
+        long[][] st = new long[strides.length][];
+        for (int op = 0; op < strides.length; op++) {
+            if (strides[op].length != n) {
+                throw new ShapeException("operand " + op + " has strides " + Arrays.toString(strides[op])
+                        + " for shape " + Arrays.toString(shape));
+            }
+            // length-1 axes carry no layout information
+            st[op] = strides[op].clone();
+            for (int d = 0; d < n; d++) {
+                if (shape[d] == 1) {
+                    st[op][d] = 0;
+                }
+            }
+        }
+        sortAxes(perm, st);
+        int[] outerFirst = new int[n];
+        for (int i = 0; i < n; i++) {
+            outerFirst[i] = perm[n - 1 - i];
+        }
+        return outerFirst;
+    }
+
+    /**
      * Whether the previous (outer) plan axis can absorb axis {@code ax} as its new inner
      * part: for every operand, outer stride == inner stride * inner length.
      */

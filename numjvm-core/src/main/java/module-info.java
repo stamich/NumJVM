@@ -15,6 +15,7 @@ module org.numjvm.core {
     exports org.numjvm.memory;
     exports org.numjvm.ndarray;
     exports org.numjvm.shape;
+    exports org.numjvm.ufunc;
 
     exports org.numjvm.internal to org.numjvm.io;
     exports org.numjvm.internal.memory to org.numjvm.io;
