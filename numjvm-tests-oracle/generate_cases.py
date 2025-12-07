@@ -34,8 +34,39 @@ def hash_unit(n):
     return ((i * np.uint64(2654435761)) & np.uint64(0xFFFFFFFF)).astype(np.float64) / 4294967296.0
 
 
+# Eight values per dtype that exercise wrap-around, signed zeros, infinities and NaN.
+EDGE = {
+    "bool": [True, False, True, True, False, False, True, False],
+    "int8": [-128, -100, -1, 0, 1, 7, 100, 127],
+    "uint8": [0, 1, 7, 100, 128, 200, 254, 255],
+    "int16": [-32768, -300, -1, 0, 1, 7, 300, 32767],
+    "uint16": [0, 1, 7, 300, 32768, 40000, 65534, 65535],
+    "int32": [-2 ** 31, -70000, -1, 0, 1, 7, 70000, 2 ** 31 - 1],
+    "uint32": [0, 1, 7, 70000, 2 ** 31, 3000000000, 2 ** 32 - 2, 2 ** 32 - 1],
+    "int64": [-2 ** 63, -2 ** 40, -1, 0, 1, 7, 2 ** 40, 2 ** 63 - 1],
+    "uint64": [0, 1, 7, 2 ** 40, 2 ** 63, 2 ** 63 + 12345, 2 ** 64 - 2, 2 ** 64 - 1],
+    "float16": [-np.inf, -65504.0, -1.5, -0.0, 0.0, 0.1, 3.0, np.nan],
+    "float32": [-np.inf, -3.0e38, -1.5, -0.0, 0.0, 0.1, 7.0, np.nan],
+    "float64": [-np.inf, -1.0e308, -1.5, -0.0, 0.0, 0.1, 7.0, np.nan],
+}
+NUMPY_REAL = list(EDGE)
+
+
+def edge(dtype):
+    return np.array(EDGE[dtype], dtype=dtype)
+
+
+def edge2(dtype):
+    """A second operand: the edge values rotated by three, so every pair of positions differs."""
+    return np.roll(edge(dtype), 3)
+
+
 def inputs():
-    return {
+    arr = {}
+    for dt in NUMPY_REAL:
+        arr[f"edge_{dt}"] = edge(dt)
+        arr[f"edge2_{dt}"] = edge2(dt)
+    return arr | {
         "f8_2x3x4": np.arange(24.0).reshape(2, 3, 4),
         "f8_3x4": np.arange(12.0).reshape(3, 4),
         "f8_hash_7x11": hash_unit(77).reshape(7, 11),
@@ -71,6 +102,12 @@ def promotion_tag(a, b):
     if {ka, kb} == {"f", "c"}:
         return ARRAY_API
     return NUMPY
+
+
+def ufunc(name, *args):
+    """Applies a NumPy ufunc with floating-point warnings silenced (NumJVM has no warnings)."""
+    with np.errstate(all="ignore"):
+        return getattr(np, name)(*args)
 
 
 def slice_expr(spec):
@@ -183,6 +220,39 @@ def cases(arr):
         add(f"flags_{cid}", NUMPY, "flags", [name], {"index": specs},
             lambda a, specs=specs: {"c": bool(a[tuple(slice_expr(s) for s in specs)].flags.c_contiguous),
                                     "f": bool(a[tuple(slice_expr(s) for s in specs)].flags.f_contiguous)})
+
+    # --- arithmetic ufuncs ---------------------------------------------------------------------
+    for name in ["add", "subtract", "multiply"]:
+        for dt in NUMPY_REAL:
+            tag = ARRAY_API if dt != "bool" else NUMPY
+            if name == "subtract" and dt == "bool":
+                add(f"ufunc_{name}_{dt}", NUMPY, "ufunc", [f"edge_{dt}", f"edge2_{dt}"], {"ufunc": name}, None)
+                continue
+            add(f"ufunc_{name}_{dt}", tag, "ufunc", [f"edge_{dt}", f"edge2_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        for x, y in [("int8", "uint8"), ("int16", "float16"), ("int64", "uint64"), ("bool", "int8"),
+                     ("uint32", "float32"), ("float16", "float64"), ("int32", "uint64"), ("uint16", "int16")]:
+            add(f"ufunc_{name}_{x}_{y}", promotion_tag(x, y), "ufunc", [f"edge_{x}", f"edge2_{y}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        add(f"ufunc_{name}_broadcast", ARRAY_API, "ufunc", ["f8_col3", "f8_row4"], {"ufunc": name},
+            lambda a, b, name=name: ufunc(name, a, b))
+        add(f"ufunc_{name}_transposed", ARRAY_API, "ufunc", ["f8_hash_7x11", "f8_hash_7x11"],
+            {"ufunc": name, "view": "transpose"}, lambda a, b, name=name: ufunc(name, a.T, b.T))
+    # Java long and double arguments are weak scalars, as Python int and float (NEP 50)
+    weak = [("uint8", 1, "long"), ("int8", -128, "long"), ("int8", 1.5, "double"), ("bool", 1, "long"),
+            ("bool", 1.5, "double"), ("float16", 100000, "long"), ("float32", 0.1, "double"),
+            ("uint64", 2, "long"), ("int64", 3, "long"), ("float64", -2.5, "double")]
+    for dt, value, kind in weak:
+        for side in ["right", "left"]:
+            add(f"ufunc_add_{dt}_{kind}_{side}", NUMPY, "ufunc", [f"edge_{dt}"],
+                {"ufunc": "add", "scalar": value, "scalar_type": kind, "scalar_side": side},
+                lambda a, value=value, side=side: ufunc("add", a, value) if side == "right" else ufunc("add", value, a))
+        add(f"ufunc_multiply_{dt}_{kind}", NUMPY, "ufunc", [f"edge_{dt}"],
+            {"ufunc": "multiply", "scalar": value, "scalar_type": kind, "scalar_side": "right"},
+            lambda a, value=value: ufunc("multiply", a, value))
+    for dt, value in [("uint8", 300), ("uint8", -1), ("int8", 128), ("uint64", -1)]:
+        add(f"ufunc_add_{dt}_out_of_bounds_{value}", NUMPY, "ufunc", [f"edge_{dt}"],
+            {"ufunc": "add", "scalar": value, "scalar_type": "long", "scalar_side": "right"}, None)
 
     # --- type promotion (ADR-005) --------------------------------------------------------------
     for a in PROMOTION_DTYPES:

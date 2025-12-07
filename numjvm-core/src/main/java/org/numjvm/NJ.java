@@ -334,6 +334,72 @@ public final class NJ {
         return Ufuncs.ADD.apply(a, b);
     }
 
+    /**
+     * Element-wise {@code a - b} with broadcasting: not defined for two bool operands ({@link Ufuncs#SUBTRACT}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray subtract(NDArray a, NDArray b) {
+        return Ufuncs.SUBTRACT.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a - b} with a weak scalar ({@link Ufuncs#SUBTRACT}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray subtract(NDArray a, double b) {
+        return Ufuncs.SUBTRACT.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a - b} with a weak scalar ({@link Ufuncs#SUBTRACT}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray subtract(NDArray a, long b) {
+        return Ufuncs.SUBTRACT.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a * b} with broadcasting: logical and for bool ({@link Ufuncs#MULTIPLY}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray multiply(NDArray a, NDArray b) {
+        return Ufuncs.MULTIPLY.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a * b} with a weak scalar ({@link Ufuncs#MULTIPLY}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray multiply(NDArray a, double b) {
+        return Ufuncs.MULTIPLY.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a * b} with a weak scalar ({@link Ufuncs#MULTIPLY}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray multiply(NDArray a, long b) {
+        return Ufuncs.MULTIPLY.apply(a, b);
+    }
+
     // ------------------------------------------------------------------ type promotion
 
     /**

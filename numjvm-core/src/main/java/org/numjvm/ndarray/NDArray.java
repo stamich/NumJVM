@@ -718,6 +718,72 @@ public final class NDArray {
         return Ufuncs.ADD.apply(this, other);
     }
 
+    /**
+     * Returns {@code this - other}, element-wise with broadcasting: not defined for two bool operands
+     * ({@link org.numjvm.ufunc.Ufuncs#SUBTRACT}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray subtract(NDArray other) {
+        return Ufuncs.SUBTRACT.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this - other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#SUBTRACT}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray subtract(double other) {
+        return Ufuncs.SUBTRACT.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this - other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#SUBTRACT}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray subtract(long other) {
+        return Ufuncs.SUBTRACT.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this * other}, element-wise with broadcasting: logical and for bool
+     * ({@link org.numjvm.ufunc.Ufuncs#MULTIPLY}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray multiply(NDArray other) {
+        return Ufuncs.MULTIPLY.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this * other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#MULTIPLY}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray multiply(double other) {
+        return Ufuncs.MULTIPLY.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this * other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#MULTIPLY}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray multiply(long other) {
+        return Ufuncs.MULTIPLY.apply(this, other);
+    }
+
     // ------------------------------------------------------------------ element access: helpers
 
     private long idx(long i, int axis) {

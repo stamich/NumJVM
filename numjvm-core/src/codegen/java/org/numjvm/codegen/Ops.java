@@ -23,5 +23,12 @@ final class Ops {
             OpSpec.binary("add", "x + y (logical or for bool)")
                     .on("x | y", BOOL)
                     .on("x + y", INT, LONG, ULONG, FLOAT, DOUBLE)
+                    .build(),
+            OpSpec.binary("subtract", "x - y")
+                    .on("x - y", INT, LONG, ULONG, FLOAT, DOUBLE)
+                    .build(),
+            OpSpec.binary("multiply", "x * y (logical and for bool)")
+                    .on("x & y", BOOL)
+                    .on("x * y", INT, LONG, ULONG, FLOAT, DOUBLE)
                     .build());
 }

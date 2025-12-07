@@ -32,6 +32,10 @@ import org.numjvm.ndarray.Order;
 import org.numjvm.ndarray.Shape;
 import org.numjvm.ndarray.Slice;
 import org.numjvm.shape.Broadcasting;
+import org.numjvm.ufunc.BinaryUfunc;
+import org.numjvm.ufunc.Ufunc;
+import org.numjvm.ufunc.UnaryUfunc;
+import org.numjvm.ufunc.Ufuncs;
 
 /**
  * Replays every case of the NumPy oracle ({@code numjvm-tests-oracle/fixtures/manifest.json})
@@ -91,7 +95,7 @@ class OracleTest {
             NDArray expected = Npy.read(fixtures().resolve((String) expect.get("file")));
             assertEquals(expected.dtype(), actual.dtype(), id + " dtype");
             assertEquals(expected.shape(), actual.shape(), id + " shape");
-            assertArrayEquals(bytes(expected), bytes(actual), id + " values");
+            assertSameElements(id, expected, actual);
             if (Boolean.TRUE.equals(expect.get("fortran")) && op.equals("copy")) {
                 assertTrue(actual.isFContiguous(), id + " fortran order");
             }
@@ -157,11 +161,57 @@ class OracleTest {
                     "transpose".equals(p.get("view")) ? in.get(0).transpose() : in.get(0));
             case "sum_generated" -> ValidationKernels.sumFloat64(hashUnit(((Number) p.get("n")).intValue()));
             case "repr" -> in.get(0);
+            case "ufunc" -> ufunc(in, p);
             case "result_type" -> TypePromotion.resultType(((List<Object>) p.get("dtypes")).stream()
                     .map(o -> DType.fromName((String) o)).toArray(DType[]::new));
             case "can_cast" -> null;
             default -> throw new AssertionError("unknown op " + op);
         };
+    }
+
+    private static NDArray ufunc(List<NDArray> in, Map<String, Object> p) {
+        Ufunc u = Ufuncs.byName((String) p.get("ufunc")).orElseThrow(() -> new AssertionError("no ufunc " + p));
+        boolean transpose = "transpose".equals(p.get("view"));
+        NDArray x = transpose ? in.get(0).transpose() : in.get(0);
+        if (p.containsKey("scalar")) {
+            BinaryUfunc b = (BinaryUfunc) u;
+            Number v = (Number) p.get("scalar");
+            boolean right = "right".equals(p.get("scalar_side"));
+            if ("long".equals(p.get("scalar_type"))) {
+                return right ? b.apply(x, v.longValue()) : b.apply(v.longValue(), x);
+            }
+            return right ? b.apply(x, v.doubleValue()) : b.apply(v.doubleValue(), x);
+        }
+        if (u instanceof BinaryUfunc b) {
+            NDArray y = transpose ? in.get(1).transpose() : in.get(1);
+            return b.apply(x, y);
+        }
+        return ((UnaryUfunc) u).apply(x);
+    }
+
+    /**
+     * Exact comparison of two arrays of the same dtype and shape: integers and bools byte for
+     * byte; floats value by value with signed zeros distinguished and any NaN equal to any NaN
+     * (NaN payloads are not part of NumPy's or NumJVM's contract).
+     */
+    static void assertSameElements(String id, NDArray expected, NDArray actual) {
+        DType t = expected.dtype();
+        if (!t.isFloatingPoint()) {
+            assertArrayEquals(bytes(expected), bytes(actual), id + " values");
+            return;
+        }
+        NDArray e = expected.copy().reshape(-1);
+        NDArray a = actual.copy().reshape(-1);
+        for (long i = 0; i < e.size(); i++) {
+            double x = e.getDouble(i);
+            double y = a.getDouble(i);
+            if (Double.isNaN(x) && Double.isNaN(y)) {
+                continue;
+            }
+            long k = i;
+            assertEquals(Double.doubleToLongBits(x), Double.doubleToLongBits(y),
+                    () -> id + " element " + k + ": expected " + x + " but was " + y);
+        }
     }
 
     /**
