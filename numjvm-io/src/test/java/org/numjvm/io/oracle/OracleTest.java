@@ -95,7 +95,11 @@ class OracleTest {
             NDArray expected = Npy.read(fixtures().resolve((String) expect.get("file")));
             assertEquals(expected.dtype(), actual.dtype(), id + " dtype");
             assertEquals(expected.shape(), actual.shape(), id + " shape");
-            assertSameElements(id, expected, actual);
+            if (params.containsKey("ulp")) {
+                assertWithinUlps(id, expected, actual, ((Number) params.get("ulp")).longValue());
+            } else {
+                assertSameElements(id, expected, actual);
+            }
             if (Boolean.TRUE.equals(expect.get("fortran")) && op.equals("copy")) {
                 assertTrue(actual.isFContiguous(), id + " fortran order");
             }
@@ -212,6 +216,61 @@ class OracleTest {
             assertEquals(Double.doubleToLongBits(x), Double.doubleToLongBits(y),
                     () -> id + " element " + k + ": expected " + x + " but was " + y);
         }
+    }
+
+    /**
+     * Floating-point comparison with a tolerance in units in the last place of the dtype
+     * (decision D6, for transcendental functions); NaN equals NaN, and -0.0 equals 0.0.
+     */
+    static void assertWithinUlps(String id, NDArray expected, NDArray actual, long maxUlps) {
+        DType t = expected.dtype();
+        if (!t.isFloatingPoint()) {
+            assertSameElements(id, expected, actual);
+            return;
+        }
+        NDArray e = expected.copy().reshape(-1);
+        NDArray a = actual.copy().reshape(-1);
+        for (long i = 0; i < e.size(); i++) {
+            double x = e.getDouble(i);
+            double y = a.getDouble(i);
+            if (Double.isNaN(x) && Double.isNaN(y)) {
+                continue;
+            }
+            long d = Math.abs(line(x, t) - line(y, t));
+            long k = i;
+            assertTrue(!Double.isNaN(x) && !Double.isNaN(y) && d <= maxUlps,
+                    () -> id + " element " + k + ": expected " + x + " but was " + y + " (" + d + " ulp)");
+        }
+    }
+
+    /**
+     * Position of {@code v} on a monotonic integer line of {@code t}'s values: adjacent values
+     * differ by 1.
+     */
+    static long line(double v, DType t) {
+        long bits;
+        int width;
+        switch (t) {
+            case FLOAT64 -> {
+                bits = Double.doubleToRawLongBits(v);
+                width = 64;
+            }
+            case FLOAT32 -> {
+                bits = Float.floatToRawIntBits((float) v) & 0xFFFF_FFFFL;
+                width = 32;
+            }
+            case FLOAT16 -> {
+                bits = Float.floatToFloat16((float) v) & 0xFFFFL;
+                width = 16;
+            }
+            default -> {
+                bits = (Float.floatToRawIntBits((float) v) >>> 16) & 0xFFFFL;
+                width = 16;
+            }
+        }
+        long magnitude = width == 64 ? bits & Long.MAX_VALUE : bits & ((1L << (width - 1)) - 1);
+        boolean negative = width == 64 ? bits < 0 : (bits >>> (width - 1)) != 0;
+        return negative ? -magnitude : magnitude;
     }
 
     /**

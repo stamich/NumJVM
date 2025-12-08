@@ -77,4 +77,25 @@ class UfuncsTest {
         assertEquals(-1, NJ.remainder(NJ.array(new double[]{5}), -3L).getDouble(0));
         assertEquals(DType.FLOAT64, NJ.floorDivide(a, 2.0).dtype());
     }
+
+    @Test
+    void powerAndExtrema() {
+        assertEquals(DType.INT8, Ufuncs.POWER.resultType(DType.BOOL, DType.BOOL));
+        assertTrue(NJ.arrayEquals(NJ.array(new long[]{1, 8, 81}), NJ.power(NJ.array(new long[]{1, 2, 3}),
+                NJ.array(new long[]{5, 3, 4}))));
+        assertThrows(org.numjvm.exception.ValueException.class,
+                () -> NJ.power(NJ.array(new long[]{2}), NJ.array(new long[]{-1})));
+        NDArray x = NJ.array(new double[]{Double.NaN, 1, 5});
+        NDArray y = NJ.array(new double[]{2, Double.NaN, 3});
+        assertTrue(Double.isNaN(NJ.maximum(x, y).getDouble(0)));
+        assertTrue(Double.isNaN(x.minimum(y).getDouble(1)));
+        assertEquals(2.0, NJ.fmax(x, y).getDouble(0));
+        assertEquals(1.0, NJ.fmin(x, y).getDouble(1));
+        assertEquals(5.0, x.maximum(y).getDouble(2));
+        NDArray u = NJ.zeros(DType.UINT64, 2);
+        u.setLong(0, -1L);  // 2^64 - 1
+        u.setLong(1, 1L);
+        assertEquals(-1L, NJ.maximum(u, 7L).getLong(0));
+        assertEquals(1L, NJ.minimum(u, 7L).getLong(1));
+    }
 }

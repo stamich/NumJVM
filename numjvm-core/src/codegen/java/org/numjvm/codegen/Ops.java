@@ -42,5 +42,33 @@ final class Ops {
             OpSpec.binary("remainder", "x - floor(x / y) * y, with the sign of y; 0 for integers modulo zero")
                     .on("ScalarMath.remainder(x, y)", INT, LONG, FLOAT, DOUBLE)
                     .on("ScalarMath.remainderUnsigned(x, y)", ULONG)
+                    .build(),
+            OpSpec.binary("power", "x to the power y; integers wrap, a negative integer exponent is an error")
+                    .on("ScalarMath.power(x, y)", INT, LONG, FLOAT, DOUBLE)
+                    .on("ScalarMath.powerUnsigned(x, y)", ULONG)
+                    .build(),
+            OpSpec.binary("maximum", "the larger of x and y; NaN propagates")
+                    .on("x | y", BOOL)
+                    .on("Math.max(x, y)", INT, LONG)
+                    .on("Long.compareUnsigned(x, y) >= 0 ? x : y", ULONG)
+                    .on("ScalarMath.maximum(x, y)", FLOAT, DOUBLE)
+                    .build(),
+            OpSpec.binary("minimum", "the smaller of x and y; NaN propagates")
+                    .on("x & y", BOOL)
+                    .on("Math.min(x, y)", INT, LONG)
+                    .on("Long.compareUnsigned(x, y) <= 0 ? x : y", ULONG)
+                    .on("ScalarMath.minimum(x, y)", FLOAT, DOUBLE)
+                    .build(),
+            OpSpec.binary("fmax", "the larger of x and y; a NaN operand is ignored")
+                    .on("x | y", BOOL)
+                    .on("Math.max(x, y)", INT, LONG)
+                    .on("Long.compareUnsigned(x, y) >= 0 ? x : y", ULONG)
+                    .on("ScalarMath.fmax(x, y)", FLOAT, DOUBLE)
+                    .build(),
+            OpSpec.binary("fmin", "the smaller of x and y; a NaN operand is ignored")
+                    .on("x & y", BOOL)
+                    .on("Math.min(x, y)", INT, LONG)
+                    .on("Long.compareUnsigned(x, y) <= 0 ? x : y", ULONG)
+                    .on("ScalarMath.fmin(x, y)", FLOAT, DOUBLE)
                     .build());
 }

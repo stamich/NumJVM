@@ -74,6 +74,14 @@ def inputs():
         hi = np.iinfo(dt).max
         arr[f"div_a_{dt}"] = np.array([hi, hi, 5, 0, 7, 7], dtype=dt)
         arr[f"div_b_{dt}"] = np.array([1, 2, 0, 0, 3, hi], dtype=dt)
+    for dt in [d for d in NUMPY_REAL if d != "bool"]:
+        arr[f"exp_{dt}"] = np.array([0, 1, 2, 3, 7, 8, 0, 1], dtype=dt)
+    for dt in ["float64", "float32"]:
+        arr[f"pow_x_{dt}"] = np.array([1.0, 1.0, -1.0, -1.0, np.nan, 2.0, 0.0, -0.0, -8.0, 0.5], dtype=dt)
+        arr[f"pow_y_{dt}"] = np.array([np.nan, np.inf, np.inf, -np.inf, 0.0, np.nan, -1.0, -1.0, 1 / 3, -np.inf],
+                                      dtype=dt)
+    arr["nan_x_float64"] = np.array([np.nan, 1.0, np.nan, -np.inf, 2.0, np.inf])
+    arr["nan_y_float64"] = np.array([1.0, np.nan, np.nan, 3.0, -0.5, np.nan])
     arr["div_a_float64"] = np.array([6.0, -6.0, 0.0, -0.0, 7.5, -7.5, 1.0, np.inf, 5.0, 1e300])
     arr["div_b_float64"] = np.array([-3.0, 3.0, -1.0, 2.0, -2.0, 2.0, -0.0, 2.0, np.inf, 1e-300])
     return arr | {
@@ -112,6 +120,32 @@ def promotion_tag(a, b):
     if {ka, kb} == {"f", "c"}:
         return ARRAY_API
     return NUMPY
+
+
+# Decision D6: results of transcendental functions may differ from NumPy's by a few units in
+# the last place (NumPy uses its own SIMD implementations or the C library, NumJVM uses
+# java.lang.Math). Such cases carry "ulp" in their parameters; OracleTest and --check compare
+# them with that tolerance instead of bit for bit.
+ULP_TOLERANCE = {"power": 4}
+
+
+def ulp_distance(a, b):
+    """Elementwise distance in units in the last place of a's dtype; NaN equals NaN."""
+    a = np.asarray(a)
+    b = np.asarray(b)
+    if a.dtype.kind == "c":
+        return np.maximum(ulp_distance(a.real, b.real), ulp_distance(a.imag, b.imag))
+
+    def line(x):
+        # sign-magnitude bit patterns mapped onto a monotonic integer line (-0.0 == 0.0)
+        bits = x.view({2: np.uint16, 4: np.uint32, 8: np.uint64}[x.dtype.itemsize])
+        n = 8 * x.dtype.itemsize
+        magnitude = (bits & np.array((1 << (n - 1)) - 1, dtype=bits.dtype)).astype(np.int64)
+        negative = (bits >> np.array(n - 1, dtype=bits.dtype)).astype(bool)
+        return np.where(negative, -magnitude, magnitude)
+
+    d = np.abs(line(a) - line(b))
+    return np.where(np.isnan(a) & np.isnan(b), 0, d)
 
 
 def ufunc(name, *args):
@@ -232,7 +266,8 @@ def cases(arr):
                                     "f": bool(a[tuple(slice_expr(s) for s in specs)].flags.f_contiguous)})
 
     # --- arithmetic ufuncs ---------------------------------------------------------------------
-    for name in ["add", "subtract", "multiply", "divide", "floor_divide", "remainder"]:
+    for name in ["add", "subtract", "multiply", "divide", "floor_divide", "remainder", "power", "maximum",
+                 "minimum", "fmax", "fmin"]:
         for dt in NUMPY_REAL:
             tag = ARRAY_API if dt != "bool" else NUMPY
             if name == "subtract" and dt == "bool":
@@ -256,6 +291,19 @@ def cases(arr):
     for name in ["floor_divide", "remainder"]:
         add(f"ufunc_{name}_float64_signs", NUMPY, "ufunc", ["div_a_float64", "div_b_float64"], {"ufunc": name},
             lambda a, b, name=name: ufunc(name, a, b))
+
+    # integer powers with non-negative exponents wrap; floating-point special cases follow C99
+    for dt in [d for d in NUMPY_REAL if d != "bool"]:
+        add(f"ufunc_power_{dt}_exponents", NUMPY if dt.startswith(("int", "uint")) else ARRAY_API, "ufunc",
+            [f"edge_{dt}", f"exp_{dt}"], {"ufunc": "power"}, lambda a, b: ufunc("power", a, b))
+    add("ufunc_power_float64_c99", NUMPY, "ufunc", ["pow_x_float64", "pow_y_float64"], {"ufunc": "power"},
+        lambda a, b: ufunc("power", a, b))
+    add("ufunc_power_float32_c99", NUMPY, "ufunc", ["pow_x_float32", "pow_y_float32"], {"ufunc": "power"},
+        lambda a, b: ufunc("power", a, b))
+    # NaN handling of the min/max family
+    for name in ["maximum", "minimum", "fmax", "fmin"]:
+        add(f"ufunc_{name}_nan", ARRAY_API if name in ("maximum", "minimum") else NUMPY, "ufunc",
+            ["nan_x_float64", "nan_y_float64"], {"ufunc": name}, lambda a, b, name=name: ufunc(name, a, b))
 
     # Java long and double arguments are weak scalars, as Python int and float (NEP 50)
     weak = [("uint8", 1, "long"), ("int8", -128, "long"), ("int8", 1.5, "double"), ("bool", 1, "long"),
@@ -322,6 +370,8 @@ def generate(out_dir):
             if result is None:
                 entry["expect"] = {"error": True}
             elif isinstance(result, np.ndarray):
+                if op == "ufunc" and params["ufunc"] in ULP_TOLERANCE and result.dtype.kind in "fc":
+                    params["ulp"] = ULP_TOLERANCE[params["ufunc"]]
                 fname = f"expected_{cid}.npy"
                 np.save(os.path.join(out_dir, fname), result)
                 entry["expect"] = {"file": fname, "shape": list(result.shape), "dtype": result.dtype.str,
@@ -358,13 +408,22 @@ def main():
         print(f"wrote {len(manifest)} cases to {fixtures}")
         return 0
     with tempfile.TemporaryDirectory() as tmp:
-        generate(tmp)
+        generated = generate(tmp)
         expected = sorted(os.listdir(tmp))
         actual = sorted(f for f in os.listdir(fixtures) if not f.startswith("."))
         if expected != actual:
             print("fixture file list differs:", sorted(set(expected) ^ set(actual)))
             return 1
         _, mismatch, errors = filecmp.cmpfiles(tmp, fixtures, expected, shallow=False)
+        tolerant = {c["expect"]["file"]: c["params"]["ulp"] for c in generated
+                    if "ulp" in c["params"] and "file" in c["expect"]}
+        for f in list(mismatch):
+            if f in tolerant:
+                new = np.load(os.path.join(tmp, f))
+                old = np.load(os.path.join(fixtures, f))
+                if new.dtype == old.dtype and new.shape == old.shape \
+                        and int(np.max(ulp_distance(new, old), initial=0)) <= tolerant[f]:
+                    mismatch.remove(f)
         if mismatch or errors:
             print("fixtures out of date:", mismatch + errors)
             return 1

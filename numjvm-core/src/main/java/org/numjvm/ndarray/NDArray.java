@@ -883,6 +883,105 @@ public final class NDArray {
         return Ufuncs.REMAINDER.apply(this, other);
     }
 
+    /**
+     * Returns {@code this ** other}, element-wise with broadcasting: integer powers wrap
+     * ({@link org.numjvm.ufunc.Ufuncs#POWER}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray power(NDArray other) {
+        return Ufuncs.POWER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this ** other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#POWER}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray power(double other) {
+        return Ufuncs.POWER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this ** other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#POWER}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray power(long other) {
+        return Ufuncs.POWER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code max(this, other)}, element-wise with broadcasting: NaN propagates
+     * ({@link org.numjvm.ufunc.Ufuncs#MAXIMUM}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray maximum(NDArray other) {
+        return Ufuncs.MAXIMUM.apply(this, other);
+    }
+
+    /**
+     * Returns {@code max(this, other)} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#MAXIMUM}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray maximum(double other) {
+        return Ufuncs.MAXIMUM.apply(this, other);
+    }
+
+    /**
+     * Returns {@code max(this, other)} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#MAXIMUM}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray maximum(long other) {
+        return Ufuncs.MAXIMUM.apply(this, other);
+    }
+
+    /**
+     * Returns {@code min(this, other)}, element-wise with broadcasting: NaN propagates
+     * ({@link org.numjvm.ufunc.Ufuncs#MINIMUM}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray minimum(NDArray other) {
+        return Ufuncs.MINIMUM.apply(this, other);
+    }
+
+    /**
+     * Returns {@code min(this, other)} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#MINIMUM}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray minimum(double other) {
+        return Ufuncs.MINIMUM.apply(this, other);
+    }
+
+    /**
+     * Returns {@code min(this, other)} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#MINIMUM}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray minimum(long other) {
+        return Ufuncs.MINIMUM.apply(this, other);
+    }
+
     // ------------------------------------------------------------------ element access: helpers
 
     private long idx(long i, int axis) {

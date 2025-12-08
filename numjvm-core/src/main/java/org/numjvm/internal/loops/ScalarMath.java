@@ -28,7 +28,9 @@ import org.numjvm.exception.ValueException;
  *       return the second and {@code fmax}/{@code fmin} the first, as NumPy's SIMD loops do
  *       (the Array API leaves signed zeros unspecified).</li>
  *   <li><b>An integer raised to a negative integer power</b> is a {@link ValueException}
- *       ("Integers to negative integer powers are not allowed.").</li>
+ *       ("Integers to negative integer powers are not allowed."). Floating-point
+ *       {@code power} follows C99, as NumPy: {@code pow(1, NaN) == 1} and
+ *       {@code pow(-1, inf) == 1}, where Java's {@code Math.pow} returns NaN.</li>
  * </ul>
  */
 public final class ScalarMath {
@@ -295,6 +297,36 @@ public final class ScalarMath {
      */
     public static float fmin(float a, float b) {
         return b != b || a <= b ? a : b;
+    }
+
+    // ------------------------------------------------------------------ floating-point power
+
+    /**
+     * C99's {@code pow}, which NumPy uses: as {@link Math#pow(double, double)}, except that
+     * {@code pow(1, y)} is 1 for every {@code y}, NaN included, and {@code pow(-1, +-inf)} is 1;
+     * Java returns NaN for both.
+     *
+     * @param x base
+     * @param y exponent
+     * @return {@code x^y}
+     */
+    public static double power(double x, double y) {
+        if (x == 1.0 || x == -1.0 && Double.isInfinite(y)) {
+            return 1.0;
+        }
+        return Math.pow(x, y);
+    }
+
+    /**
+     * {@link #power(double, double)} for {@code float}, computed in {@code double} and
+     * rounded once.
+     *
+     * @param x base
+     * @param y exponent
+     * @return {@code x^y}
+     */
+    public static float power(float x, float y) {
+        return (float) power((double) x, (double) y);
     }
 
     // ------------------------------------------------------------------ integer power

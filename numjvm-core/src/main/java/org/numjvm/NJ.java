@@ -499,6 +499,171 @@ public final class NJ {
         return Ufuncs.REMAINDER.apply(a, b);
     }
 
+    /**
+     * Element-wise {@code a ** b} with broadcasting: integer powers wrap ({@link Ufuncs#POWER}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray power(NDArray a, NDArray b) {
+        return Ufuncs.POWER.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a ** b} with a weak scalar ({@link Ufuncs#POWER}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray power(NDArray a, double b) {
+        return Ufuncs.POWER.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a ** b} with a weak scalar ({@link Ufuncs#POWER}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray power(NDArray a, long b) {
+        return Ufuncs.POWER.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code max(a, b)} with broadcasting: NaN propagates ({@link Ufuncs#MAXIMUM}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray maximum(NDArray a, NDArray b) {
+        return Ufuncs.MAXIMUM.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code max(a, b)} with a weak scalar ({@link Ufuncs#MAXIMUM}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray maximum(NDArray a, double b) {
+        return Ufuncs.MAXIMUM.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code max(a, b)} with a weak scalar ({@link Ufuncs#MAXIMUM}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray maximum(NDArray a, long b) {
+        return Ufuncs.MAXIMUM.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code min(a, b)} with broadcasting: NaN propagates ({@link Ufuncs#MINIMUM}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray minimum(NDArray a, NDArray b) {
+        return Ufuncs.MINIMUM.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code min(a, b)} with a weak scalar ({@link Ufuncs#MINIMUM}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray minimum(NDArray a, double b) {
+        return Ufuncs.MINIMUM.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code min(a, b)} with a weak scalar ({@link Ufuncs#MINIMUM}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray minimum(NDArray a, long b) {
+        return Ufuncs.MINIMUM.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code fmax(a, b)} with broadcasting: a NaN operand is ignored ({@link Ufuncs#FMAX}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray fmax(NDArray a, NDArray b) {
+        return Ufuncs.FMAX.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code fmax(a, b)} with a weak scalar ({@link Ufuncs#FMAX}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray fmax(NDArray a, double b) {
+        return Ufuncs.FMAX.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code fmax(a, b)} with a weak scalar ({@link Ufuncs#FMAX}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray fmax(NDArray a, long b) {
+        return Ufuncs.FMAX.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code fmin(a, b)} with broadcasting: a NaN operand is ignored ({@link Ufuncs#FMIN}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray fmin(NDArray a, NDArray b) {
+        return Ufuncs.FMIN.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code fmin(a, b)} with a weak scalar ({@link Ufuncs#FMIN}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray fmin(NDArray a, double b) {
+        return Ufuncs.FMIN.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code fmin(a, b)} with a weak scalar ({@link Ufuncs#FMIN}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray fmin(NDArray a, long b) {
+        return Ufuncs.FMIN.apply(a, b);
+    }
+
     // ------------------------------------------------------------------ type promotion
 
     /**

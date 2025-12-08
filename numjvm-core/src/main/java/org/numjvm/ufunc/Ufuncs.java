@@ -60,6 +60,34 @@ public final class Ufuncs {
     public static final BinaryUfunc REMAINDER = BinaryUfunc.builder("remainder").build();
 
     /**
+     * {@code x} to the power {@code y} ({@code ARRAY_API}: {@code pow}; NumPy's
+     * {@code power}). Integer powers wrap on overflow; a negative integer exponent is a
+     * {@link org.numjvm.exception.ValueException}. Two bool operands give int8.
+     * Floating-point special cases follow C99 ({@code pow(1, NaN) == 1}).
+     */
+    public static final BinaryUfunc POWER = BinaryUfunc.builder("power").build();
+
+    /**
+     * The larger operand, element-wise; NaN propagates ({@code ARRAY_API}: {@code maximum}).
+     */
+    public static final BinaryUfunc MAXIMUM = BinaryUfunc.builder("maximum").build();
+
+    /**
+     * The smaller operand, element-wise; NaN propagates ({@code ARRAY_API}: {@code minimum}).
+     */
+    public static final BinaryUfunc MINIMUM = BinaryUfunc.builder("minimum").build();
+
+    /**
+     * The larger operand, ignoring a NaN operand ({@code NUMPY_COMPATIBILITY}: {@code fmax}).
+     */
+    public static final BinaryUfunc FMAX = BinaryUfunc.builder("fmax").build();
+
+    /**
+     * The smaller operand, ignoring a NaN operand ({@code NUMPY_COMPATIBILITY}: {@code fmin}).
+     */
+    public static final BinaryUfunc FMIN = BinaryUfunc.builder("fmin").build();
+
+    /**
      * Returns every ufunc, in declaration order.
      *
      * @return the ufuncs
@@ -84,7 +112,7 @@ public final class Ufuncs {
      */
     private static final class ByName {
         static final Map<String, Ufunc> MAP = build(List.of(
-                ADD, SUBTRACT, MULTIPLY, DIVIDE, FLOOR_DIVIDE, REMAINDER));
+                ADD, SUBTRACT, MULTIPLY, DIVIDE, FLOOR_DIVIDE, REMAINDER, POWER, MAXIMUM, MINIMUM, FMAX, FMIN));
 
         private static Map<String, Ufunc> build(List<Ufunc> all) {
             Map<String, Ufunc> m = new LinkedHashMap<>();

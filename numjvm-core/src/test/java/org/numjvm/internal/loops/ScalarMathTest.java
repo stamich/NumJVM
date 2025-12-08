@@ -162,4 +162,17 @@ class ScalarMathTest {
         assertEquals(BigInteger.valueOf(x).pow(y).longValue(), ScalarMath.power(x, (long) y));
         assertEquals(BigInteger.valueOf(x).pow(y).intValue(), ScalarMath.power((int) x, y));
     }
+
+    @Test
+    void floatPowerFollowsC99() {
+        // np.power(1.0, nan) == 1.0 and np.power(-1.0, inf) == 1.0; Java's Math.pow gives NaN
+        assertEquals(1.0, ScalarMath.power(1.0, Double.NaN));
+        assertEquals(1.0, ScalarMath.power(-1.0, Double.POSITIVE_INFINITY));
+        assertEquals(1.0, ScalarMath.power(-1.0, Double.NEGATIVE_INFINITY));
+        assertEquals(1.0, ScalarMath.power(Double.NaN, 0.0));
+        assertTrue(Double.isNaN(ScalarMath.power(-8.0, 1.0 / 3)));
+        assertEquals(Double.NEGATIVE_INFINITY, ScalarMath.power(-0.0, -1.0));
+        assertEquals(1f, ScalarMath.power(1f, Float.NaN));
+        assertEquals(8f, ScalarMath.power(2f, 3f));
+    }
 }
