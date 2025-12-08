@@ -66,6 +66,16 @@ def inputs():
     for dt in NUMPY_REAL:
         arr[f"edge_{dt}"] = edge(dt)
         arr[f"edge2_{dt}"] = edge2(dt)
+    for dt in ["int8", "int16", "int32", "int64"]:
+        lo = np.iinfo(dt).min
+        arr[f"div_a_{dt}"] = np.array([lo, lo, 5, -5, 0, 7, -7, 7], dtype=dt)
+        arr[f"div_b_{dt}"] = np.array([-1, 1, 0, 0, 0, -2, 2, 3], dtype=dt)
+    for dt in ["uint8", "uint64"]:
+        hi = np.iinfo(dt).max
+        arr[f"div_a_{dt}"] = np.array([hi, hi, 5, 0, 7, 7], dtype=dt)
+        arr[f"div_b_{dt}"] = np.array([1, 2, 0, 0, 3, hi], dtype=dt)
+    arr["div_a_float64"] = np.array([6.0, -6.0, 0.0, -0.0, 7.5, -7.5, 1.0, np.inf, 5.0, 1e300])
+    arr["div_b_float64"] = np.array([-3.0, 3.0, -1.0, 2.0, -2.0, 2.0, -0.0, 2.0, np.inf, 1e-300])
     return arr | {
         "f8_2x3x4": np.arange(24.0).reshape(2, 3, 4),
         "f8_3x4": np.arange(12.0).reshape(3, 4),
@@ -222,7 +232,7 @@ def cases(arr):
                                     "f": bool(a[tuple(slice_expr(s) for s in specs)].flags.f_contiguous)})
 
     # --- arithmetic ufuncs ---------------------------------------------------------------------
-    for name in ["add", "subtract", "multiply"]:
+    for name in ["add", "subtract", "multiply", "divide", "floor_divide", "remainder"]:
         for dt in NUMPY_REAL:
             tag = ARRAY_API if dt != "bool" else NUMPY
             if name == "subtract" and dt == "bool":
@@ -238,6 +248,15 @@ def cases(arr):
             lambda a, b, name=name: ufunc(name, a, b))
         add(f"ufunc_{name}_transposed", ARRAY_API, "ufunc", ["f8_hash_7x11", "f8_hash_7x11"],
             {"ufunc": name, "view": "transpose"}, lambda a, b, name=name: ufunc(name, a.T, b.T))
+    # integer MIN // -1 wraps; division and remainder by zero give 0 for integers
+    for dt in ["int8", "int16", "int32", "int64", "uint8", "uint64"]:
+        for name in ["floor_divide", "remainder", "divide"]:
+            add(f"ufunc_{name}_{dt}_min_and_zero", NUMPY, "ufunc", [f"div_a_{dt}", f"div_b_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+    for name in ["floor_divide", "remainder"]:
+        add(f"ufunc_{name}_float64_signs", NUMPY, "ufunc", ["div_a_float64", "div_b_float64"], {"ufunc": name},
+            lambda a, b, name=name: ufunc(name, a, b))
+
     # Java long and double arguments are weak scalars, as Python int and float (NEP 50)
     weak = [("uint8", 1, "long"), ("int8", -128, "long"), ("int8", 1.5, "double"), ("bool", 1, "long"),
             ("bool", 1.5, "double"), ("float16", 100000, "long"), ("float32", 0.1, "double"),

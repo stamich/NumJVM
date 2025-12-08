@@ -53,4 +53,28 @@ class UfuncsTest {
         // bool with a non-bool operand promotes and subtracts normally
         assertEquals(DType.INT8, NJ.subtract(t, NJ.array(DType.INT8, new double[]{1, 1, 1})).dtype());
     }
+
+    @Test
+    void divisionResultDtypes() {
+        assertEquals(DType.FLOAT64, Ufuncs.DIVIDE.resultType(DType.INT8, DType.INT8));
+        assertEquals(DType.FLOAT64, Ufuncs.DIVIDE.resultType(DType.BOOL, DType.BOOL));
+        assertEquals(DType.FLOAT16, Ufuncs.DIVIDE.resultType(DType.FLOAT16, DType.INT8));
+        assertEquals(DType.INT8, Ufuncs.FLOOR_DIVIDE.resultType(DType.BOOL, DType.BOOL));
+        assertEquals(DType.INT8, Ufuncs.REMAINDER.resultType(DType.BOOL, DType.BOOL));
+        assertEquals(DType.UINT64, Ufuncs.FLOOR_DIVIDE.resultType(DType.UINT64, DType.UINT8));
+        assertEquals(DType.BFLOAT16, Ufuncs.DIVIDE.resultType(DType.BFLOAT16, DType.BFLOAT16));
+    }
+
+    @Test
+    void divisionValues() {
+        NDArray a = NJ.array(new long[]{7, -7, 7, 1});
+        NDArray b = NJ.array(new long[]{2, 2, 0, 0});
+        assertTrue(NJ.arrayEquals(NJ.array(new long[]{3, -4, 0, 0}), a.floorDivide(b)));
+        assertTrue(NJ.arrayEquals(NJ.array(new long[]{1, 1, 0, 0}), a.remainder(b)));
+        NDArray q = NJ.divide(a, b);
+        assertEquals(3.5, q.getDouble(0));
+        assertEquals(Double.POSITIVE_INFINITY, q.getDouble(2));
+        assertEquals(-1, NJ.remainder(NJ.array(new double[]{5}), -3L).getDouble(0));
+        assertEquals(DType.FLOAT64, NJ.floorDivide(a, 2.0).dtype());
+    }
 }

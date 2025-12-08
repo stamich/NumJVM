@@ -400,6 +400,105 @@ public final class NJ {
         return Ufuncs.MULTIPLY.apply(a, b);
     }
 
+    /**
+     * Element-wise {@code a / b} with broadcasting: true division; integers give float64 ({@link Ufuncs#DIVIDE}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray divide(NDArray a, NDArray b) {
+        return Ufuncs.DIVIDE.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a / b} with a weak scalar ({@link Ufuncs#DIVIDE}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray divide(NDArray a, double b) {
+        return Ufuncs.DIVIDE.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a / b} with a weak scalar ({@link Ufuncs#DIVIDE}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray divide(NDArray a, long b) {
+        return Ufuncs.DIVIDE.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code floor(a / b)} with broadcasting: integer division by zero gives 0 ({@link Ufuncs#FLOOR_DIVIDE}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray floorDivide(NDArray a, NDArray b) {
+        return Ufuncs.FLOOR_DIVIDE.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code floor(a / b)} with a weak scalar ({@link Ufuncs#FLOOR_DIVIDE}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray floorDivide(NDArray a, double b) {
+        return Ufuncs.FLOOR_DIVIDE.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code floor(a / b)} with a weak scalar ({@link Ufuncs#FLOOR_DIVIDE}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray floorDivide(NDArray a, long b) {
+        return Ufuncs.FLOOR_DIVIDE.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a % b} with broadcasting: Python-style remainder with the sign of the divisor ({@link Ufuncs#REMAINDER}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray remainder(NDArray a, NDArray b) {
+        return Ufuncs.REMAINDER.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a % b} with a weak scalar ({@link Ufuncs#REMAINDER}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray remainder(NDArray a, double b) {
+        return Ufuncs.REMAINDER.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a % b} with a weak scalar ({@link Ufuncs#REMAINDER}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray remainder(NDArray a, long b) {
+        return Ufuncs.REMAINDER.apply(a, b);
+    }
+
     // ------------------------------------------------------------------ type promotion
 
     /**

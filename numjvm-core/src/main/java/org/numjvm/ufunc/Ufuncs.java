@@ -38,6 +38,28 @@ public final class Ufuncs {
     public static final BinaryUfunc MULTIPLY = BinaryUfunc.builder("multiply").build();
 
     /**
+     * True division {@code x / y} ({@code ARRAY_API}: {@code divide}). Integer and bool
+     * operands give float64, as in NumPy; float16 is computed in float32.
+     */
+    public static final BinaryUfunc DIVIDE = BinaryUfunc.builder("divide")
+            .loopFor(t -> t.isInteger() || t.isBool() ? DType.FLOAT64 : null)
+            .build();
+
+    /**
+     * Floor division {@code floor(x / y)} ({@code ARRAY_API}: {@code floor_divide}). Integer
+     * division by zero gives 0; two bool operands give int8. Floating-point results follow
+     * NumPy's {@code npy_floor_divide}.
+     */
+    public static final BinaryUfunc FLOOR_DIVIDE = BinaryUfunc.builder("floor_divide").build();
+
+    /**
+     * Remainder of floor division, with the sign of the divisor ({@code ARRAY_API}:
+     * {@code remainder}; Python's {@code %}). Integer remainder by zero gives 0;
+     * floating-point remainder by zero gives NaN.
+     */
+    public static final BinaryUfunc REMAINDER = BinaryUfunc.builder("remainder").build();
+
+    /**
      * Returns every ufunc, in declaration order.
      *
      * @return the ufuncs
@@ -62,7 +84,7 @@ public final class Ufuncs {
      */
     private static final class ByName {
         static final Map<String, Ufunc> MAP = build(List.of(
-                ADD, SUBTRACT, MULTIPLY));
+                ADD, SUBTRACT, MULTIPLY, DIVIDE, FLOOR_DIVIDE, REMAINDER));
 
         private static Map<String, Ufunc> build(List<Ufunc> all) {
             Map<String, Ufunc> m = new LinkedHashMap<>();

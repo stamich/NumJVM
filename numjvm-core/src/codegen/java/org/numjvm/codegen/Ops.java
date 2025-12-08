@@ -30,5 +30,17 @@ final class Ops {
             OpSpec.binary("multiply", "x * y (logical and for bool)")
                     .on("x & y", BOOL)
                     .on("x * y", INT, LONG, ULONG, FLOAT, DOUBLE)
+                    .build(),
+            // true division: integer and bool operands are converted to float64 by the ufunc
+            OpSpec.binary("divide", "x / y, true division")
+                    .on("x / y", FLOAT, DOUBLE)
+                    .build(),
+            OpSpec.binary("floor_divide", "floor(x / y); 0 for integers divided by zero")
+                    .on("ScalarMath.floorDivide(x, y)", INT, LONG, FLOAT, DOUBLE)
+                    .on("ScalarMath.floorDivideUnsigned(x, y)", ULONG)
+                    .build(),
+            OpSpec.binary("remainder", "x - floor(x / y) * y, with the sign of y; 0 for integers modulo zero")
+                    .on("ScalarMath.remainder(x, y)", INT, LONG, FLOAT, DOUBLE)
+                    .on("ScalarMath.remainderUnsigned(x, y)", ULONG)
                     .build());
 }

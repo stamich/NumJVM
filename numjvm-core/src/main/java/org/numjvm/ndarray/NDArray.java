@@ -784,6 +784,105 @@ public final class NDArray {
         return Ufuncs.MULTIPLY.apply(this, other);
     }
 
+    /**
+     * Returns {@code this / other}, element-wise with broadcasting: true division; integers give float64
+     * ({@link org.numjvm.ufunc.Ufuncs#DIVIDE}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray divide(NDArray other) {
+        return Ufuncs.DIVIDE.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this / other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#DIVIDE}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray divide(double other) {
+        return Ufuncs.DIVIDE.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this / other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#DIVIDE}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray divide(long other) {
+        return Ufuncs.DIVIDE.apply(this, other);
+    }
+
+    /**
+     * Returns {@code floor(this / other)}, element-wise with broadcasting: integer division by zero gives 0
+     * ({@link org.numjvm.ufunc.Ufuncs#FLOOR_DIVIDE}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray floorDivide(NDArray other) {
+        return Ufuncs.FLOOR_DIVIDE.apply(this, other);
+    }
+
+    /**
+     * Returns {@code floor(this / other)} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#FLOOR_DIVIDE}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray floorDivide(double other) {
+        return Ufuncs.FLOOR_DIVIDE.apply(this, other);
+    }
+
+    /**
+     * Returns {@code floor(this / other)} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#FLOOR_DIVIDE}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray floorDivide(long other) {
+        return Ufuncs.FLOOR_DIVIDE.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this % other}, element-wise with broadcasting: Python-style remainder with the sign of the divisor
+     * ({@link org.numjvm.ufunc.Ufuncs#REMAINDER}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray remainder(NDArray other) {
+        return Ufuncs.REMAINDER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this % other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#REMAINDER}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray remainder(double other) {
+        return Ufuncs.REMAINDER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this % other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#REMAINDER}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray remainder(long other) {
+        return Ufuncs.REMAINDER.apply(this, other);
+    }
+
     // ------------------------------------------------------------------ element access: helpers
 
     private long idx(long i, int axis) {
