@@ -664,6 +664,207 @@ public final class NJ {
         return Ufuncs.FMIN.apply(a, b);
     }
 
+    /**
+     * Element-wise {@code a == b} with broadcasting: giving bool ({@link Ufuncs#EQUAL}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    @SuppressWarnings("java:S1221") // NumPy's name for the ufunc; not Object.equals
+    public static NDArray equal(NDArray a, NDArray b) {
+        return Ufuncs.EQUAL.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a == b} with a weak scalar ({@link Ufuncs#EQUAL}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    @SuppressWarnings("java:S1221") // NumPy's name for the ufunc; not Object.equals
+    public static NDArray equal(NDArray a, double b) {
+        return Ufuncs.EQUAL.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a == b} with a weak scalar ({@link Ufuncs#EQUAL}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    @SuppressWarnings("java:S1221") // NumPy's name for the ufunc; not Object.equals
+    public static NDArray equal(NDArray a, long b) {
+        return Ufuncs.EQUAL.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a != b} with broadcasting: giving bool ({@link Ufuncs#NOT_EQUAL}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray notEqual(NDArray a, NDArray b) {
+        return Ufuncs.NOT_EQUAL.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a != b} with a weak scalar ({@link Ufuncs#NOT_EQUAL}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray notEqual(NDArray a, double b) {
+        return Ufuncs.NOT_EQUAL.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a != b} with a weak scalar ({@link Ufuncs#NOT_EQUAL}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray notEqual(NDArray a, long b) {
+        return Ufuncs.NOT_EQUAL.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a < b} with broadcasting: giving bool ({@link Ufuncs#LESS}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray less(NDArray a, NDArray b) {
+        return Ufuncs.LESS.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a < b} with a weak scalar ({@link Ufuncs#LESS}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray less(NDArray a, double b) {
+        return Ufuncs.LESS.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a < b} with a weak scalar ({@link Ufuncs#LESS}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray less(NDArray a, long b) {
+        return Ufuncs.LESS.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a <= b} with broadcasting: giving bool ({@link Ufuncs#LESS_EQUAL}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray lessEqual(NDArray a, NDArray b) {
+        return Ufuncs.LESS_EQUAL.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a <= b} with a weak scalar ({@link Ufuncs#LESS_EQUAL}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray lessEqual(NDArray a, double b) {
+        return Ufuncs.LESS_EQUAL.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a <= b} with a weak scalar ({@link Ufuncs#LESS_EQUAL}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray lessEqual(NDArray a, long b) {
+        return Ufuncs.LESS_EQUAL.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a > b} with broadcasting: giving bool ({@link Ufuncs#GREATER}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray greater(NDArray a, NDArray b) {
+        return Ufuncs.GREATER.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a > b} with a weak scalar ({@link Ufuncs#GREATER}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray greater(NDArray a, double b) {
+        return Ufuncs.GREATER.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a > b} with a weak scalar ({@link Ufuncs#GREATER}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray greater(NDArray a, long b) {
+        return Ufuncs.GREATER.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a >= b} with broadcasting: giving bool ({@link Ufuncs#GREATER_EQUAL}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray greaterEqual(NDArray a, NDArray b) {
+        return Ufuncs.GREATER_EQUAL.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a >= b} with a weak scalar ({@link Ufuncs#GREATER_EQUAL}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray greaterEqual(NDArray a, double b) {
+        return Ufuncs.GREATER_EQUAL.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a >= b} with a weak scalar ({@link Ufuncs#GREATER_EQUAL}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray greaterEqual(NDArray a, long b) {
+        return Ufuncs.GREATER_EQUAL.apply(a, b);
+    }
+
     // ------------------------------------------------------------------ type promotion
 
     /**

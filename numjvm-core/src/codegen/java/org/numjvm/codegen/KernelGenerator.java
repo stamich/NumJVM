@@ -147,7 +147,7 @@ public final class KernelGenerator {
                 + o.dtype().toLowerCase();
         Map<String, String> v = new HashMap<>();
         v.put("OP", op.name());
-        v.put("DOC", op.doc());
+        v.put("DOC", html(op.doc()));
         v.put("SIGNATURE", signature);
         v.put("METHOD", method(op));
         v.put("CT", t.ct());
@@ -177,6 +177,14 @@ public final class KernelGenerator {
         v.put("WRITE", write.apply("o", "po"));
         v.put("WRITE_I", write.apply("o", indexed("po", outSize)));
         return fill("UnaryLoop", v);
+    }
+
+    /**
+     * Escapes text for Javadoc, which is HTML: operation descriptions such as
+     * {@code x < y} or {@code x & y} would otherwise be malformed.
+     */
+    private static String html(String text) {
+        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
     }
 
     private static String indexed(String base, int size) {

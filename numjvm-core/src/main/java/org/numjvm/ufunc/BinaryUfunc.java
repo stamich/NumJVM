@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.function.UnaryOperator;
 
 import org.numjvm.dtype.DType;
+import org.numjvm.dtype.DTypeKind;
 import org.numjvm.dtype.TypePromotion;
 import org.numjvm.exception.DTypeException;
 import org.numjvm.internal.loops.BinaryLoop;
@@ -29,6 +30,7 @@ public final class BinaryUfunc extends Ufunc {
 
     private final UnaryOperator<DType> loopOverride;
     private final Map<DType, String> unsupported;
+    private final boolean comparison;
     private final Resolution[] cache = new Resolution[DType.values().length];
 
     /**
@@ -41,6 +43,7 @@ public final class BinaryUfunc extends Ufunc {
         super(b.name, b.loopName);
         this.loopOverride = b.loopOverride;
         this.unsupported = Map.copyOf(b.unsupported);
+        this.comparison = b.comparison;
     }
 
     static Builder builder(String name) {
@@ -55,6 +58,7 @@ public final class BinaryUfunc extends Ufunc {
         private String loopName;
         private UnaryOperator<DType> loopOverride = t -> null;
         private final Map<DType, String> unsupported = new EnumMap<>(DType.class);
+        private boolean comparison;
 
         private Builder(String name) {
             this.name = name;
@@ -86,6 +90,15 @@ public final class BinaryUfunc extends Ufunc {
             return this;
         }
 
+        /**
+         * Marks a comparison: signed integers against uint64, and integers against an
+         * out-of-range Java {@code long}, are compared exactly instead of after promotion.
+         */
+        Builder comparison() {
+            this.comparison = true;
+            return this;
+        }
+
         BinaryUfunc build() {
             return new BinaryUfunc(this);
         }
@@ -106,6 +119,9 @@ public final class BinaryUfunc extends Ufunc {
      * @throws DTypeException                      if the ufunc has no loop for the dtypes
      */
     public NDArray apply(NDArray a, NDArray b) {
+        if (comparison && signedWithUInt64(a.dtype(), b.dtype())) {
+            return exact(a, b);
+        }
         return run(a, b, TypePromotion.resultType(a.dtype(), b.dtype()));
     }
 
@@ -144,6 +160,9 @@ public final class BinaryUfunc extends Ufunc {
      */
     public NDArray apply(NDArray a, long b) {
         DType common = TypePromotion.resultTypeWithLong(a.dtype());
+        if (comparison && common.isInteger() && !Operands.fits(common, b)) {
+            return exact(a, int64(b));
+        }
         return run(a, Operands.weakLong(common, b), common);
     }
 
@@ -158,6 +177,9 @@ public final class BinaryUfunc extends Ufunc {
      */
     public NDArray apply(long a, NDArray b) {
         DType common = TypePromotion.resultTypeWithLong(b.dtype());
+        if (comparison && common.isInteger() && !Operands.fits(common, a)) {
+            return exact(int64(a), b);
+        }
         return run(Operands.weakLong(common, a), b, common);
     }
 
@@ -171,6 +193,32 @@ public final class BinaryUfunc extends Ufunc {
      */
     public DType resultType(DType a, DType b) {
         return resolve(TypePromotion.resultType(a, b), a, b).out();
+    }
+
+    private static boolean signedWithUInt64(DType a, DType b) {
+        return a == DType.UINT64 && b.kind() == DTypeKind.SIGNED_INTEGER
+                || b == DType.UINT64 && a.kind() == DTypeKind.SIGNED_INTEGER;
+    }
+
+    private static NDArray int64(long v) {
+        NDArray s = org.numjvm.NJ.zeros(DType.INT64);
+        s.setLong(v);
+        return s;
+    }
+
+    /**
+     * An exact integer comparison: uint64 against a signed integer through the mixed
+     * int64/uint64 loops, every other integer pair through int64.
+     */
+    private NDArray exact(NDArray a, NDArray b) {
+        DType ta = a.dtype() == DType.UINT64 ? DType.UINT64 : DType.INT64;
+        DType tb = b.dtype() == DType.UINT64 ? DType.UINT64 : DType.INT64;
+        NDArray x = Operands.cast(a, ta);
+        NDArray y = Operands.cast(b, tb);
+        BinaryLoop loop = KernelRegistry.binary(loopName(), ta, tb);
+        NDArray out = Operands.allocate(DType.BOOL, Broadcasting.broadcastShapes(a.shape(), b.shape()), x, y);
+        LoopExecutor.binary(loop, x, y, out);
+        return out;
     }
 
     private NDArray run(NDArray a, NDArray b, DType common) {

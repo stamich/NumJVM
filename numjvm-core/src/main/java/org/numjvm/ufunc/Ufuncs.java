@@ -88,6 +88,39 @@ public final class Ufuncs {
     public static final BinaryUfunc FMIN = BinaryUfunc.builder("fmin").build();
 
     /**
+     * {@code x == y}, giving bool ({@code ARRAY_API}: {@code equal}). Comparisons follow IEEE 754
+     * (NaN is unequal to everything); signed integers against uint64, and integers against a
+     * Java {@code long} outside their range, are compared exactly ({@code NUMPY_COMPATIBILITY},
+     * as NumPy 2).
+     */
+    public static final BinaryUfunc EQUAL = BinaryUfunc.builder("equal").comparison().build();
+
+    /**
+     * {@code x != y}, giving bool ({@code ARRAY_API}: {@code not_equal}); see {@link #EQUAL}.
+     */
+    public static final BinaryUfunc NOT_EQUAL = BinaryUfunc.builder("not_equal").comparison().build();
+
+    /**
+     * {@code x < y}, giving bool ({@code ARRAY_API}: {@code less}); see {@link #EQUAL}.
+     */
+    public static final BinaryUfunc LESS = BinaryUfunc.builder("less").comparison().build();
+
+    /**
+     * {@code x <= y}, giving bool ({@code ARRAY_API}: {@code less_equal}); see {@link #EQUAL}.
+     */
+    public static final BinaryUfunc LESS_EQUAL = BinaryUfunc.builder("less_equal").comparison().build();
+
+    /**
+     * {@code x > y}, giving bool ({@code ARRAY_API}: {@code greater}); see {@link #EQUAL}.
+     */
+    public static final BinaryUfunc GREATER = BinaryUfunc.builder("greater").comparison().build();
+
+    /**
+     * {@code x >= y}, giving bool ({@code ARRAY_API}: {@code greater_equal}); see {@link #EQUAL}.
+     */
+    public static final BinaryUfunc GREATER_EQUAL = BinaryUfunc.builder("greater_equal").comparison().build();
+
+    /**
      * Returns every ufunc, in declaration order.
      *
      * @return the ufuncs
@@ -112,7 +145,8 @@ public final class Ufuncs {
      */
     private static final class ByName {
         static final Map<String, Ufunc> MAP = build(List.of(
-                ADD, SUBTRACT, MULTIPLY, DIVIDE, FLOOR_DIVIDE, REMAINDER, POWER, MAXIMUM, MINIMUM, FMAX, FMIN));
+                ADD, SUBTRACT, MULTIPLY, DIVIDE, FLOOR_DIVIDE, REMAINDER, POWER, MAXIMUM, MINIMUM, FMAX, FMIN,
+                EQUAL, NOT_EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL));
 
         private static Map<String, Ufunc> build(List<Ufunc> all) {
             Map<String, Ufunc> m = new LinkedHashMap<>();

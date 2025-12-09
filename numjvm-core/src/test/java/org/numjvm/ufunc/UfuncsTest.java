@@ -98,4 +98,27 @@ class UfuncsTest {
         assertEquals(-1L, NJ.maximum(u, 7L).getLong(0));
         assertEquals(1L, NJ.minimum(u, 7L).getLong(1));
     }
+
+    @Test
+    void comparisons() {
+        NDArray x = NJ.array(new double[]{1, Double.NaN, 3});
+        NDArray y = NJ.array(new double[]{1, Double.NaN, 2});
+        assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{true, false, false}), NJ.equal(x, y)));
+        assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{false, true, true}), x.notEqual(y)));
+        assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{false, false, true}), x.greater(y)));
+        assertEquals(DType.BOOL, Ufuncs.LESS.resultType(DType.INT8, DType.FLOAT64));
+        // exact int64 / uint64: 2^63 - 1 < 2^63, which float64 would round to equal
+        NDArray s = NJ.array(new long[]{Long.MAX_VALUE, -1});
+        NDArray u = NJ.zeros(DType.UINT64, 2);
+        u.setLong(0, Long.MIN_VALUE);  // 2^63
+        u.setLong(1, -1L);             // 2^64 - 1
+        assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{true, true}), NJ.less(s, u)));
+        assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{true, true}), NJ.greater(u, s)));
+        // out-of-range long scalars compare exactly instead of failing
+        NDArray b = NJ.array(DType.UINT8, new double[]{1, 255});
+        assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{true, true}), NJ.less(b, 300L)));
+        assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{true, true}), b.greater(-1L)));
+        assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{true, true}), NJ.greater(u, -1L)));
+        assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{false, false}), Ufuncs.EQUAL.apply(1000L, b)));
+    }
 }

@@ -982,6 +982,207 @@ public final class NDArray {
         return Ufuncs.MINIMUM.apply(this, other);
     }
 
+    /**
+     * Returns {@code this == other}, element-wise with broadcasting: giving bool
+     * ({@link org.numjvm.ufunc.Ufuncs#EQUAL}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    @SuppressWarnings("java:S1221") // NumPy's name for the ufunc; not Object.equals
+    public NDArray equal(NDArray other) {
+        return Ufuncs.EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this == other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#EQUAL}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    @SuppressWarnings("java:S1221") // NumPy's name for the ufunc; not Object.equals
+    public NDArray equal(double other) {
+        return Ufuncs.EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this == other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#EQUAL}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    @SuppressWarnings("java:S1221") // NumPy's name for the ufunc; not Object.equals
+    public NDArray equal(long other) {
+        return Ufuncs.EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this != other}, element-wise with broadcasting: giving bool
+     * ({@link org.numjvm.ufunc.Ufuncs#NOT_EQUAL}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray notEqual(NDArray other) {
+        return Ufuncs.NOT_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this != other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#NOT_EQUAL}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray notEqual(double other) {
+        return Ufuncs.NOT_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this != other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#NOT_EQUAL}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray notEqual(long other) {
+        return Ufuncs.NOT_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this < other}, element-wise with broadcasting: giving bool
+     * ({@link org.numjvm.ufunc.Ufuncs#LESS}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray less(NDArray other) {
+        return Ufuncs.LESS.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this < other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#LESS}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray less(double other) {
+        return Ufuncs.LESS.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this < other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#LESS}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray less(long other) {
+        return Ufuncs.LESS.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this <= other}, element-wise with broadcasting: giving bool
+     * ({@link org.numjvm.ufunc.Ufuncs#LESS_EQUAL}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray lessEqual(NDArray other) {
+        return Ufuncs.LESS_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this <= other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#LESS_EQUAL}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray lessEqual(double other) {
+        return Ufuncs.LESS_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this <= other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#LESS_EQUAL}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray lessEqual(long other) {
+        return Ufuncs.LESS_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this > other}, element-wise with broadcasting: giving bool
+     * ({@link org.numjvm.ufunc.Ufuncs#GREATER}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray greater(NDArray other) {
+        return Ufuncs.GREATER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this > other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#GREATER}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray greater(double other) {
+        return Ufuncs.GREATER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this > other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#GREATER}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray greater(long other) {
+        return Ufuncs.GREATER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this >= other}, element-wise with broadcasting: giving bool
+     * ({@link org.numjvm.ufunc.Ufuncs#GREATER_EQUAL}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray greaterEqual(NDArray other) {
+        return Ufuncs.GREATER_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this >= other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#GREATER_EQUAL}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray greaterEqual(double other) {
+        return Ufuncs.GREATER_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this >= other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#GREATER_EQUAL}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray greaterEqual(long other) {
+        return Ufuncs.GREATER_EQUAL.apply(this, other);
+    }
+
     // ------------------------------------------------------------------ element access: helpers
 
     private long idx(long i, int axis) {

@@ -70,5 +70,32 @@ final class Ops {
                     .on("Math.min(x, y)", INT, LONG)
                     .on("Long.compareUnsigned(x, y) <= 0 ? x : y", ULONG)
                     .on("ScalarMath.fmin(x, y)", FLOAT, DOUBLE)
+                    .build(),
+            // comparisons: bool output; NaN compares unequal to everything (IEEE 754)
+            OpSpec.binary("equal", "x == y").boolOutput()
+                    .on("x == y", BOOL, INT, LONG, ULONG, FLOAT, DOUBLE)
+                    .build(),
+            OpSpec.binary("not_equal", "x != y").boolOutput()
+                    .on("x != y", BOOL, INT, LONG, ULONG, FLOAT, DOUBLE)
+                    .build(),
+            OpSpec.binary("less", "x < y").boolOutput()
+                    .on("!x & y", BOOL)
+                    .on("x < y", INT, LONG, FLOAT, DOUBLE)
+                    .on("Long.compareUnsigned(x, y) < 0", ULONG)
+                    .build(),
+            OpSpec.binary("less_equal", "x <= y").boolOutput()
+                    .on("!x | y", BOOL)
+                    .on("x <= y", INT, LONG, FLOAT, DOUBLE)
+                    .on("Long.compareUnsigned(x, y) <= 0", ULONG)
+                    .build(),
+            OpSpec.binary("greater", "x > y").boolOutput()
+                    .on("x & !y", BOOL)
+                    .on("x > y", INT, LONG, FLOAT, DOUBLE)
+                    .on("Long.compareUnsigned(x, y) > 0", ULONG)
+                    .build(),
+            OpSpec.binary("greater_equal", "x >= y").boolOutput()
+                    .on("x | !y", BOOL)
+                    .on("x >= y", INT, LONG, FLOAT, DOUBLE)
+                    .on("Long.compareUnsigned(x, y) >= 0", ULONG)
                     .build());
 }

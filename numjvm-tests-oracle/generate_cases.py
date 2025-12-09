@@ -80,6 +80,8 @@ def inputs():
         arr[f"pow_x_{dt}"] = np.array([1.0, 1.0, -1.0, -1.0, np.nan, 2.0, 0.0, -0.0, -8.0, 0.5], dtype=dt)
         arr[f"pow_y_{dt}"] = np.array([np.nan, np.inf, np.inf, -np.inf, 0.0, np.nan, -1.0, -1.0, 1 / 3, -np.inf],
                                       dtype=dt)
+    arr["cmp_i8"] = np.array([2 ** 63 - 1, -1, 5, -2 ** 63, 0, 2 ** 53 + 1], dtype=np.int64)
+    arr["cmp_u8"] = np.array([2 ** 63, 2 ** 64 - 1, 5, 0, 0, 2 ** 53], dtype=np.uint64)
     arr["nan_x_float64"] = np.array([np.nan, 1.0, np.nan, -np.inf, 2.0, np.inf])
     arr["nan_y_float64"] = np.array([1.0, np.nan, np.nan, 3.0, -0.5, np.nan])
     arr["div_a_float64"] = np.array([6.0, -6.0, 0.0, -0.0, 7.5, -7.5, 1.0, np.inf, 5.0, 1e300])
@@ -291,6 +293,31 @@ def cases(arr):
     for name in ["floor_divide", "remainder"]:
         add(f"ufunc_{name}_float64_signs", NUMPY, "ufunc", ["div_a_float64", "div_b_float64"], {"ufunc": name},
             lambda a, b, name=name: ufunc(name, a, b))
+
+    # --- comparisons ------------------------------------------------------------------------
+    for name in ["equal", "not_equal", "less", "less_equal", "greater", "greater_equal"]:
+        for dt in NUMPY_REAL:
+            add(f"ufunc_{name}_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}", f"edge2_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+            add(f"ufunc_{name}_{dt}_self", ARRAY_API, "ufunc", [f"edge_{dt}", f"edge_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        # signed integers against uint64 are compared exactly (NumPy 2), not through float64
+        for x, y in [("cmp_i8", "cmp_u8"), ("cmp_u8", "cmp_i8"), ("edge_int8", "edge2_uint64"),
+                     ("edge_int16", "edge_float16"), ("edge_bool", "edge_int8")]:
+            add(f"ufunc_{name}_{x}_{y}", NUMPY, "ufunc", [x, y], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        # Java long scalars outside the array's range compare exactly
+        for dt, value in [("uint8", 300), ("uint8", -1), ("int8", 1000), ("uint64", -1), ("int64", 5),
+                          ("bool", 2)]:
+            add(f"ufunc_{name}_{dt}_long_{value}", NUMPY, "ufunc", [f"edge_{dt}"],
+                {"ufunc": name, "scalar": value, "scalar_type": "long", "scalar_side": "right"},
+                lambda a, value=value, name=name: ufunc(name, a, value))
+            add(f"ufunc_{name}_long_{value}_{dt}", NUMPY, "ufunc", [f"edge_{dt}"],
+                {"ufunc": name, "scalar": value, "scalar_type": "long", "scalar_side": "left"},
+                lambda a, value=value, name=name: ufunc(name, value, a))
+        add(f"ufunc_{name}_int8_double", NUMPY, "ufunc", ["edge_int8"],
+            {"ufunc": name, "scalar": 1.5, "scalar_type": "double", "scalar_side": "right"},
+            lambda a, name=name: ufunc(name, a, 1.5))
 
     # integer powers with non-negative exponents wrap; floating-point special cases follow C99
     for dt in [d for d in NUMPY_REAL if d != "bool"]:

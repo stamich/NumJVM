@@ -32,6 +32,7 @@ public final class KernelRegistry {
         Registrar r = new Registrar();
         GeneratedLoops.register(r);
         ComplexLoops.register(r);
+        MixedComparisonLoops.register(r);
         Map<String, Table> tables = new LinkedHashMap<>();
         r.tables.forEach((op, t) -> tables.put(op, t.freeze()));
         return Collections.unmodifiableMap(tables);
