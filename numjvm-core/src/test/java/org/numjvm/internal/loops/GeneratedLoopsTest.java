@@ -38,9 +38,9 @@ class GeneratedLoopsTest {
         for (String op : KernelRegistry.operations()) {
             registered += KernelRegistry.signatures(op).size();
         }
-        // generated loops plus the hand-written ones: 6 complex copies and casts, 12 exact
+        // generated loops plus the hand-written ones: 8 complex copies and casts, 12 exact
         // int64/uint64 comparisons
-        assertEquals(GeneratedLoops.LOOP_COUNT + 6 + 12, registered);
+        assertEquals(GeneratedLoops.LOOP_COUNT + 8 + 12, registered);
     }
 
     /**

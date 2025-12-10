@@ -319,6 +319,38 @@ def cases(arr):
             {"ufunc": name, "scalar": 1.5, "scalar_type": "double", "scalar_side": "right"},
             lambda a, name=name: ufunc(name, a, 1.5))
 
+    # --- logical and bitwise ---------------------------------------------------------------------
+    for name in ["logical_and", "logical_or", "logical_xor"]:
+        for dt in NUMPY_REAL:
+            add(f"ufunc_{name}_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}", f"edge2_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        add(f"ufunc_{name}_float64_int8", NUMPY, "ufunc", ["edge_float64", "edge2_int8"], {"ufunc": name},
+            lambda a, b, name=name: ufunc(name, a, b))
+        add(f"ufunc_{name}_complex128", NUMPY, "ufunc", ["c16_2x2", "c16_2x2"], {"ufunc": name, "view": "transpose"},
+            lambda a, b, name=name: ufunc(name, a.T, b.T))
+    for dt in NUMPY_REAL:
+        add(f"ufunc_logical_not_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}"], {"ufunc": "logical_not"},
+            lambda a: ufunc("logical_not", a))
+    for name in ["bitwise_and", "bitwise_or", "bitwise_xor"]:
+        for dt in NUMPY_REAL:
+            if dt.startswith("float"):
+                add(f"ufunc_{name}_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}", f"edge2_{dt}"], {"ufunc": name}, None)
+                continue
+            add(f"ufunc_{name}_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}", f"edge2_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        for x, y in [("int8", "uint8"), ("bool", "int16"), ("int64", "uint32")]:
+            add(f"ufunc_{name}_{x}_{y}", promotion_tag(x, y), "ufunc", [f"edge_{x}", f"edge2_{y}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        add(f"ufunc_{name}_uint8_long", NUMPY, "ufunc", ["edge_uint8"],
+            {"ufunc": name, "scalar": 15, "scalar_type": "long", "scalar_side": "right"},
+            lambda a, name=name: ufunc(name, a, 15))
+    for dt in NUMPY_REAL:
+        if dt.startswith("float"):
+            add(f"ufunc_invert_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}"], {"ufunc": "invert"}, None)
+        else:
+            add(f"ufunc_invert_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}"], {"ufunc": "invert"},
+                lambda a: ufunc("invert", a))
+
     # integer powers with non-negative exponents wrap; floating-point special cases follow C99
     for dt in [d for d in NUMPY_REAL if d != "bool"]:
         add(f"ufunc_power_{dt}_exponents", NUMPY if dt.startswith(("int", "uint")) else ARRAY_API, "ufunc",
@@ -392,7 +424,7 @@ def generate(out_dir):
         else:
             try:
                 result = fn(*[arr[n] for n in ins])
-            except ValueError:
+            except (ValueError, TypeError):
                 result = None
             if result is None:
                 entry["expect"] = {"error": True}

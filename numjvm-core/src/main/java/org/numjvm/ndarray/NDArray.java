@@ -663,12 +663,13 @@ public final class NDArray {
      * correctly rounded as in NumPy. Floating-point values convert to integers by truncation
      * toward zero; NaN and out-of-range values follow Java's saturating conversion to
      * {@code long} and then wrap ({@code NUMJVM_SPECIFIC}: NumPy leaves them undefined).
-     * Real values become complex with a zero imaginary part; converting complex to real is
+     * Real values become complex with a zero imaginary part; converting complex to bool gives
+     * {@code true} when either part is non-zero; converting complex to any other real dtype is
      * rejected rather than silently discarding the imaginary part.
      *
      * @param target the dtype of the result
      * @return the converted copy; a plain copy if {@code target} equals this dtype
-     * @throws org.numjvm.exception.DTypeException for complex to real conversions
+     * @throws org.numjvm.exception.DTypeException for complex to real conversions other than bool
      */
     public NDArray astype(DType target) {
         return astype(target, Order.C);

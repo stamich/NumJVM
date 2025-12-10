@@ -865,6 +865,224 @@ public final class NJ {
         return Ufuncs.GREATER_EQUAL.apply(a, b);
     }
 
+    /**
+     * Element-wise {@code a and b} with broadcasting: giving bool; non-zero is true ({@link Ufuncs#LOGICAL_AND}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray logicalAnd(NDArray a, NDArray b) {
+        return Ufuncs.LOGICAL_AND.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a and b} with a weak scalar ({@link Ufuncs#LOGICAL_AND}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray logicalAnd(NDArray a, double b) {
+        return Ufuncs.LOGICAL_AND.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a and b} with a weak scalar ({@link Ufuncs#LOGICAL_AND}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray logicalAnd(NDArray a, long b) {
+        return Ufuncs.LOGICAL_AND.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a or b} with broadcasting: giving bool; non-zero is true ({@link Ufuncs#LOGICAL_OR}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray logicalOr(NDArray a, NDArray b) {
+        return Ufuncs.LOGICAL_OR.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a or b} with a weak scalar ({@link Ufuncs#LOGICAL_OR}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray logicalOr(NDArray a, double b) {
+        return Ufuncs.LOGICAL_OR.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a or b} with a weak scalar ({@link Ufuncs#LOGICAL_OR}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray logicalOr(NDArray a, long b) {
+        return Ufuncs.LOGICAL_OR.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a xor b} with broadcasting: giving bool; non-zero is true ({@link Ufuncs#LOGICAL_XOR}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray logicalXor(NDArray a, NDArray b) {
+        return Ufuncs.LOGICAL_XOR.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a xor b} with a weak scalar ({@link Ufuncs#LOGICAL_XOR}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray logicalXor(NDArray a, double b) {
+        return Ufuncs.LOGICAL_XOR.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a xor b} with a weak scalar ({@link Ufuncs#LOGICAL_XOR}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray logicalXor(NDArray a, long b) {
+        return Ufuncs.LOGICAL_XOR.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code not x}: giving bool; non-zero is true ({@link Ufuncs#LOGICAL_NOT}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray logicalNot(NDArray x) {
+        return Ufuncs.LOGICAL_NOT.apply(x);
+    }
+
+    /**
+     * Element-wise {@code a & b} with broadcasting: bool and integers ({@link Ufuncs#BITWISE_AND}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray bitwiseAnd(NDArray a, NDArray b) {
+        return Ufuncs.BITWISE_AND.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a & b} with a weak scalar ({@link Ufuncs#BITWISE_AND}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray bitwiseAnd(NDArray a, double b) {
+        return Ufuncs.BITWISE_AND.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a & b} with a weak scalar ({@link Ufuncs#BITWISE_AND}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray bitwiseAnd(NDArray a, long b) {
+        return Ufuncs.BITWISE_AND.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a | b} with broadcasting: bool and integers ({@link Ufuncs#BITWISE_OR}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray bitwiseOr(NDArray a, NDArray b) {
+        return Ufuncs.BITWISE_OR.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a | b} with a weak scalar ({@link Ufuncs#BITWISE_OR}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray bitwiseOr(NDArray a, double b) {
+        return Ufuncs.BITWISE_OR.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a | b} with a weak scalar ({@link Ufuncs#BITWISE_OR}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray bitwiseOr(NDArray a, long b) {
+        return Ufuncs.BITWISE_OR.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a ^ b} with broadcasting: bool and integers ({@link Ufuncs#BITWISE_XOR}).
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return a new array with the broadcast shape
+     */
+    public static NDArray bitwiseXor(NDArray a, NDArray b) {
+        return Ufuncs.BITWISE_XOR.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a ^ b} with a weak scalar ({@link Ufuncs#BITWISE_XOR}).
+     *
+     * @param a the array
+     * @param b the scalar; float and complex arrays keep their dtype, others become float64
+     * @return a new array
+     */
+    public static NDArray bitwiseXor(NDArray a, double b) {
+        return Ufuncs.BITWISE_XOR.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code a ^ b} with a weak scalar ({@link Ufuncs#BITWISE_XOR}).
+     *
+     * @param a the array
+     * @param b the scalar; it must fit the array's integer dtype, bool arrays become int64
+     * @return a new array
+     */
+    public static NDArray bitwiseXor(NDArray a, long b) {
+        return Ufuncs.BITWISE_XOR.apply(a, b);
+    }
+
+    /**
+     * Element-wise {@code ~x}: bitwise not; logical not for bool ({@link Ufuncs#INVERT}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray invert(NDArray x) {
+        return Ufuncs.INVERT.apply(x);
+    }
+
     // ------------------------------------------------------------------ type promotion
 
     /**

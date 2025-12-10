@@ -121,4 +121,23 @@ class UfuncsTest {
         assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{true, true}), NJ.greater(u, -1L)));
         assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{false, false}), Ufuncs.EQUAL.apply(1000L, b)));
     }
+
+    @Test
+    void logicalAndBitwise() {
+        NDArray f = NJ.array(new double[]{0, Double.NaN, 2});
+        NDArray i = NJ.array(new long[]{1, 1, 0});
+        assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{false, true, false}), NJ.logicalAnd(f, i)));
+        assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{true, false, false}), NJ.logicalNot(f)));
+        assertEquals(DType.BOOL, Ufuncs.LOGICAL_XOR.resultType(DType.FLOAT32, DType.INT8));
+        NDArray c = NJ.array(new double[]{0, 1}).astype(DType.COMPLEX128);
+        assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{false, true}), NJ.logicalOr(c, c)));
+        assertTrue(NJ.arrayEquals(NJ.array(new boolean[]{false, true}), c.astype(DType.BOOL)));
+        assertEquals(8, NJ.bitwiseAnd(NJ.array(DType.UINT8, new double[]{12}), 10L).getLong(0));
+        assertEquals(DType.INT16, NJ.bitwiseOr(NJ.array(DType.INT8, new double[]{1}),
+                NJ.array(DType.UINT8, new double[]{2})).dtype());
+        assertEquals(-6, NJ.invert(NJ.array(DType.INT16, new double[]{5})).getLong(0));
+        assertTrue(NJ.invert(NJ.array(new boolean[]{false})).getBoolean(0));
+        assertThrows(DTypeException.class, () -> NJ.bitwiseXor(NJ.zeros(2), NJ.zeros(2)));
+        assertThrows(DTypeException.class, () -> NJ.invert(NJ.zeros(2)));
+    }
 }

@@ -97,5 +97,18 @@ final class Ops {
                     .on("x | !y", BOOL)
                     .on("x >= y", INT, LONG, FLOAT, DOUBLE)
                     .on("Long.compareUnsigned(x, y) >= 0", ULONG)
+                    .build(),
+            // logical operations run on bool; the ufunc converts other operands with != 0
+            OpSpec.binary("logical_and", "x and y").on("x & y", BOOL).build(),
+            OpSpec.binary("logical_or", "x or y").on("x | y", BOOL).build(),
+            OpSpec.binary("logical_xor", "x xor y").on("x ^ y", BOOL).build(),
+            OpSpec.unary("logical_not", "not x").on("!x", BOOL).build(),
+            // bitwise operations: bool and integers only
+            OpSpec.binary("bitwise_and", "x & y").on("x & y", BOOL, INT, LONG, ULONG).build(),
+            OpSpec.binary("bitwise_or", "x | y").on("x | y", BOOL, INT, LONG, ULONG).build(),
+            OpSpec.binary("bitwise_xor", "x ^ y").on("x ^ y", BOOL, INT, LONG, ULONG).build(),
+            OpSpec.unary("invert", "~x; logical not for bool")
+                    .on("!x", BOOL)
+                    .on("~x", INT, LONG, ULONG)
                     .build());
 }

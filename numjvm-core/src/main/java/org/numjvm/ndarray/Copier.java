@@ -23,7 +23,7 @@ final class Copier {
     }
 
     static NDArray copy(NDArray src, MemoryAllocator allocator, DType target, Order order) {
-        if (src.dtype.isComplex() && !target.isComplex()) {
+        if (src.dtype.isComplex() && !target.isComplex() && !target.isBool()) {
             throw new DTypeException("cannot convert " + src.dtype.typeName() + " to " + target.typeName()
                     + " without discarding the imaginary part");
         }

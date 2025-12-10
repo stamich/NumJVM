@@ -28,7 +28,7 @@ class CastLoopsTest {
         for (DType from : DType.values()) {
             for (DType to : DType.values()) {
                 LoopSignature sig = KernelRegistry.find("cast:" + to.typeName(), from);
-                if (from.isComplex() && !to.isComplex()) {
+                if (from.isComplex() && !to.isComplex() && !to.isBool()) {
                     assertNull(sig, from + " -> " + to);
                 } else {
                     assertNotNull(sig, from + " -> " + to);

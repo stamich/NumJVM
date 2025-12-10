@@ -121,6 +121,50 @@ public final class Ufuncs {
     public static final BinaryUfunc GREATER_EQUAL = BinaryUfunc.builder("greater_equal").comparison().build();
 
     /**
+     * Logical and, giving bool ({@code ARRAY_API}: {@code logical_and}). Operands of any real
+     * dtype are true when non-zero (NaN included).
+     */
+    public static final BinaryUfunc LOGICAL_AND = BinaryUfunc.builder("logical_and").loopFor(t -> DType.BOOL).build();
+
+    /**
+     * Logical or, giving bool ({@code ARRAY_API}: {@code logical_or}); see {@link #LOGICAL_AND}.
+     */
+    public static final BinaryUfunc LOGICAL_OR = BinaryUfunc.builder("logical_or").loopFor(t -> DType.BOOL).build();
+
+    /**
+     * Logical exclusive or, giving bool ({@code ARRAY_API}: {@code logical_xor}); see
+     * {@link #LOGICAL_AND}.
+     */
+    public static final BinaryUfunc LOGICAL_XOR = BinaryUfunc.builder("logical_xor").loopFor(t -> DType.BOOL).build();
+
+    /**
+     * Logical not, giving bool ({@code ARRAY_API}: {@code logical_not}); see {@link #LOGICAL_AND}.
+     */
+    public static final UnaryUfunc LOGICAL_NOT = UnaryUfunc.builder("logical_not").loopFor(t -> DType.BOOL).build();
+
+    /**
+     * Bitwise and of bool and integer operands ({@code ARRAY_API}: {@code bitwise_and});
+     * floating-point operands are a {@link org.numjvm.exception.DTypeException}.
+     */
+    public static final BinaryUfunc BITWISE_AND = BinaryUfunc.builder("bitwise_and").build();
+
+    /**
+     * Bitwise or of bool and integer operands ({@code ARRAY_API}: {@code bitwise_or}).
+     */
+    public static final BinaryUfunc BITWISE_OR = BinaryUfunc.builder("bitwise_or").build();
+
+    /**
+     * Bitwise exclusive or of bool and integer operands ({@code ARRAY_API}: {@code bitwise_xor}).
+     */
+    public static final BinaryUfunc BITWISE_XOR = BinaryUfunc.builder("bitwise_xor").build();
+
+    /**
+     * Bitwise not of integers, logical not of bool ({@code ARRAY_API}: {@code bitwise_invert};
+     * NumPy's {@code invert}).
+     */
+    public static final UnaryUfunc INVERT = UnaryUfunc.builder("invert").build();
+
+    /**
      * Returns every ufunc, in declaration order.
      *
      * @return the ufuncs
@@ -146,7 +190,8 @@ public final class Ufuncs {
     private static final class ByName {
         static final Map<String, Ufunc> MAP = build(List.of(
                 ADD, SUBTRACT, MULTIPLY, DIVIDE, FLOOR_DIVIDE, REMAINDER, POWER, MAXIMUM, MINIMUM, FMAX, FMIN,
-                EQUAL, NOT_EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL));
+                EQUAL, NOT_EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL, LOGICAL_AND, LOGICAL_OR, LOGICAL_XOR,
+                LOGICAL_NOT, BITWISE_AND, BITWISE_OR, BITWISE_XOR, INVERT));
 
         private static Map<String, Ufunc> build(List<Ufunc> all) {
             Map<String, Ufunc> m = new LinkedHashMap<>();
