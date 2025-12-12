@@ -1184,6 +1184,46 @@ public final class NDArray {
         return Ufuncs.GREATER_EQUAL.apply(this, other);
     }
 
+    /**
+     * Returns {@code -this}, element-wise: integers wrap; not defined for bool
+     * ({@link org.numjvm.ufunc.Ufuncs#NEGATIVE}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray negative() {
+        return Ufuncs.NEGATIVE.apply(this);
+    }
+
+    /**
+     * Returns {@code |this|}, element-wise: abs(MIN) wraps to MIN
+     * ({@link org.numjvm.ufunc.Ufuncs#ABSOLUTE}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray abs() {
+        return Ufuncs.ABSOLUTE.apply(this);
+    }
+
+    /**
+     * Returns {@code sign(this)}, element-wise: -1, 0 or 1; NaN for NaN
+     * ({@link org.numjvm.ufunc.Ufuncs#SIGN}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray sign() {
+        return Ufuncs.SIGN.apply(this);
+    }
+
+    /**
+     * Returns {@code this * this}, element-wise: integers wrap
+     * ({@link org.numjvm.ufunc.Ufuncs#SQUARE}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray square() {
+        return Ufuncs.SQUARE.apply(this);
+    }
+
     // ------------------------------------------------------------------ element access: helpers
 
     private long idx(long i, int axis) {

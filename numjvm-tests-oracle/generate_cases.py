@@ -351,6 +351,14 @@ def cases(arr):
             add(f"ufunc_invert_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}"], {"ufunc": "invert"},
                 lambda a: ufunc("invert", a))
 
+    # --- unary arithmetic --------------------------------------------------------------------
+    for name in ["negative", "positive", "absolute", "sign", "square"]:
+        for dt in NUMPY_REAL:
+            tag = NUMPY if dt == "bool" else ARRAY_API
+            add(f"ufunc_{name}_{dt}", tag, "ufunc", [f"edge_{dt}"], {"ufunc": name}, lambda a, name=name: ufunc(name, a))
+        add(f"ufunc_{name}_transposed", ARRAY_API, "ufunc", ["f8_hash_7x11"], {"ufunc": name, "view": "transpose"},
+            lambda a, name=name: ufunc(name, a.T))
+
     # integer powers with non-negative exponents wrap; floating-point special cases follow C99
     for dt in [d for d in NUMPY_REAL if d != "bool"]:
         add(f"ufunc_power_{dt}_exponents", NUMPY if dt.startswith(("int", "uint")) else ARRAY_API, "ufunc",

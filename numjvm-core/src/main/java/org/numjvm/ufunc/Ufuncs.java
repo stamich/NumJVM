@@ -165,6 +165,40 @@ public final class Ufuncs {
     public static final UnaryUfunc INVERT = UnaryUfunc.builder("invert").build();
 
     /**
+     * {@code -x} ({@code ARRAY_API}: {@code negative}). Integers wrap ({@code -MIN == MIN}, the
+     * negative of an unsigned value wraps); bool is not supported, as in NumPy.
+     */
+    public static final UnaryUfunc NEGATIVE = UnaryUfunc.builder("negative")
+            .unsupported(DType.BOOL, "boolean negative is not supported; use INVERT or LOGICAL_NOT instead")
+            .build();
+
+    /**
+     * {@code +x}, a copy ({@code ARRAY_API}: {@code positive}); bool is not supported, as in NumPy.
+     */
+    public static final UnaryUfunc POSITIVE = UnaryUfunc.builder("positive")
+            .unsupported(DType.BOOL, "ufunc 'positive' has no loop for (bool)")
+            .build();
+
+    /**
+     * {@code |x|} ({@code ARRAY_API}: {@code abs}; NumPy's {@code absolute}). {@code abs(MIN)}
+     * wraps to {@code MIN}; {@code abs(-0.0) == 0.0}; bool and unsigned values are unchanged.
+     */
+    public static final UnaryUfunc ABSOLUTE = UnaryUfunc.builder("absolute").build();
+
+    /**
+     * -1, 0 or 1 by the sign of {@code x} ({@code ARRAY_API}: {@code sign}); NaN gives NaN and
+     * {@code -0.0} gives {@code 0.0}. Bool is not supported, as in NumPy.
+     */
+    public static final UnaryUfunc SIGN = UnaryUfunc.builder("sign")
+            .unsupported(DType.BOOL, "ufunc 'sign' has no loop for (bool)")
+            .build();
+
+    /**
+     * {@code x * x} ({@code ARRAY_API}: {@code square}). Integers wrap; bool gives int8.
+     */
+    public static final UnaryUfunc SQUARE = UnaryUfunc.builder("square").build();
+
+    /**
      * Returns every ufunc, in declaration order.
      *
      * @return the ufuncs
@@ -191,7 +225,8 @@ public final class Ufuncs {
         static final Map<String, Ufunc> MAP = build(List.of(
                 ADD, SUBTRACT, MULTIPLY, DIVIDE, FLOOR_DIVIDE, REMAINDER, POWER, MAXIMUM, MINIMUM, FMAX, FMIN,
                 EQUAL, NOT_EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL, LOGICAL_AND, LOGICAL_OR, LOGICAL_XOR,
-                LOGICAL_NOT, BITWISE_AND, BITWISE_OR, BITWISE_XOR, INVERT));
+                LOGICAL_NOT, BITWISE_AND, BITWISE_OR, BITWISE_XOR, INVERT, NEGATIVE, POSITIVE, ABSOLUTE, SIGN,
+                SQUARE));
 
         private static Map<String, Ufunc> build(List<Ufunc> all) {
             Map<String, Ufunc> m = new LinkedHashMap<>();

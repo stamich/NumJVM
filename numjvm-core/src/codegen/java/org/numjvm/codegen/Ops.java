@@ -110,5 +110,21 @@ final class Ops {
             OpSpec.unary("invert", "~x; logical not for bool")
                     .on("!x", BOOL)
                     .on("~x", INT, LONG, ULONG)
-                    .build());
+                    .build(),
+            // unary arithmetic; integers wrap (abs(MIN) == MIN, -x of unsigned wraps)
+            OpSpec.unary("negative", "-x").on("-x", INT, LONG, ULONG, FLOAT, DOUBLE).build(),
+            OpSpec.unary("positive", "+x, a copy").on("x", INT, LONG, ULONG, FLOAT, DOUBLE).build(),
+            OpSpec.unary("absolute", "|x|; clears the sign of -0.0")
+                    .on("x", BOOL, ULONG)
+                    .on("Math.abs(x)", INT, LONG, FLOAT, DOUBLE)
+                    .build(),
+            // sign: -1, 0 or 1; NaN stays NaN and -0.0 gives 0.0 (NumPy, unlike Math.signum)
+            OpSpec.unary("sign", "-1, 0 or 1; NaN for NaN")
+                    .on("Integer.signum(x)", INT)
+                    .on("(long) Long.signum(x)", LONG)
+                    .on("x == 0 ? 0L : 1L", ULONG)
+                    .on("x > 0 ? 1f : x < 0 ? -1f : x == 0 ? 0f : x", FLOAT)
+                    .on("x > 0 ? 1.0 : x < 0 ? -1.0 : x == 0 ? 0.0 : x", DOUBLE)
+                    .build(),
+            OpSpec.unary("square", "x * x").on("x * x", INT, LONG, ULONG, FLOAT, DOUBLE).build());
 }

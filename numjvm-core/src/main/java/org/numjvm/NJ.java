@@ -1083,6 +1083,56 @@ public final class NJ {
         return Ufuncs.INVERT.apply(x);
     }
 
+    /**
+     * Element-wise {@code -x}: integers wrap; not defined for bool ({@link Ufuncs#NEGATIVE}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray negative(NDArray x) {
+        return Ufuncs.NEGATIVE.apply(x);
+    }
+
+    /**
+     * Element-wise {@code +x}: a copy; not defined for bool ({@link Ufuncs#POSITIVE}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray positive(NDArray x) {
+        return Ufuncs.POSITIVE.apply(x);
+    }
+
+    /**
+     * Element-wise {@code |x|}: abs(MIN) wraps to MIN ({@link Ufuncs#ABSOLUTE}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray abs(NDArray x) {
+        return Ufuncs.ABSOLUTE.apply(x);
+    }
+
+    /**
+     * Element-wise {@code sign(x)}: -1, 0 or 1; NaN for NaN ({@link Ufuncs#SIGN}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray sign(NDArray x) {
+        return Ufuncs.SIGN.apply(x);
+    }
+
+    /**
+     * Element-wise {@code x * x}: integers wrap ({@link Ufuncs#SQUARE}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray square(NDArray x) {
+        return Ufuncs.SQUARE.apply(x);
+    }
+
     // ------------------------------------------------------------------ type promotion
 
     /**

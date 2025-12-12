@@ -140,4 +140,24 @@ class UfuncsTest {
         assertThrows(DTypeException.class, () -> NJ.bitwiseXor(NJ.zeros(2), NJ.zeros(2)));
         assertThrows(DTypeException.class, () -> NJ.invert(NJ.zeros(2)));
     }
+
+    @Test
+    void unaryArithmetic() {
+        NDArray x = NJ.array(new double[]{-0.0, -2.5, Double.NaN, 3});
+        assertEquals(0, Double.compare(0.0, NJ.abs(x).getDouble(0)));
+        assertEquals(0, Double.compare(0.0, x.sign().getDouble(0)));
+        assertEquals(-1.0, x.sign().getDouble(1));
+        assertTrue(Double.isNaN(NJ.sign(x).getDouble(2)));
+        assertEquals(6.25, x.square().getDouble(1));
+        assertEquals(2.5, x.negative().getDouble(1));
+        assertEquals(-128, NJ.abs(NJ.array(DType.INT8, new double[]{-128})).getLong(0));
+        assertEquals(255, NJ.negative(NJ.array(DType.UINT8, new double[]{1})).getLong(0));
+        assertEquals(DType.INT8, Ufuncs.SQUARE.resultType(DType.BOOL));
+        assertEquals(DType.BOOL, Ufuncs.ABSOLUTE.resultType(DType.BOOL));
+        NDArray b = NJ.array(new boolean[]{true});
+        assertThrows(DTypeException.class, () -> NJ.negative(b));
+        assertThrows(DTypeException.class, () -> NJ.positive(b));
+        assertThrows(DTypeException.class, () -> NJ.sign(b));
+        assertEquals("<ufunc 'absolute'>", Ufuncs.ABSOLUTE.toString());
+    }
 }
