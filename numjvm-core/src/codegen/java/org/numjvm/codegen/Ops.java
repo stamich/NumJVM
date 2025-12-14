@@ -126,5 +126,21 @@ final class Ops {
                     .on("x > 0 ? 1f : x < 0 ? -1f : x == 0 ? 0f : x", FLOAT)
                     .on("x > 0 ? 1.0 : x < 0 ? -1.0 : x == 0 ? 0.0 : x", DOUBLE)
                     .build(),
-            OpSpec.unary("square", "x * x").on("x * x", INT, LONG, ULONG, FLOAT, DOUBLE).build());
+            OpSpec.unary("square", "x * x").on("x * x", INT, LONG, ULONG, FLOAT, DOUBLE).build(),
+            // floating-point functions (D6): sqrt is correctly rounded; the others use
+            // java.lang.Math and may differ from NumPy by a few ulp. float16, bfloat16 and
+            // float32 are computed in double and rounded once; integer and bool inputs are
+            // converted by the ufunc to the first float loop they cast to safely.
+            OpSpec.unary("sqrt", "square root, correctly rounded")
+                    .on("(float) Math.sqrt(x)", FLOAT).on("Math.sqrt(x)", DOUBLE).build(),
+            OpSpec.unary("exp", "e to the power x")
+                    .on("(float) Math.exp(x)", FLOAT).on("Math.exp(x)", DOUBLE).build(),
+            OpSpec.unary("log", "natural logarithm")
+                    .on("(float) Math.log(x)", FLOAT).on("Math.log(x)", DOUBLE).build(),
+            OpSpec.unary("sin", "sine")
+                    .on("(float) Math.sin(x)", FLOAT).on("Math.sin(x)", DOUBLE).build(),
+            OpSpec.unary("cos", "cosine")
+                    .on("(float) Math.cos(x)", FLOAT).on("Math.cos(x)", DOUBLE).build(),
+            OpSpec.unary("tanh", "hyperbolic tangent")
+                    .on("(float) Math.tanh(x)", FLOAT).on("Math.tanh(x)", DOUBLE).build());
 }

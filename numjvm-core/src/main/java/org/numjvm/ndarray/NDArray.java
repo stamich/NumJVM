@@ -1224,6 +1224,66 @@ public final class NDArray {
         return Ufuncs.SQUARE.apply(this);
     }
 
+    /**
+     * Returns {@code sqrt(this)}, element-wise: integers give the first float dtype they convert to safely
+     * ({@link org.numjvm.ufunc.Ufuncs#SQRT}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray sqrt() {
+        return Ufuncs.SQRT.apply(this);
+    }
+
+    /**
+     * Returns {@code exp(this)}, element-wise: integers give the first float dtype they convert to safely
+     * ({@link org.numjvm.ufunc.Ufuncs#EXP}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray exp() {
+        return Ufuncs.EXP.apply(this);
+    }
+
+    /**
+     * Returns {@code log(this)}, element-wise: integers give the first float dtype they convert to safely
+     * ({@link org.numjvm.ufunc.Ufuncs#LOG}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray log() {
+        return Ufuncs.LOG.apply(this);
+    }
+
+    /**
+     * Returns {@code sin(this)}, element-wise: integers give the first float dtype they convert to safely
+     * ({@link org.numjvm.ufunc.Ufuncs#SIN}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray sin() {
+        return Ufuncs.SIN.apply(this);
+    }
+
+    /**
+     * Returns {@code cos(this)}, element-wise: integers give the first float dtype they convert to safely
+     * ({@link org.numjvm.ufunc.Ufuncs#COS}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray cos() {
+        return Ufuncs.COS.apply(this);
+    }
+
+    /**
+     * Returns {@code tanh(this)}, element-wise: integers give the first float dtype they convert to safely
+     * ({@link org.numjvm.ufunc.Ufuncs#TANH}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray tanh() {
+        return Ufuncs.TANH.apply(this);
+    }
+
     // ------------------------------------------------------------------ element access: helpers
 
     private long idx(long i, int axis) {

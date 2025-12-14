@@ -199,6 +199,54 @@ public final class Ufuncs {
     public static final UnaryUfunc SQUARE = UnaryUfunc.builder("square").build();
 
     /**
+     * The square root, correctly rounded ({@code ARRAY_API}: {@code sqrt}).
+     * Exact, as IEEE 754 requires.
+     * Integer and bool inputs give the first float dtype they convert to safely: float16
+     * for bool, int8 and uint8, float32 for 16-bit integers, float64 otherwise.
+     */
+    public static final UnaryUfunc SQRT = UnaryUfunc.builder("sqrt").build();
+
+    /**
+     * E to the power {@code x} ({@code ARRAY_API}: {@code exp}).
+     * Computed with {@link Math#exp(double)}; results may differ from NumPy by up to 4 ulp (decision D6).
+     * Integer and bool inputs give the first float dtype they convert to safely: float16
+     * for bool, int8 and uint8, float32 for 16-bit integers, float64 otherwise.
+     */
+    public static final UnaryUfunc EXP = UnaryUfunc.builder("exp").build();
+
+    /**
+     * The natural logarithm; {@code log(0) == -inf}, negative values give nan ({@code ARRAY_API}: {@code log}).
+     * Computed with {@link Math#log(double)}; results may differ from NumPy by up to 4 ulp (decision D6).
+     * Integer and bool inputs give the first float dtype they convert to safely: float16
+     * for bool, int8 and uint8, float32 for 16-bit integers, float64 otherwise.
+     */
+    public static final UnaryUfunc LOG = UnaryUfunc.builder("log").build();
+
+    /**
+     * The sine of {@code x} in radians ({@code ARRAY_API}: {@code sin}).
+     * Computed with {@link Math#sin(double)}; results may differ from NumPy by up to 4 ulp (decision D6).
+     * Integer and bool inputs give the first float dtype they convert to safely: float16
+     * for bool, int8 and uint8, float32 for 16-bit integers, float64 otherwise.
+     */
+    public static final UnaryUfunc SIN = UnaryUfunc.builder("sin").build();
+
+    /**
+     * The cosine of {@code x} in radians ({@code ARRAY_API}: {@code cos}).
+     * Computed with {@link Math#cos(double)}; results may differ from NumPy by up to 4 ulp (decision D6).
+     * Integer and bool inputs give the first float dtype they convert to safely: float16
+     * for bool, int8 and uint8, float32 for 16-bit integers, float64 otherwise.
+     */
+    public static final UnaryUfunc COS = UnaryUfunc.builder("cos").build();
+
+    /**
+     * The hyperbolic tangent ({@code ARRAY_API}: {@code tanh}).
+     * Computed with {@link Math#tanh(double)}; results may differ from NumPy by up to 4 ulp (decision D6).
+     * Integer and bool inputs give the first float dtype they convert to safely: float16
+     * for bool, int8 and uint8, float32 for 16-bit integers, float64 otherwise.
+     */
+    public static final UnaryUfunc TANH = UnaryUfunc.builder("tanh").build();
+
+    /**
      * Returns every ufunc, in declaration order.
      *
      * @return the ufuncs
@@ -226,7 +274,7 @@ public final class Ufuncs {
                 ADD, SUBTRACT, MULTIPLY, DIVIDE, FLOOR_DIVIDE, REMAINDER, POWER, MAXIMUM, MINIMUM, FMAX, FMIN,
                 EQUAL, NOT_EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL, LOGICAL_AND, LOGICAL_OR, LOGICAL_XOR,
                 LOGICAL_NOT, BITWISE_AND, BITWISE_OR, BITWISE_XOR, INVERT, NEGATIVE, POSITIVE, ABSOLUTE, SIGN,
-                SQUARE));
+                SQUARE, SQRT, EXP, LOG, SIN, COS, TANH));
 
         private static Map<String, Ufunc> build(List<Ufunc> all) {
             Map<String, Ufunc> m = new LinkedHashMap<>();

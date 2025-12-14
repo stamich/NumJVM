@@ -1133,6 +1133,66 @@ public final class NJ {
         return Ufuncs.SQUARE.apply(x);
     }
 
+    /**
+     * Element-wise {@code sqrt(x)}: integers give the first float dtype they convert to safely ({@link Ufuncs#SQRT}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray sqrt(NDArray x) {
+        return Ufuncs.SQRT.apply(x);
+    }
+
+    /**
+     * Element-wise {@code exp(x)}: integers give the first float dtype they convert to safely ({@link Ufuncs#EXP}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray exp(NDArray x) {
+        return Ufuncs.EXP.apply(x);
+    }
+
+    /**
+     * Element-wise {@code log(x)}: integers give the first float dtype they convert to safely ({@link Ufuncs#LOG}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray log(NDArray x) {
+        return Ufuncs.LOG.apply(x);
+    }
+
+    /**
+     * Element-wise {@code sin(x)}: integers give the first float dtype they convert to safely ({@link Ufuncs#SIN}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray sin(NDArray x) {
+        return Ufuncs.SIN.apply(x);
+    }
+
+    /**
+     * Element-wise {@code cos(x)}: integers give the first float dtype they convert to safely ({@link Ufuncs#COS}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray cos(NDArray x) {
+        return Ufuncs.COS.apply(x);
+    }
+
+    /**
+     * Element-wise {@code tanh(x)}: integers give the first float dtype they convert to safely ({@link Ufuncs#TANH}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray tanh(NDArray x) {
+        return Ufuncs.TANH.apply(x);
+    }
+
     // ------------------------------------------------------------------ type promotion
 
     /**

@@ -80,6 +80,12 @@ def inputs():
         arr[f"pow_x_{dt}"] = np.array([1.0, 1.0, -1.0, -1.0, np.nan, 2.0, 0.0, -0.0, -8.0, 0.5], dtype=dt)
         arr[f"pow_y_{dt}"] = np.array([np.nan, np.inf, np.inf, -np.inf, 0.0, np.nan, -1.0, -1.0, 1 / 3, -np.inf],
                                       dtype=dt)
+    # 64 values per float dtype for the transcendental functions: [-12, 12) and (0, 1000)
+    for dt in ["float16", "float32", "float64"]:
+        u = hash_unit(64)
+        arr[f"dense_{dt}"] = (u * 24.0 - 12.0).astype(dt)
+        # ldexp is exact; exp2 is not correctly rounded and its last bit depends on the CPU
+        arr[f"dense_pos_{dt}"] = np.ldexp(1.0 + u, np.floor(u * 1e6).astype(np.int64) % 20 - 10).astype(dt)
     arr["cmp_i8"] = np.array([2 ** 63 - 1, -1, 5, -2 ** 63, 0, 2 ** 53 + 1], dtype=np.int64)
     arr["cmp_u8"] = np.array([2 ** 63, 2 ** 64 - 1, 5, 0, 0, 2 ** 53], dtype=np.uint64)
     arr["nan_x_float64"] = np.array([np.nan, 1.0, np.nan, -np.inf, 2.0, np.inf])
@@ -128,7 +134,7 @@ def promotion_tag(a, b):
 # the last place (NumPy uses its own SIMD implementations or the C library, NumJVM uses
 # java.lang.Math). Such cases carry "ulp" in their parameters; OracleTest and --check compare
 # them with that tolerance instead of bit for bit.
-ULP_TOLERANCE = {"power": 4}
+ULP_TOLERANCE = {"power": 4, "exp": 4, "log": 4, "sin": 4, "cos": 4, "tanh": 4}
 
 
 def ulp_distance(a, b):
@@ -358,6 +364,16 @@ def cases(arr):
             add(f"ufunc_{name}_{dt}", tag, "ufunc", [f"edge_{dt}"], {"ufunc": name}, lambda a, name=name: ufunc(name, a))
         add(f"ufunc_{name}_transposed", ARRAY_API, "ufunc", ["f8_hash_7x11"], {"ufunc": name, "view": "transpose"},
             lambda a, name=name: ufunc(name, a.T))
+
+    # --- floating-point functions (decision D6) -------------------------------------------------
+    for name in ["sqrt", "exp", "log", "sin", "cos", "tanh"]:
+        for dt in NUMPY_REAL:
+            add(f"ufunc_{name}_{dt}", NUMPY if not dt.startswith("float") else ARRAY_API, "ufunc", [f"edge_{dt}"],
+                {"ufunc": name}, lambda a, name=name: ufunc(name, a))
+        for dt in ["float16", "float32", "float64"]:
+            src = "dense_pos" if name in ("sqrt", "log") else "dense"
+            add(f"ufunc_{name}_{dt}_{src}", ARRAY_API, "ufunc", [f"{src}_{dt}"], {"ufunc": name},
+                lambda a, name=name: ufunc(name, a))
 
     # integer powers with non-negative exponents wrap; floating-point special cases follow C99
     for dt in [d for d in NUMPY_REAL if d != "bool"]:

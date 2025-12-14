@@ -160,4 +160,24 @@ class UfuncsTest {
         assertThrows(DTypeException.class, () -> NJ.sign(b));
         assertEquals("<ufunc 'absolute'>", Ufuncs.ABSOLUTE.toString());
     }
+
+    @Test
+    void floatingPointFunctions() {
+        // NumPy: np.sqrt of bool/int8/uint8 is float16, of int16 float32, of int32/int64 float64
+        assertEquals(DType.FLOAT16, Ufuncs.SQRT.resultType(DType.BOOL));
+        assertEquals(DType.FLOAT16, Ufuncs.EXP.resultType(DType.INT8));
+        assertEquals(DType.FLOAT16, Ufuncs.LOG.resultType(DType.UINT8));
+        assertEquals(DType.FLOAT32, Ufuncs.SIN.resultType(DType.INT16));
+        assertEquals(DType.FLOAT64, Ufuncs.COS.resultType(DType.INT32));
+        assertEquals(DType.FLOAT64, Ufuncs.TANH.resultType(DType.UINT64));
+        assertEquals(DType.BFLOAT16, Ufuncs.SQRT.resultType(DType.BFLOAT16));
+        assertEquals(3.0, NJ.sqrt(NJ.array(new double[]{9})).getDouble(0));
+        assertEquals(Double.NEGATIVE_INFINITY, NJ.array(new double[]{0}).log().getDouble(0));
+        assertTrue(Double.isNaN(NJ.log(NJ.array(new double[]{-1})).getDouble(0)));
+        assertEquals(1.0, NJ.exp(NJ.zeros(1)).getDouble(0));
+        assertEquals(0.0, NJ.sin(NJ.zeros(1)).getDouble(0));
+        assertEquals(1.0, NJ.zeros(1).cos().getDouble(0));
+        assertEquals(1.0, NJ.tanh(NJ.array(new double[]{100})).getDouble(0));
+        assertThrows(DTypeException.class, () -> NJ.sqrt(NJ.zeros(DType.COMPLEX64, 1)));
+    }
 }
