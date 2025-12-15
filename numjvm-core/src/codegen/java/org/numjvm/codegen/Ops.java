@@ -142,5 +142,18 @@ final class Ops {
             OpSpec.unary("cos", "cosine")
                     .on("(float) Math.cos(x)", FLOAT).on("Math.cos(x)", DOUBLE).build(),
             OpSpec.unary("tanh", "hyperbolic tangent")
-                    .on("(float) Math.tanh(x)", FLOAT).on("Math.tanh(x)", DOUBLE).build());
+                    .on("(float) Math.tanh(x)", FLOAT).on("Math.tanh(x)", DOUBLE).build(),
+            // rounding; integers and bool are already integral and keep their dtype
+            OpSpec.unary("floor", "the largest integer <= x")
+                    .on("x", BOOL, INT, LONG, ULONG)
+                    .on("(float) Math.floor(x)", FLOAT).on("Math.floor(x)", DOUBLE).build(),
+            OpSpec.unary("ceil", "the smallest integer >= x")
+                    .on("x", BOOL, INT, LONG, ULONG)
+                    .on("(float) Math.ceil(x)", FLOAT).on("Math.ceil(x)", DOUBLE).build(),
+            OpSpec.unary("trunc", "x rounded toward zero")
+                    .on("x", BOOL, INT, LONG, ULONG)
+                    .on("(float) (x < 0 ? Math.ceil(x) : Math.floor(x))", FLOAT)
+                    .on("x < 0 ? Math.ceil(x) : Math.floor(x)", DOUBLE).build(),
+            OpSpec.unary("rint", "x rounded to the nearest integer, halves to even")
+                    .on("(float) Math.rint(x)", FLOAT).on("Math.rint(x)", DOUBLE).build());
 }

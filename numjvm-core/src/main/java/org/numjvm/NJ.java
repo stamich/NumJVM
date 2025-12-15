@@ -14,6 +14,7 @@ import org.numjvm.internal.memory.NativeMemoryTracker;
 import org.numjvm.memory.MemoryStats;
 import org.numjvm.memory.NJScope;
 import org.numjvm.ndarray.NDArray;
+import org.numjvm.ufunc.Rounding;
 import org.numjvm.ufunc.Ufuncs;
 
 /**
@@ -1191,6 +1192,68 @@ public final class NJ {
      */
     public static NDArray tanh(NDArray x) {
         return Ufuncs.TANH.apply(x);
+    }
+
+    /**
+     * Element-wise {@code trunc(x)}: integers keep their dtype ({@link Ufuncs#TRUNC}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray trunc(NDArray x) {
+        return Ufuncs.TRUNC.apply(x);
+    }
+
+    /**
+     * Element-wise {@code rint(x)}: halves to even; integers give a float dtype ({@link Ufuncs#RINT}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray rint(NDArray x) {
+        return Ufuncs.RINT.apply(x);
+    }
+
+    /**
+     * Rounds to the nearest integer, halves to even ({@link Rounding#round(NDArray)}).
+     *
+     * @param x the array
+     * @return a new array; integer arrays keep their dtype
+     */
+    public static NDArray round(NDArray x) {
+        return Rounding.round(x);
+    }
+
+    /**
+     * Rounds to {@code decimals} decimal places, halves to even, as NumPy's {@code np.round}
+     * ({@link Rounding#round(NDArray, int)}).
+     *
+     * @param x        the array
+     * @param decimals decimal places; negative values round to tens, hundreds, ...
+     * @return a new array of the same dtype
+     */
+    public static NDArray round(NDArray x, int decimals) {
+        return Rounding.round(x, decimals);
+    }
+
+    /**
+     * Element-wise {@code floor(x)}: integers keep their dtype ({@link Ufuncs#FLOOR}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray floor(NDArray x) {
+        return Ufuncs.FLOOR.apply(x);
+    }
+
+    /**
+     * Element-wise {@code ceil(x)}: integers keep their dtype ({@link Ufuncs#CEIL}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray ceil(NDArray x) {
+        return Ufuncs.CEIL.apply(x);
     }
 
     // ------------------------------------------------------------------ type promotion

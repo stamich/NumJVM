@@ -166,6 +166,7 @@ class OracleTest {
             case "sum_generated" -> ValidationKernels.sumFloat64(hashUnit(((Number) p.get("n")).intValue()));
             case "repr" -> in.get(0);
             case "ufunc" -> ufunc(in, p);
+            case "round" -> NJ.round(in.get(0), ((Number) p.get("decimals")).intValue());
             case "result_type" -> TypePromotion.resultType(((List<Object>) p.get("dtypes")).stream()
                     .map(o -> DType.fromName((String) o)).toArray(DType[]::new));
             case "can_cast" -> null;

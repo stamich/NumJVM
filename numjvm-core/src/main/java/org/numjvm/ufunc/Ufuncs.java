@@ -247,6 +247,30 @@ public final class Ufuncs {
     public static final UnaryUfunc TANH = UnaryUfunc.builder("tanh").build();
 
     /**
+     * The largest integer {@code <= x} ({@code ARRAY_API}: {@code floor}). Integer and bool
+     * arrays keep their dtype and values, as in NumPy 2.
+     */
+    public static final UnaryUfunc FLOOR = UnaryUfunc.builder("floor").build();
+
+    /**
+     * The smallest integer {@code >= x} ({@code ARRAY_API}: {@code ceil}); see {@link #FLOOR}.
+     */
+    public static final UnaryUfunc CEIL = UnaryUfunc.builder("ceil").build();
+
+    /**
+     * {@code x} rounded toward zero ({@code ARRAY_API}: {@code trunc}); {@code trunc(-0.5) == -0.0};
+     * see {@link #FLOOR}.
+     */
+    public static final UnaryUfunc TRUNC = UnaryUfunc.builder("trunc").build();
+
+    /**
+     * {@code x} rounded to the nearest integer, halves to even ({@code NUMPY_COMPATIBILITY}:
+     * {@code rint}). Integer and bool inputs give a float dtype, as in NumPy; for rounding
+     * that keeps integer dtypes and supports decimals, see {@link Rounding#round(NDArray, int)}.
+     */
+    public static final UnaryUfunc RINT = UnaryUfunc.builder("rint").build();
+
+    /**
      * Returns every ufunc, in declaration order.
      *
      * @return the ufuncs
@@ -274,7 +298,7 @@ public final class Ufuncs {
                 ADD, SUBTRACT, MULTIPLY, DIVIDE, FLOOR_DIVIDE, REMAINDER, POWER, MAXIMUM, MINIMUM, FMAX, FMIN,
                 EQUAL, NOT_EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL, LOGICAL_AND, LOGICAL_OR, LOGICAL_XOR,
                 LOGICAL_NOT, BITWISE_AND, BITWISE_OR, BITWISE_XOR, INVERT, NEGATIVE, POSITIVE, ABSOLUTE, SIGN,
-                SQUARE, SQRT, EXP, LOG, SIN, COS, TANH));
+                SQUARE, SQRT, EXP, LOG, SIN, COS, TANH, FLOOR, CEIL, TRUNC, RINT));
 
         private static Map<String, Ufunc> build(List<Ufunc> all) {
             Map<String, Ufunc> m = new LinkedHashMap<>();

@@ -86,6 +86,14 @@ def inputs():
         arr[f"dense_{dt}"] = (u * 24.0 - 12.0).astype(dt)
         # ldexp is exact; exp2 is not correctly rounded and its last bit depends on the CPU
         arr[f"dense_pos_{dt}"] = np.ldexp(1.0 + u, np.floor(u * 1e6).astype(np.int64) % 20 - 10).astype(dt)
+    arr["halves_float64"] = np.array([-2.5, -1.5, -0.5, -0.0, 0.5, 1.5, 2.5, 3.5, 1e300, -0.49999999999999994])
+    for dt in ["float16", "float32", "float64"]:
+        arr[f"round_in_{dt}"] = np.array([1.005, 2.675, 0.125, -0.125, 1234.5, -1250.0, 1.5e-5, 99.95,
+                                          65000.0 if dt == "float16" else 1e30, np.nan, np.inf], dtype=dt)
+    arr["round_int_int8"] = np.array([125, 127, -125, -128, 15, -15, 25, -25], dtype=np.int8)
+    arr["round_int_uint8"] = np.array([125, 255, 15, 25, 35, 0, 254, 245], dtype=np.uint8)
+    arr["round_int_int32"] = np.array([125, 135, -125, -2 ** 31 + 50, 2 ** 31 - 50, 15, 250, -350], dtype=np.int32)
+    arr["round_int_int64"] = np.array([2 ** 62 + 1, 2 ** 62 + 15, -15, 25, -25, 2 ** 53 + 5, -2 ** 63, 7], dtype=np.int64)
     arr["cmp_i8"] = np.array([2 ** 63 - 1, -1, 5, -2 ** 63, 0, 2 ** 53 + 1], dtype=np.int64)
     arr["cmp_u8"] = np.array([2 ** 63, 2 ** 64 - 1, 5, 0, 0, 2 ** 53], dtype=np.uint64)
     arr["nan_x_float64"] = np.array([np.nan, 1.0, np.nan, -np.inf, 2.0, np.inf])
@@ -154,6 +162,11 @@ def ulp_distance(a, b):
 
     d = np.abs(line(a) - line(b))
     return np.where(np.isnan(a) & np.isnan(b), 0, d)
+
+
+def round_(a, decimals):
+    with np.errstate(all="ignore"):
+        return np.round(a, decimals)
 
 
 def ufunc(name, *args):
@@ -375,6 +388,32 @@ def cases(arr):
             add(f"ufunc_{name}_{dt}_{src}", ARRAY_API, "ufunc", [f"{src}_{dt}"], {"ufunc": name},
                 lambda a, name=name: ufunc(name, a))
 
+    # --- rounding -----------------------------------------------------------------------------
+    for name in ["floor", "ceil", "trunc", "rint"]:
+        for dt in NUMPY_REAL:
+            add(f"ufunc_{name}_{dt}", ARRAY_API if name != "rint" else NUMPY, "ufunc", [f"edge_{dt}"],
+                {"ufunc": name}, lambda a, name=name: ufunc(name, a))
+        add(f"ufunc_{name}_halves", ARRAY_API if name != "rint" else NUMPY, "ufunc", ["halves_float64"],
+            {"ufunc": name}, lambda a, name=name: ufunc(name, a))
+    for dt in NUMPY_REAL:
+        for d in [0, 1, 2, -1, -2]:
+            if d < 0 and dt[0] in "iu":
+                # rounding the extreme edge values leaves the integer range, and NumPy leaves
+                # the conversion back undefined; round_ints_* covers negative decimals
+                continue
+            if dt == "bool" and d != 0:
+                add(f"round_{dt}_{d}", NUMPY, "round", [f"edge_{dt}"], {"decimals": d}, None)
+                continue
+            add(f"round_{dt}_{d}", ARRAY_API if d == 0 else NUMPY, "round", [f"edge_{dt}"], {"decimals": d},
+                lambda a, d=d: round_(a, d))
+    for d in [0, 1, 2, 3, -1, -3, 10, 30]:
+        for dt in ["float16", "float32", "float64"]:
+            add(f"round_decimals_{dt}_{d}", NUMPY, "round", [f"round_in_{dt}"], {"decimals": d},
+                lambda a, d=d: round_(a, d))
+    for dt in ["int8", "uint8", "int32", "int64"]:
+        add(f"round_ints_{dt}_-1", NUMPY, "round", [f"round_int_{dt}"], {"decimals": -1}, lambda a: round_(a, -1))
+        add(f"round_ints_{dt}_-2", NUMPY, "round", [f"round_int_{dt}"], {"decimals": -2}, lambda a: round_(a, -2))
+
     # integer powers with non-negative exponents wrap; floating-point special cases follow C99
     for dt in [d for d in NUMPY_REAL if d != "bool"]:
         add(f"ufunc_power_{dt}_exponents", NUMPY if dt.startswith(("int", "uint")) else ARRAY_API, "ufunc",
@@ -435,6 +474,9 @@ def cases(arr):
 
 def generate(out_dir):
     os.makedirs(out_dir, exist_ok=True)
+    for f in os.listdir(out_dir):  # drop fixtures of cases that no longer exist
+        if f.endswith(".npy") or f == "manifest.json":
+            os.remove(os.path.join(out_dir, f))
     arr = inputs()
     for name, a in arr.items():
         np.save(os.path.join(out_dir, f"in_{name}.npy"), a)

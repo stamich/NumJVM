@@ -17455,6 +17455,2418 @@
   },
   {
    "expect": {
+    "dtype": "|b1",
+    "file": "expected_ufunc_floor_bool.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_floor_bool",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|i1",
+    "file": "expected_ufunc_floor_int8.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_floor_int8",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|u1",
+    "file": "expected_ufunc_floor_uint8.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_floor_uint8",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i2",
+    "file": "expected_ufunc_floor_int16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_floor_int16",
+   "inputs": [
+    "in_edge_int16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u2",
+    "file": "expected_ufunc_floor_uint16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_floor_uint16",
+   "inputs": [
+    "in_edge_uint16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_ufunc_floor_int32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_floor_int32",
+   "inputs": [
+    "in_edge_int32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u4",
+    "file": "expected_ufunc_floor_uint32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_floor_uint32",
+   "inputs": [
+    "in_edge_uint32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_ufunc_floor_int64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_floor_int64",
+   "inputs": [
+    "in_edge_int64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_ufunc_floor_uint64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_floor_uint64",
+   "inputs": [
+    "in_edge_uint64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_ufunc_floor_float16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_floor_float16",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_ufunc_floor_float32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_floor_float32",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_ufunc_floor_float64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_floor_float64",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_ufunc_floor_halves.npy",
+    "fortran": false,
+    "shape": [
+     10
+    ]
+   },
+   "id": "ufunc_floor_halves",
+   "inputs": [
+    "in_halves_float64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_ufunc_ceil_bool.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_ceil_bool",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "ceil"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|i1",
+    "file": "expected_ufunc_ceil_int8.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_ceil_int8",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "ceil"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|u1",
+    "file": "expected_ufunc_ceil_uint8.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_ceil_uint8",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "ceil"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i2",
+    "file": "expected_ufunc_ceil_int16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_ceil_int16",
+   "inputs": [
+    "in_edge_int16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "ceil"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u2",
+    "file": "expected_ufunc_ceil_uint16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_ceil_uint16",
+   "inputs": [
+    "in_edge_uint16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "ceil"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_ufunc_ceil_int32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_ceil_int32",
+   "inputs": [
+    "in_edge_int32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "ceil"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u4",
+    "file": "expected_ufunc_ceil_uint32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_ceil_uint32",
+   "inputs": [
+    "in_edge_uint32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "ceil"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_ufunc_ceil_int64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_ceil_int64",
+   "inputs": [
+    "in_edge_int64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "ceil"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_ufunc_ceil_uint64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_ceil_uint64",
+   "inputs": [
+    "in_edge_uint64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "ceil"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_ufunc_ceil_float16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_ceil_float16",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "ceil"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_ufunc_ceil_float32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_ceil_float32",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "ceil"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_ufunc_ceil_float64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_ceil_float64",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "ceil"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_ufunc_ceil_halves.npy",
+    "fortran": false,
+    "shape": [
+     10
+    ]
+   },
+   "id": "ufunc_ceil_halves",
+   "inputs": [
+    "in_halves_float64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "ceil"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_ufunc_trunc_bool.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_trunc_bool",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "trunc"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|i1",
+    "file": "expected_ufunc_trunc_int8.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_trunc_int8",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "trunc"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|u1",
+    "file": "expected_ufunc_trunc_uint8.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_trunc_uint8",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "trunc"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i2",
+    "file": "expected_ufunc_trunc_int16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_trunc_int16",
+   "inputs": [
+    "in_edge_int16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "trunc"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u2",
+    "file": "expected_ufunc_trunc_uint16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_trunc_uint16",
+   "inputs": [
+    "in_edge_uint16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "trunc"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_ufunc_trunc_int32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_trunc_int32",
+   "inputs": [
+    "in_edge_int32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "trunc"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u4",
+    "file": "expected_ufunc_trunc_uint32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_trunc_uint32",
+   "inputs": [
+    "in_edge_uint32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "trunc"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_ufunc_trunc_int64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_trunc_int64",
+   "inputs": [
+    "in_edge_int64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "trunc"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_ufunc_trunc_uint64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_trunc_uint64",
+   "inputs": [
+    "in_edge_uint64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "trunc"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_ufunc_trunc_float16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_trunc_float16",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "trunc"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_ufunc_trunc_float32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_trunc_float32",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "trunc"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_ufunc_trunc_float64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_trunc_float64",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "trunc"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_ufunc_trunc_halves.npy",
+    "fortran": false,
+    "shape": [
+     10
+    ]
+   },
+   "id": "ufunc_trunc_halves",
+   "inputs": [
+    "in_halves_float64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "trunc"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_ufunc_rint_bool.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_bool",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_ufunc_rint_int8.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_int8",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_ufunc_rint_uint8.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_uint8",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_ufunc_rint_int16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_int16",
+   "inputs": [
+    "in_edge_int16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_ufunc_rint_uint16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_uint16",
+   "inputs": [
+    "in_edge_uint16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_ufunc_rint_int32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_int32",
+   "inputs": [
+    "in_edge_int32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_ufunc_rint_uint32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_uint32",
+   "inputs": [
+    "in_edge_uint32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_ufunc_rint_int64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_int64",
+   "inputs": [
+    "in_edge_int64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_ufunc_rint_uint64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_uint64",
+   "inputs": [
+    "in_edge_uint64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_ufunc_rint_float16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_float16",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_ufunc_rint_float32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_float32",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_ufunc_rint_float64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_float64",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_ufunc_rint_halves.npy",
+    "fortran": false,
+    "shape": [
+     10
+    ]
+   },
+   "id": "ufunc_rint_halves",
+   "inputs": [
+    "in_halves_float64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_round_bool_0.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_bool_0",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "error": true
+   },
+   "id": "round_bool_1",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "error": true
+   },
+   "id": "round_bool_2",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "error": true
+   },
+   "id": "round_bool_-1",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "error": true
+   },
+   "id": "round_bool_-2",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|i1",
+    "file": "expected_round_int8_0.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_int8_0",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|i1",
+    "file": "expected_round_int8_1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_int8_1",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|i1",
+    "file": "expected_round_int8_2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_int8_2",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|u1",
+    "file": "expected_round_uint8_0.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_uint8_0",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|u1",
+    "file": "expected_round_uint8_1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_uint8_1",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|u1",
+    "file": "expected_round_uint8_2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_uint8_2",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i2",
+    "file": "expected_round_int16_0.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_int16_0",
+   "inputs": [
+    "in_edge_int16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i2",
+    "file": "expected_round_int16_1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_int16_1",
+   "inputs": [
+    "in_edge_int16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i2",
+    "file": "expected_round_int16_2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_int16_2",
+   "inputs": [
+    "in_edge_int16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<u2",
+    "file": "expected_round_uint16_0.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_uint16_0",
+   "inputs": [
+    "in_edge_uint16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u2",
+    "file": "expected_round_uint16_1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_uint16_1",
+   "inputs": [
+    "in_edge_uint16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<u2",
+    "file": "expected_round_uint16_2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_uint16_2",
+   "inputs": [
+    "in_edge_uint16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_round_int32_0.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_int32_0",
+   "inputs": [
+    "in_edge_int32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_round_int32_1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_int32_1",
+   "inputs": [
+    "in_edge_int32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_round_int32_2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_int32_2",
+   "inputs": [
+    "in_edge_int32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<u4",
+    "file": "expected_round_uint32_0.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_uint32_0",
+   "inputs": [
+    "in_edge_uint32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u4",
+    "file": "expected_round_uint32_1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_uint32_1",
+   "inputs": [
+    "in_edge_uint32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<u4",
+    "file": "expected_round_uint32_2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_uint32_2",
+   "inputs": [
+    "in_edge_uint32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_round_int64_0.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_int64_0",
+   "inputs": [
+    "in_edge_int64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_round_int64_1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_int64_1",
+   "inputs": [
+    "in_edge_int64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_round_int64_2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_int64_2",
+   "inputs": [
+    "in_edge_int64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_round_uint64_0.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_uint64_0",
+   "inputs": [
+    "in_edge_uint64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_round_uint64_1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_uint64_1",
+   "inputs": [
+    "in_edge_uint64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_round_uint64_2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_uint64_2",
+   "inputs": [
+    "in_edge_uint64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_round_float16_0.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float16_0",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_round_float16_1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float16_1",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_round_float16_2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float16_2",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_round_float16_-1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float16_-1",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_round_float16_-2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float16_-2",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_round_float32_0.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float32_0",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_round_float32_1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float32_1",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_round_float32_2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float32_2",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_round_float32_-1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float32_-1",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_round_float32_-2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float32_-2",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_round_float64_0.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float64_0",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_round_float64_1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float64_1",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_round_float64_2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float64_2",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_round_float64_-1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float64_-1",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_round_float64_-2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_float64_-2",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_round_decimals_float16_0.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float16_0",
+   "inputs": [
+    "in_round_in_float16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_round_decimals_float32_0.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float32_0",
+   "inputs": [
+    "in_round_in_float32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_round_decimals_float64_0.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float64_0",
+   "inputs": [
+    "in_round_in_float64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_round_decimals_float16_1.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float16_1",
+   "inputs": [
+    "in_round_in_float16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_round_decimals_float32_1.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float32_1",
+   "inputs": [
+    "in_round_in_float32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_round_decimals_float64_1.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float64_1",
+   "inputs": [
+    "in_round_in_float64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_round_decimals_float16_2.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float16_2",
+   "inputs": [
+    "in_round_in_float16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_round_decimals_float32_2.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float32_2",
+   "inputs": [
+    "in_round_in_float32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_round_decimals_float64_2.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float64_2",
+   "inputs": [
+    "in_round_in_float64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_round_decimals_float16_3.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float16_3",
+   "inputs": [
+    "in_round_in_float16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 3
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_round_decimals_float32_3.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float32_3",
+   "inputs": [
+    "in_round_in_float32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 3
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_round_decimals_float64_3.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float64_3",
+   "inputs": [
+    "in_round_in_float64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 3
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_round_decimals_float16_-1.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float16_-1",
+   "inputs": [
+    "in_round_in_float16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_round_decimals_float32_-1.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float32_-1",
+   "inputs": [
+    "in_round_in_float32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_round_decimals_float64_-1.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float64_-1",
+   "inputs": [
+    "in_round_in_float64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_round_decimals_float16_-3.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float16_-3",
+   "inputs": [
+    "in_round_in_float16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -3
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_round_decimals_float32_-3.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float32_-3",
+   "inputs": [
+    "in_round_in_float32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -3
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_round_decimals_float64_-3.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float64_-3",
+   "inputs": [
+    "in_round_in_float64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -3
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_round_decimals_float16_10.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float16_10",
+   "inputs": [
+    "in_round_in_float16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 10
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_round_decimals_float32_10.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float32_10",
+   "inputs": [
+    "in_round_in_float32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 10
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_round_decimals_float64_10.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float64_10",
+   "inputs": [
+    "in_round_in_float64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 10
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_round_decimals_float16_30.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float16_30",
+   "inputs": [
+    "in_round_in_float16.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 30
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_round_decimals_float32_30.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float32_30",
+   "inputs": [
+    "in_round_in_float32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 30
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_round_decimals_float64_30.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "round_decimals_float64_30",
+   "inputs": [
+    "in_round_in_float64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 30
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|i1",
+    "file": "expected_round_ints_int8_-1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_ints_int8_-1",
+   "inputs": [
+    "in_round_int_int8.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|i1",
+    "file": "expected_round_ints_int8_-2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_ints_int8_-2",
+   "inputs": [
+    "in_round_int_int8.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|u1",
+    "file": "expected_round_ints_uint8_-1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_ints_uint8_-1",
+   "inputs": [
+    "in_round_int_uint8.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|u1",
+    "file": "expected_round_ints_uint8_-2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_ints_uint8_-2",
+   "inputs": [
+    "in_round_int_uint8.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_round_ints_int32_-1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_ints_int32_-1",
+   "inputs": [
+    "in_round_int_int32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_round_ints_int32_-2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_ints_int32_-2",
+   "inputs": [
+    "in_round_int_int32.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_round_ints_int64_-1.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_ints_int64_-1",
+   "inputs": [
+    "in_round_int_int64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_round_ints_int64_-2.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "round_ints_int64_-2",
+   "inputs": [
+    "in_round_int_int64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
     "dtype": "|i1",
     "file": "expected_ufunc_power_int8_exponents.npy",
     "fortran": false,

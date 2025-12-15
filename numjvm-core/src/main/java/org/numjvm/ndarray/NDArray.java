@@ -15,6 +15,7 @@ import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.internal.memory.MemoryErrors;
 import org.numjvm.internal.memory.Sizes;
 import org.numjvm.memory.MemoryOwner;
+import org.numjvm.ufunc.Rounding;
 import org.numjvm.ufunc.Ufuncs;
 
 /**
@@ -1282,6 +1283,57 @@ public final class NDArray {
      */
     public NDArray tanh() {
         return Ufuncs.TANH.apply(this);
+    }
+
+    /**
+     * Returns {@code trunc(this)}, element-wise: integers keep their dtype
+     * ({@link org.numjvm.ufunc.Ufuncs#TRUNC}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray trunc() {
+        return Ufuncs.TRUNC.apply(this);
+    }
+
+    /**
+     * Returns this array rounded to the nearest integer, halves to even
+     * ({@link org.numjvm.ufunc.Rounding#round(NDArray)}).
+     *
+     * @return a new array; integer arrays keep their dtype
+     */
+    public NDArray round() {
+        return Rounding.round(this);
+    }
+
+    /**
+     * Returns this array rounded to {@code decimals} decimal places, halves to even
+     * ({@link org.numjvm.ufunc.Rounding#round(NDArray, int)}).
+     *
+     * @param decimals decimal places; negative values round to tens, hundreds, ...
+     * @return a new array of the same dtype
+     */
+    public NDArray round(int decimals) {
+        return Rounding.round(this, decimals);
+    }
+
+    /**
+     * Returns {@code floor(this)}, element-wise: integers keep their dtype
+     * ({@link org.numjvm.ufunc.Ufuncs#FLOOR}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray floor() {
+        return Ufuncs.FLOOR.apply(this);
+    }
+
+    /**
+     * Returns {@code ceil(this)}, element-wise: integers keep their dtype
+     * ({@link org.numjvm.ufunc.Ufuncs#CEIL}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray ceil() {
+        return Ufuncs.CEIL.apply(this);
     }
 
     // ------------------------------------------------------------------ element access: helpers
