@@ -65,6 +65,31 @@ class LoopPathsTest {
         NDArray b0 = b.slice(Slice.range(2, 3)).reshape();
         assertSame(sig + " broadcast first", binary(loop, fill(a0, N), b, out), binary(loop, a0.broadcastTo(N), b, out));
         assertSame(sig + " broadcast second", binary(loop, a, fill(b0, N), out), binary(loop, a, b0.broadcastTo(N), out));
+        if (in == out) {
+            checkReduction(sig, loop, a0, values(in, 4, 5, sig.operation().equals("power")));
+        }
+    }
+
+    /**
+     * The reduction path (output passed as the first input, both with stride 0) against
+     * applying the loop one element at a time. float16 and bfloat16 accumulate in float32
+     * without rounding each step, as NumPy does, so for them the path only runs.
+     */
+    private static void checkReduction(LoopSignature sig, BinaryLoop loop, NDArray start, NDArray b) {
+        DType t = start.dtype();
+        NDArray acc = start.copy();
+        MemorySegment ma = SharedSecrets.arrayAccess().buffer(acc).segment();
+        MemorySegment mb = SharedSecrets.arrayAccess().buffer(b).segment();
+        loop.run(ma, 0, 0, mb, 0, t.size(), ma, 0, 0, b.size());
+        NDArray step = start.copy();
+        for (long i = 0; i < b.size(); i++) {
+            NDArray next = NJ.zeros(t);
+            LoopExecutor.binary(loop, step, b.slice(Slice.range(i, i + 1)).reshape(), next);
+            step = next;
+        }
+        if (t != DType.FLOAT16 && t != DType.BFLOAT16) {
+            assertSame(sig + " reduction", step, acc);
+        }
     }
 
     private static NDArray unary(UnaryLoop loop, NDArray a, DType out) {

@@ -1,0 +1,11 @@
+        if (sa == 0 && so == 0 && pa == po && a == o) {
+            // reduction into one element (out = op(out, b[i]) for every i): accumulate in a
+            // register, wrapped to the dtype's width after every step, and write once
+            ${CT} x = ${READ_A};
+            for (long i = 0; i < n; i++, pb += sb) {
+                ${CT} y = ${READ_B};
+                x = ${EXPR};
+            }
+            ${WRITE_X};
+            return;
+        }

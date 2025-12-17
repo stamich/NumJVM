@@ -169,6 +169,11 @@ def round_(a, decimals):
         return np.round(a, decimals)
 
 
+def ufunc_reduce(name, a, **kw):
+    with np.errstate(all="ignore"):
+        return getattr(np, name).reduce(a, **kw)
+
+
 def ufunc(name, *args):
     """Applies a NumPy ufunc with floating-point warnings silenced (NumJVM has no warnings)."""
     with np.errstate(all="ignore"):
@@ -413,6 +418,33 @@ def cases(arr):
     for dt in ["int8", "uint8", "int32", "int64"]:
         add(f"round_ints_{dt}_-1", NUMPY, "round", [f"round_int_{dt}"], {"decimals": -1}, lambda a: round_(a, -1))
         add(f"round_ints_{dt}_-2", NUMPY, "round", [f"round_int_{dt}"], {"decimals": -2}, lambda a: round_(a, -2))
+
+    # --- ufunc.reduce --------------------------------------------------------------------------
+    for name in ["add", "multiply", "maximum", "minimum", "fmax", "logical_and", "logical_or", "bitwise_or",
+                 "bitwise_xor"]:
+        src = "i4_3x4" if name.startswith("bitwise") else "f8_2x3x4"
+        for axis, keep in [(None, False), ([0], False), ([1], True), ([0, 2], False), ([-1, 0], True), ([], False)]:
+            cid = f"reduce_{name}_{'all' if axis is None else '_'.join(map(str, axis)) or 'none'}" \
+                  + ("_keepdims" if keep else "")
+            if src == "i4_3x4" and axis is not None and any(a in (2, -3) for a in axis):
+                continue
+            add(cid.replace("-", "m"), NUMPY, "reduce", [src], {"ufunc": name, "axis": axis, "keepdims": keep},
+                lambda a, name=name, axis=axis, keep=keep: np.asarray(getattr(np, name).reduce(
+                    a, axis=None if axis is None else tuple(axis), keepdims=keep)))
+    for name in ["add", "multiply", "maximum", "minimum"]:
+        for dt in ["int8", "uint8", "float16", "bool"]:
+            add(f"reduce_{name}_{dt}", NUMPY, "reduce", [f"edge_{dt}"], {"ufunc": name, "axis": None, "keepdims": False},
+                lambda a, name=name: np.asarray(ufunc_reduce(name, a)))
+    add("reduce_maximum_empty", NUMPY, "reduce", ["f8_empty_0x3"], {"ufunc": "maximum", "axis": [0], "keepdims": False},
+        None)
+    add("reduce_maximum_empty_other_axis", NUMPY, "reduce", ["f8_empty_0x3"],
+        {"ufunc": "maximum", "axis": [1], "keepdims": False}, lambda a: np.maximum.reduce(a, axis=1))
+    add("reduce_add_empty", NUMPY, "reduce", ["f8_empty_0x3"], {"ufunc": "add", "axis": [0], "keepdims": True},
+        lambda a: np.add.reduce(a, axis=0, keepdims=True))
+    add("reduce_subtract_axis0", NUMPY, "reduce", ["f8_3x4"], {"ufunc": "subtract", "axis": [0], "keepdims": False},
+        lambda a: np.subtract.reduce(a, axis=0))
+    add("reduce_subtract_two_axes", NUMPY, "reduce", ["f8_3x4"], {"ufunc": "subtract", "axis": [0, 1],
+                                                                    "keepdims": False}, None)
 
     # integer powers with non-negative exponents wrap; floating-point special cases follow C99
     for dt in [d for d in NUMPY_REAL if d != "bool"]:

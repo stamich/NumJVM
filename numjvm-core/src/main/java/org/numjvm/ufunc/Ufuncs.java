@@ -22,7 +22,7 @@ public final class Ufuncs {
     /**
      * {@code x + y}; logical or for bool ({@code ARRAY_API}: {@code add}).
      */
-    public static final BinaryUfunc ADD = BinaryUfunc.builder("add").build();
+    public static final BinaryUfunc ADD = BinaryUfunc.builder("add").identity(0).reorderable().widensSmallIntegers().build();
 
     /**
      * {@code x - y} ({@code ARRAY_API}: {@code subtract}). Not defined for two bool operands,
@@ -35,7 +35,7 @@ public final class Ufuncs {
     /**
      * {@code x * y}; logical and for bool ({@code ARRAY_API}: {@code multiply}).
      */
-    public static final BinaryUfunc MULTIPLY = BinaryUfunc.builder("multiply").build();
+    public static final BinaryUfunc MULTIPLY = BinaryUfunc.builder("multiply").identity(1).reorderable().widensSmallIntegers().build();
 
     /**
      * True division {@code x / y} ({@code ARRAY_API}: {@code divide}). Integer and bool
@@ -70,22 +70,22 @@ public final class Ufuncs {
     /**
      * The larger operand, element-wise; NaN propagates ({@code ARRAY_API}: {@code maximum}).
      */
-    public static final BinaryUfunc MAXIMUM = BinaryUfunc.builder("maximum").build();
+    public static final BinaryUfunc MAXIMUM = BinaryUfunc.builder("maximum").reorderable().build();
 
     /**
      * The smaller operand, element-wise; NaN propagates ({@code ARRAY_API}: {@code minimum}).
      */
-    public static final BinaryUfunc MINIMUM = BinaryUfunc.builder("minimum").build();
+    public static final BinaryUfunc MINIMUM = BinaryUfunc.builder("minimum").reorderable().build();
 
     /**
      * The larger operand, ignoring a NaN operand ({@code NUMPY_COMPATIBILITY}: {@code fmax}).
      */
-    public static final BinaryUfunc FMAX = BinaryUfunc.builder("fmax").build();
+    public static final BinaryUfunc FMAX = BinaryUfunc.builder("fmax").reorderable().build();
 
     /**
      * The smaller operand, ignoring a NaN operand ({@code NUMPY_COMPATIBILITY}: {@code fmin}).
      */
-    public static final BinaryUfunc FMIN = BinaryUfunc.builder("fmin").build();
+    public static final BinaryUfunc FMIN = BinaryUfunc.builder("fmin").reorderable().build();
 
     /**
      * {@code x == y}, giving bool ({@code ARRAY_API}: {@code equal}). Comparisons follow IEEE 754
@@ -124,18 +124,21 @@ public final class Ufuncs {
      * Logical and, giving bool ({@code ARRAY_API}: {@code logical_and}). Operands of any real
      * dtype are true when non-zero (NaN included).
      */
-    public static final BinaryUfunc LOGICAL_AND = BinaryUfunc.builder("logical_and").loopFor(t -> DType.BOOL).build();
+    public static final BinaryUfunc LOGICAL_AND = BinaryUfunc.builder("logical_and").loopFor(t -> DType.BOOL)
+            .identity(1).reorderable().build();
 
     /**
      * Logical or, giving bool ({@code ARRAY_API}: {@code logical_or}); see {@link #LOGICAL_AND}.
      */
-    public static final BinaryUfunc LOGICAL_OR = BinaryUfunc.builder("logical_or").loopFor(t -> DType.BOOL).build();
+    public static final BinaryUfunc LOGICAL_OR = BinaryUfunc.builder("logical_or").loopFor(t -> DType.BOOL)
+            .identity(0).reorderable().build();
 
     /**
      * Logical exclusive or, giving bool ({@code ARRAY_API}: {@code logical_xor}); see
      * {@link #LOGICAL_AND}.
      */
-    public static final BinaryUfunc LOGICAL_XOR = BinaryUfunc.builder("logical_xor").loopFor(t -> DType.BOOL).build();
+    public static final BinaryUfunc LOGICAL_XOR = BinaryUfunc.builder("logical_xor").loopFor(t -> DType.BOOL)
+            .identity(0).reorderable().build();
 
     /**
      * Logical not, giving bool ({@code ARRAY_API}: {@code logical_not}); see {@link #LOGICAL_AND}.
@@ -146,17 +149,17 @@ public final class Ufuncs {
      * Bitwise and of bool and integer operands ({@code ARRAY_API}: {@code bitwise_and});
      * floating-point operands are a {@link org.numjvm.exception.DTypeException}.
      */
-    public static final BinaryUfunc BITWISE_AND = BinaryUfunc.builder("bitwise_and").build();
+    public static final BinaryUfunc BITWISE_AND = BinaryUfunc.builder("bitwise_and").identity(-1).reorderable().build();
 
     /**
      * Bitwise or of bool and integer operands ({@code ARRAY_API}: {@code bitwise_or}).
      */
-    public static final BinaryUfunc BITWISE_OR = BinaryUfunc.builder("bitwise_or").build();
+    public static final BinaryUfunc BITWISE_OR = BinaryUfunc.builder("bitwise_or").identity(0).reorderable().build();
 
     /**
      * Bitwise exclusive or of bool and integer operands ({@code ARRAY_API}: {@code bitwise_xor}).
      */
-    public static final BinaryUfunc BITWISE_XOR = BinaryUfunc.builder("bitwise_xor").build();
+    public static final BinaryUfunc BITWISE_XOR = BinaryUfunc.builder("bitwise_xor").identity(0).reorderable().build();
 
     /**
      * Bitwise not of integers, logical not of bool ({@code ARRAY_API}: {@code bitwise_invert};

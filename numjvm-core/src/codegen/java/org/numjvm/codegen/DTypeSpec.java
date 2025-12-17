@@ -24,6 +24,23 @@ record DTypeSpec(String dtype, String cls, Family family, String ct, String layo
                  String write) {
 
     /**
+     * {@code v}, a value of the compute type, wrapped to this dtype's width as storing and
+     * reading it back would: needed where a value stays in a register across steps
+     * (reductions) and the operation is not modular (floor division, power, minimum, ...).
+     * float16 and bfloat16 are not narrowed: NumPy accumulates them in float32.
+     */
+    String narrow(String v) {
+        return switch (dtype) {
+            case "INT8" -> "(byte) (" + v + ")";
+            case "UINT8" -> "((" + v + ") & 0xFF)";
+            case "INT16" -> "(short) (" + v + ")";
+            case "UINT16" -> "((" + v + ") & 0xFFFF)";
+            case "UINT32" -> "((" + v + ") & 0xFFFF_FFFFL)";
+            default -> v;
+        };
+    }
+
+    /**
      * Groups of dtypes whose operations are written with the same expressions.
      */
     enum Family {

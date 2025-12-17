@@ -32,7 +32,7 @@ public final class KernelGenerator {
     private final Map<String, String> templates = new HashMap<>();
 
     private KernelGenerator(Path templateDir) throws IOException {
-        for (String name : List.of("LoopClass", "BinaryLoop", "UnaryLoop", "CopyLoop", "GeneratedLoops")) {
+        for (String name : List.of("LoopClass", "BinaryLoop", "UnaryLoop", "CopyLoop", "GeneratedLoops", "ReducePath")) {
             templates.put(name, Files.readString(templateDir.resolve(name + ".java.tmpl"), StandardCharsets.UTF_8));
         }
     }
@@ -159,6 +159,12 @@ public final class KernelGenerator {
         v.put("READ_B_I", t.read("b", indexed("pb", t.size())));
         v.put("WRITE", o.write("o", "po", expr));
         v.put("WRITE_I", o.write("o", indexed("po", o.size()), expr));
+        // binary operations whose output dtype is the input dtype can reduce (ADR-004): the
+        // executor passes the output as the first input with stride 0
+        boolean reduces = op.arity() == 2 && !op.boolOutput();
+        v.put("EXPR", t.narrow(expr));
+        v.put("WRITE_X", o.write("o", "po", "x"));
+        v.put("REDUCE", reduces ? fill("ReducePath", v) : "");
         return fill(op.arity() == 2 ? "BinaryLoop" : "UnaryLoop", v);
     }
 

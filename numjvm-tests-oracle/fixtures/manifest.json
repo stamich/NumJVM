@@ -19867,6 +19867,1630 @@
   },
   {
    "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_add_all.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_add_all",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_add_0.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "reduce_add_0",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_add_1_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     1,
+     4
+    ]
+   },
+   "id": "reduce_add_1_keepdims",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_add_0_2.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "reduce_add_0_2",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0,
+     2
+    ],
+    "keepdims": false,
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_add_m1_0_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     3,
+     1
+    ]
+   },
+   "id": "reduce_add_m1_0_keepdims",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     -1,
+     0
+    ],
+    "keepdims": true,
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_add_none.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     3,
+     4
+    ]
+   },
+   "id": "reduce_add_none",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [],
+    "keepdims": false,
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_multiply_all.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_multiply_all",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_multiply_0.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "reduce_multiply_0",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_multiply_1_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     1,
+     4
+    ]
+   },
+   "id": "reduce_multiply_1_keepdims",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_multiply_0_2.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "reduce_multiply_0_2",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0,
+     2
+    ],
+    "keepdims": false,
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_multiply_m1_0_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     3,
+     1
+    ]
+   },
+   "id": "reduce_multiply_m1_0_keepdims",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     -1,
+     0
+    ],
+    "keepdims": true,
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_multiply_none.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     3,
+     4
+    ]
+   },
+   "id": "reduce_multiply_none",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [],
+    "keepdims": false,
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_maximum_all.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_maximum_all",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "maximum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_maximum_0.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "reduce_maximum_0",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "ufunc": "maximum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_maximum_1_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     1,
+     4
+    ]
+   },
+   "id": "reduce_maximum_1_keepdims",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "ufunc": "maximum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_maximum_0_2.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "reduce_maximum_0_2",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0,
+     2
+    ],
+    "keepdims": false,
+    "ufunc": "maximum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_maximum_m1_0_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     3,
+     1
+    ]
+   },
+   "id": "reduce_maximum_m1_0_keepdims",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     -1,
+     0
+    ],
+    "keepdims": true,
+    "ufunc": "maximum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_maximum_none.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     3,
+     4
+    ]
+   },
+   "id": "reduce_maximum_none",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [],
+    "keepdims": false,
+    "ufunc": "maximum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_minimum_all.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_minimum_all",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "minimum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_minimum_0.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "reduce_minimum_0",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "ufunc": "minimum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_minimum_1_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     1,
+     4
+    ]
+   },
+   "id": "reduce_minimum_1_keepdims",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "ufunc": "minimum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_minimum_0_2.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "reduce_minimum_0_2",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0,
+     2
+    ],
+    "keepdims": false,
+    "ufunc": "minimum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_minimum_m1_0_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     3,
+     1
+    ]
+   },
+   "id": "reduce_minimum_m1_0_keepdims",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     -1,
+     0
+    ],
+    "keepdims": true,
+    "ufunc": "minimum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_minimum_none.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     3,
+     4
+    ]
+   },
+   "id": "reduce_minimum_none",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [],
+    "keepdims": false,
+    "ufunc": "minimum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_fmax_all.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_fmax_all",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "fmax"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_fmax_0.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "reduce_fmax_0",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "ufunc": "fmax"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_fmax_1_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     1,
+     4
+    ]
+   },
+   "id": "reduce_fmax_1_keepdims",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "ufunc": "fmax"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_fmax_0_2.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "reduce_fmax_0_2",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0,
+     2
+    ],
+    "keepdims": false,
+    "ufunc": "fmax"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_fmax_m1_0_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     3,
+     1
+    ]
+   },
+   "id": "reduce_fmax_m1_0_keepdims",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     -1,
+     0
+    ],
+    "keepdims": true,
+    "ufunc": "fmax"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_fmax_none.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     3,
+     4
+    ]
+   },
+   "id": "reduce_fmax_none",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [],
+    "keepdims": false,
+    "ufunc": "fmax"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_reduce_logical_and_all.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_logical_and_all",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "logical_and"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_reduce_logical_and_0.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "reduce_logical_and_0",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "ufunc": "logical_and"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_reduce_logical_and_1_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     1,
+     4
+    ]
+   },
+   "id": "reduce_logical_and_1_keepdims",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "ufunc": "logical_and"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_reduce_logical_and_0_2.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "reduce_logical_and_0_2",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0,
+     2
+    ],
+    "keepdims": false,
+    "ufunc": "logical_and"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_reduce_logical_and_m1_0_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     3,
+     1
+    ]
+   },
+   "id": "reduce_logical_and_m1_0_keepdims",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     -1,
+     0
+    ],
+    "keepdims": true,
+    "ufunc": "logical_and"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_reduce_logical_and_none.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     3,
+     4
+    ]
+   },
+   "id": "reduce_logical_and_none",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [],
+    "keepdims": false,
+    "ufunc": "logical_and"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_reduce_logical_or_all.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_logical_or_all",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "logical_or"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_reduce_logical_or_0.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "reduce_logical_or_0",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "ufunc": "logical_or"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_reduce_logical_or_1_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     1,
+     4
+    ]
+   },
+   "id": "reduce_logical_or_1_keepdims",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "ufunc": "logical_or"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_reduce_logical_or_0_2.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "reduce_logical_or_0_2",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0,
+     2
+    ],
+    "keepdims": false,
+    "ufunc": "logical_or"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_reduce_logical_or_m1_0_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     3,
+     1
+    ]
+   },
+   "id": "reduce_logical_or_m1_0_keepdims",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     -1,
+     0
+    ],
+    "keepdims": true,
+    "ufunc": "logical_or"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_reduce_logical_or_none.npy",
+    "fortran": false,
+    "shape": [
+     2,
+     3,
+     4
+    ]
+   },
+   "id": "reduce_logical_or_none",
+   "inputs": [
+    "in_f8_2x3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [],
+    "keepdims": false,
+    "ufunc": "logical_or"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_reduce_bitwise_or_all.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_bitwise_or_all",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "bitwise_or"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_reduce_bitwise_or_0.npy",
+    "fortran": false,
+    "shape": [
+     4
+    ]
+   },
+   "id": "reduce_bitwise_or_0",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "ufunc": "bitwise_or"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_reduce_bitwise_or_1_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     1
+    ]
+   },
+   "id": "reduce_bitwise_or_1_keepdims",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "ufunc": "bitwise_or"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_reduce_bitwise_or_m1_0_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     1
+    ]
+   },
+   "id": "reduce_bitwise_or_m1_0_keepdims",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     -1,
+     0
+    ],
+    "keepdims": true,
+    "ufunc": "bitwise_or"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_reduce_bitwise_or_none.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "reduce_bitwise_or_none",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [],
+    "keepdims": false,
+    "ufunc": "bitwise_or"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_reduce_bitwise_xor_all.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_bitwise_xor_all",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "bitwise_xor"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_reduce_bitwise_xor_0.npy",
+    "fortran": false,
+    "shape": [
+     4
+    ]
+   },
+   "id": "reduce_bitwise_xor_0",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "ufunc": "bitwise_xor"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_reduce_bitwise_xor_1_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     1
+    ]
+   },
+   "id": "reduce_bitwise_xor_1_keepdims",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "ufunc": "bitwise_xor"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_reduce_bitwise_xor_m1_0_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     1
+    ]
+   },
+   "id": "reduce_bitwise_xor_m1_0_keepdims",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     -1,
+     0
+    ],
+    "keepdims": true,
+    "ufunc": "bitwise_xor"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_reduce_bitwise_xor_none.npy",
+    "fortran": false,
+    "shape": [
+     3,
+     4
+    ]
+   },
+   "id": "reduce_bitwise_xor_none",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [],
+    "keepdims": false,
+    "ufunc": "bitwise_xor"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_reduce_add_int8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_add_int8",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_reduce_add_uint8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_add_uint8",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_reduce_add_float16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_add_float16",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_reduce_add_bool.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_add_bool",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_reduce_multiply_int8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_multiply_int8",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_reduce_multiply_uint8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_multiply_uint8",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_reduce_multiply_float16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_multiply_float16",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_reduce_multiply_bool.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_multiply_bool",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|i1",
+    "file": "expected_reduce_maximum_int8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_maximum_int8",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "maximum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|u1",
+    "file": "expected_reduce_maximum_uint8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_maximum_uint8",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "maximum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_reduce_maximum_float16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_maximum_float16",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "maximum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_reduce_maximum_bool.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_maximum_bool",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "maximum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|i1",
+    "file": "expected_reduce_minimum_int8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_minimum_int8",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "minimum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|u1",
+    "file": "expected_reduce_minimum_uint8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_minimum_uint8",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "minimum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_reduce_minimum_float16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_minimum_float16",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "minimum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_reduce_minimum_bool.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "reduce_minimum_bool",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "ufunc": "minimum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "error": true
+   },
+   "id": "reduce_maximum_empty",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "ufunc": "maximum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_maximum_empty_other_axis.npy",
+    "fortran": false,
+    "shape": [
+     0
+    ]
+   },
+   "id": "reduce_maximum_empty_other_axis",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": false,
+    "ufunc": "maximum"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_add_empty.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     3
+    ]
+   },
+   "id": "reduce_add_empty",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": true,
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_reduce_subtract_axis0.npy",
+    "fortran": false,
+    "shape": [
+     4
+    ]
+   },
+   "id": "reduce_subtract_axis0",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "ufunc": "subtract"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "error": true
+   },
+   "id": "reduce_subtract_two_axes",
+   "inputs": [
+    "in_f8_3x4.npy"
+   ],
+   "op": "reduce",
+   "params": {
+    "axis": [
+     0,
+     1
+    ],
+    "keepdims": false,
+    "ufunc": "subtract"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
     "dtype": "|i1",
     "file": "expected_ufunc_power_int8_exponents.npy",
     "fortran": false,

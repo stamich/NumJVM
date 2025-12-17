@@ -31,6 +31,9 @@ public final class BinaryUfunc extends Ufunc {
     private final UnaryOperator<DType> loopOverride;
     private final Map<DType, String> unsupported;
     private final boolean comparison;
+    private final Long identity;
+    private final boolean reorderable;
+    private final boolean widensSmallIntegers;
     private final Resolution[] cache = new Resolution[DType.values().length];
 
     /**
@@ -44,6 +47,9 @@ public final class BinaryUfunc extends Ufunc {
         this.loopOverride = b.loopOverride;
         this.unsupported = Map.copyOf(b.unsupported);
         this.comparison = b.comparison;
+        this.identity = b.identity;
+        this.reorderable = b.reorderable;
+        this.widensSmallIntegers = b.widensSmallIntegers;
     }
 
     static Builder builder(String name) {
@@ -59,6 +65,9 @@ public final class BinaryUfunc extends Ufunc {
         private UnaryOperator<DType> loopOverride = t -> null;
         private final Map<DType, String> unsupported = new EnumMap<>(DType.class);
         private boolean comparison;
+        private Long identity;
+        private boolean reorderable;
+        private boolean widensSmallIntegers;
 
         private Builder(String name) {
             this.name = name;
@@ -96,6 +105,32 @@ public final class BinaryUfunc extends Ufunc {
          */
         Builder comparison() {
             this.comparison = true;
+            return this;
+        }
+
+        /**
+         * The reduction's starting value, stored with {@code setLong} ({@code -1} sets every bit).
+         */
+        Builder identity(long value) {
+            this.identity = value;
+            return this;
+        }
+
+        /**
+         * The operation is associative and commutative, so several axes may be reduced at once;
+         * without an identity it must also be idempotent (maximum, minimum).
+         */
+        Builder reorderable() {
+            this.reorderable = true;
+            return this;
+        }
+
+        /**
+         * Reductions of bool and integers narrower than 64 bits run in int64 or uint64, as
+         * NumPy's add and multiply.
+         */
+        Builder widensSmallIntegers() {
+            this.widensSmallIntegers = true;
             return this;
         }
 
@@ -193,6 +228,75 @@ public final class BinaryUfunc extends Ufunc {
      */
     public DType resultType(DType a, DType b) {
         return resolve(TypePromotion.resultType(a, b), a, b).out();
+    }
+
+    // ------------------------------------------------------------------ reduce
+
+    /**
+     * Reduces over every axis ({@code NUMPY_COMPATIBILITY}: {@code ufunc.reduce} with
+     * {@code axis=None}).
+     *
+     * @param x the array
+     * @return a 0-D array
+     * @throws DTypeException if this ufunc cannot reduce (comparisons) or has no loop
+     * @throws org.numjvm.exception.ValueException for an empty array when the ufunc has no
+     *                                             identity
+     */
+    public NDArray reduce(NDArray x) {
+        return reduce(x, null, false);
+    }
+
+    /**
+     * Reduces over one axis.
+     *
+     * @param x    the array
+     * @param axis the axis; negative values count from the end
+     * @return an array with that axis removed
+     */
+    public NDArray reduce(NDArray x, int axis) {
+        return reduce(x, new int[]{axis}, false);
+    }
+
+    /**
+     * Reduces over several axes ({@code NUMPY_COMPATIBILITY}: {@code ufunc.reduce}).
+     *
+     * <p>A ufunc with an identity (add: 0, multiply: 1, logical and: true, ...) starts from
+     * it, so an empty reduction gives the identity. One without (maximum, minimum) starts from
+     * the first element and an empty reduction is a {@link org.numjvm.exception.ValueException}.
+     * Operations that are not associative (subtract, divide, ...) reduce at most one axis, in
+     * index order. add and multiply reduce bool and integers narrower than 64 bits in int64
+     * (uint64 for unsigned), as NumPy does.
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the reduced array
+     * @throws org.numjvm.exception.ShapeException for an axis out of range or repeated
+     */
+    public NDArray reduce(NDArray x, int[] axes, boolean keepdims) {
+        java.util.Objects.requireNonNull(x, "x");
+        if (comparison) {
+            throw new DTypeException("ufunc '" + name() + "' cannot reduce");
+        }
+        boolean[] reduced = Reducer.reducedAxes(axes, x.ndim());
+        DType t = x.dtype();
+        if (widensSmallIntegers && (t.isBool() || t.isInteger() && t.size() < 8)) {
+            t = t.isUnsigned() ? DType.UINT64 : DType.INT64;
+        }
+        Resolution r = resolve(t, t, t);
+        if (r.in() != r.out()) {
+            throw Reducer.notReducible(name());
+        }
+        return Reducer.reduce(name(), r.loop(), Operands.cast(x, r.in()), reduced, keepdims, identity, reorderable);
+    }
+
+    /**
+     * Returns this ufunc's identity, the value an empty reduction gives.
+     *
+     * @return the identity as stored with {@code setLong}, or empty if there is none
+     */
+    public java.util.OptionalLong identity() {
+        return identity == null ? java.util.OptionalLong.empty() : java.util.OptionalLong.of(identity);
     }
 
     private static boolean signedWithUInt64(DType a, DType b) {

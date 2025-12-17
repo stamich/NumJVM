@@ -15,7 +15,7 @@
      */
     public static void ${METHOD}(MemorySegment a, long pa, long sa, MemorySegment b, long pb, long sb,
             MemorySegment o, long po, long so, long n) {
-        if (so == ${OSIZE} && sa == ${ISIZE} && sb == ${ISIZE}) {
+${REDUCE}        if (so == ${OSIZE} && sa == ${ISIZE} && sb == ${ISIZE}) {
             for (long i = 0; i < n; i++) {
                 ${CT} x = ${READ_A_I};
                 ${CT} y = ${READ_B_I};

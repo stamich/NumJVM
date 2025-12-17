@@ -95,6 +95,44 @@ public final class LoopExecutor {
         }
     }
 
+    /**
+     * Reduces {@code in} into {@code out} with a binary loop: for every element of
+     * {@code in}, {@code out[j] = op(out[j], in[i])}, where {@code j} is {@code i} with the
+     * reduced axes dropped. {@code outStrides} are the output's byte strides expressed over the
+     * input's shape: 0 on reduced axes. The loop sees the output as its first input and as its
+     * output with the same offsets and strides; along a run over a reduced axis both strides
+     * are 0, which the generated loops recognise and accumulate in a register.
+     *
+     * @param loop       a binary loop whose inputs and output have {@code out}'s dtype
+     * @param out        writeable output, already initialised (identity or first elements)
+     * @param outStrides byte strides of {@code out} over the input's shape
+     * @param in         the input, of {@code out}'s dtype
+     */
+    public static void reduce(BinaryLoop loop, NDArray out, long[] outStrides, NDArray in) {
+        requireWriteable(out);
+        SharedSecrets.ArrayAccess access = SharedSecrets.arrayAccess();
+        long oo = access.offset(out);
+        IterationPlan plan = IterationPlan.of(in.shape().dimensions(),
+                new long[][]{outStrides, in.strides().values(), outStrides},
+                new long[]{oo, access.offset(in), oo});
+        if (!plan.hasElements()) {
+            return;
+        }
+        MemorySegment mo = access.buffer(out).segment();
+        MemorySegment mi = access.buffer(in).segment();
+        StridedIterator it = plan.iterator();
+        long n = it.innerSize();
+        long so = it.innerStride(0);
+        long si = it.innerStride(1);
+        try {
+            do {
+                loop.run(mo, it.offset(0), so, mi, it.offset(1), si, mo, it.offset(2), so, n);
+            } while (it.next());
+        } catch (IllegalStateException | WrongThreadException e) {
+            throw MemoryErrors.translate(e, failedOwner(in, out));
+        }
+    }
+
     static long[] broadcast(NDArray a, Shape shape) {
         return a.shape().equals(shape)
                 ? a.strides().values()
