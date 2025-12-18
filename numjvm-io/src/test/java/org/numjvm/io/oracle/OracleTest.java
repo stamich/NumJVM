@@ -33,6 +33,7 @@ import org.numjvm.ndarray.Shape;
 import org.numjvm.ndarray.Slice;
 import org.numjvm.shape.Broadcasting;
 import org.numjvm.ufunc.BinaryUfunc;
+import org.numjvm.ufunc.Reductions;
 import org.numjvm.ufunc.Ufunc;
 import org.numjvm.ufunc.UnaryUfunc;
 import org.numjvm.ufunc.Ufuncs;
@@ -166,6 +167,7 @@ class OracleTest {
             case "sum_generated" -> ValidationKernels.sumFloat64(hashUnit(((Number) p.get("n")).intValue()));
             case "repr" -> in.get(0);
             case "ufunc" -> ufunc(in, p);
+            case "reduction" -> reduction(in, p);
             case "reduce" -> {
                 BinaryUfunc u = (BinaryUfunc) Ufuncs.byName((String) p.get("ufunc")).orElseThrow();
                 List<Object> axis = (List<Object>) p.get("axis");
@@ -197,6 +199,27 @@ class OracleTest {
             return b.apply(x, y);
         }
         return ((UnaryUfunc) u).apply(x);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static NDArray reduction(List<NDArray> in, Map<String, Object> p) {
+        NDArray x;
+        if (p.containsKey("generator")) {
+            x = hashUnit(((Number) p.get("n")).intValue()).astype(DType.fromName((String) p.get("dtype")));
+            if (p.containsKey("shape")) {
+                x = x.reshape(longs((List<Object>) p.get("shape")));
+            }
+        } else {
+            x = "transpose".equals(p.get("view")) ? in.get(0).transpose() : in.get(0);
+        }
+        List<Object> axis = (List<Object>) p.get("axis");
+        int[] axes = axis == null ? null : ints(axis);
+        boolean keep = Boolean.TRUE.equals(p.get("keepdims"));
+        return switch ((String) p.get("reduction")) {
+            case "sum" -> Reductions.sum(x, axes, keep);
+            case "prod" -> Reductions.prod(x, axes, keep);
+            default -> throw new AssertionError("unknown reduction " + p);
+        };
     }
 
     /**

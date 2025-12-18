@@ -19867,6 +19867,1521 @@
   },
   {
    "expect": {
+    "dtype": "<i8",
+    "file": "expected_sum_bool.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_bool",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_sum_int8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_int8",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_sum_uint8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_uint8",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_sum_int16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_int16",
+   "inputs": [
+    "in_edge_int16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_sum_uint16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_uint16",
+   "inputs": [
+    "in_edge_uint16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_sum_int32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_int32",
+   "inputs": [
+    "in_edge_int32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_sum_uint32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_uint32",
+   "inputs": [
+    "in_edge_uint32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_sum_int64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_int64",
+   "inputs": [
+    "in_edge_int64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_sum_uint64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_uint64",
+   "inputs": [
+    "in_edge_uint64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_sum_float16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_float16",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_sum_float32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_float32",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_float64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_float64",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_hash_all_none.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_hash_all_none",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "reduction": "sum",
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_hash_all_transpose.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_hash_all_transpose",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "reduction": "sum",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_hash_0_none.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "sum_hash_0_none",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "reduction": "sum",
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_hash_0_transpose.npy",
+    "fortran": false,
+    "shape": [
+     7
+    ]
+   },
+   "id": "sum_hash_0_transpose",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "reduction": "sum",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_hash_1_none_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     7,
+     1
+    ]
+   },
+   "id": "sum_hash_1_none_keepdims",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "reduction": "sum",
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_hash_1_transpose_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     11,
+     1
+    ]
+   },
+   "id": "sum_hash_1_transpose_keepdims",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "reduction": "sum",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_hash_0_1_none_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     1
+    ]
+   },
+   "id": "sum_hash_0_1_none_keepdims",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0,
+     1
+    ],
+    "keepdims": true,
+    "reduction": "sum",
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_hash_0_1_transpose_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     1
+    ]
+   },
+   "id": "sum_hash_0_1_transpose_keepdims",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0,
+     1
+    ],
+    "keepdims": true,
+    "reduction": "sum",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_hash_m1_none.npy",
+    "fortran": false,
+    "shape": [
+     7
+    ]
+   },
+   "id": "sum_hash_m1_none",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     -1
+    ],
+    "keepdims": false,
+    "reduction": "sum",
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_hash_m1_transpose.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "sum_hash_m1_transpose",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     -1
+    ],
+    "keepdims": false,
+    "reduction": "sum",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_prod_bool.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_bool",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_prod_int8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_int8",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_prod_uint8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_uint8",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_prod_int16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_int16",
+   "inputs": [
+    "in_edge_int16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_prod_uint16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_uint16",
+   "inputs": [
+    "in_edge_uint16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_prod_int32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_int32",
+   "inputs": [
+    "in_edge_int32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_prod_uint32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_uint32",
+   "inputs": [
+    "in_edge_uint32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_prod_int64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_int64",
+   "inputs": [
+    "in_edge_int64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_prod_uint64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_uint64",
+   "inputs": [
+    "in_edge_uint64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_prod_float16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_float16",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_prod_float32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_float32",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_prod_float64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_float64",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_prod_hash_all_none.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_hash_all_none",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "reduction": "prod",
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_prod_hash_all_transpose.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_hash_all_transpose",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "keepdims": false,
+    "reduction": "prod",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_prod_hash_0_none.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "prod_hash_0_none",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "reduction": "prod",
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_prod_hash_0_transpose.npy",
+    "fortran": false,
+    "shape": [
+     7
+    ]
+   },
+   "id": "prod_hash_0_transpose",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "reduction": "prod",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_prod_hash_1_none_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     7,
+     1
+    ]
+   },
+   "id": "prod_hash_1_none_keepdims",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "reduction": "prod",
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_prod_hash_1_transpose_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     11,
+     1
+    ]
+   },
+   "id": "prod_hash_1_transpose_keepdims",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "reduction": "prod",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_prod_hash_0_1_none_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     1
+    ]
+   },
+   "id": "prod_hash_0_1_none_keepdims",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0,
+     1
+    ],
+    "keepdims": true,
+    "reduction": "prod",
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_prod_hash_0_1_transpose_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     1,
+     1
+    ]
+   },
+   "id": "prod_hash_0_1_transpose_keepdims",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0,
+     1
+    ],
+    "keepdims": true,
+    "reduction": "prod",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_prod_hash_m1_none.npy",
+    "fortran": false,
+    "shape": [
+     7
+    ]
+   },
+   "id": "prod_hash_m1_none",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     -1
+    ],
+    "keepdims": false,
+    "reduction": "prod",
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_prod_hash_m1_transpose.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "prod_hash_m1_transpose",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     -1
+    ],
+    "keepdims": false,
+    "reduction": "prod",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_pairwise_float64_7.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float64_7",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float64",
+    "generator": "hash_unit",
+    "n": 7,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_pairwise_float64_8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float64_8",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float64",
+    "generator": "hash_unit",
+    "n": 8,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_pairwise_float64_9.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float64_9",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float64",
+    "generator": "hash_unit",
+    "n": 9,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_pairwise_float64_127.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float64_127",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float64",
+    "generator": "hash_unit",
+    "n": 127,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_pairwise_float64_128.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float64_128",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float64",
+    "generator": "hash_unit",
+    "n": 128,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_pairwise_float64_129.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float64_129",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float64",
+    "generator": "hash_unit",
+    "n": 129,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_pairwise_float64_1000.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float64_1000",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float64",
+    "generator": "hash_unit",
+    "n": 1000,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_pairwise_float64_4097.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float64_4097",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float64",
+    "generator": "hash_unit",
+    "n": 4097,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_pairwise_float64_65536.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float64_65536",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float64",
+    "generator": "hash_unit",
+    "n": 65536,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_sum_pairwise_float32_7.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float32_7",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float32",
+    "generator": "hash_unit",
+    "n": 7,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_sum_pairwise_float32_8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float32_8",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float32",
+    "generator": "hash_unit",
+    "n": 8,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_sum_pairwise_float32_9.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float32_9",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float32",
+    "generator": "hash_unit",
+    "n": 9,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_sum_pairwise_float32_127.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float32_127",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float32",
+    "generator": "hash_unit",
+    "n": 127,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_sum_pairwise_float32_128.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float32_128",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float32",
+    "generator": "hash_unit",
+    "n": 128,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_sum_pairwise_float32_129.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float32_129",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float32",
+    "generator": "hash_unit",
+    "n": 129,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_sum_pairwise_float32_1000.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float32_1000",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float32",
+    "generator": "hash_unit",
+    "n": 1000,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_sum_pairwise_float32_4097.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float32_4097",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float32",
+    "generator": "hash_unit",
+    "n": 4097,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_sum_pairwise_float32_65536.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float32_65536",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float32",
+    "generator": "hash_unit",
+    "n": 65536,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_sum_pairwise_float16_7.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float16_7",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float16",
+    "generator": "hash_unit",
+    "n": 7,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_sum_pairwise_float16_8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float16_8",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float16",
+    "generator": "hash_unit",
+    "n": 8,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_sum_pairwise_float16_9.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float16_9",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float16",
+    "generator": "hash_unit",
+    "n": 9,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_sum_pairwise_float16_127.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float16_127",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float16",
+    "generator": "hash_unit",
+    "n": 127,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_sum_pairwise_float16_128.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float16_128",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float16",
+    "generator": "hash_unit",
+    "n": 128,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_sum_pairwise_float16_129.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float16_129",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float16",
+    "generator": "hash_unit",
+    "n": 129,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_sum_pairwise_float16_1000.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float16_1000",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float16",
+    "generator": "hash_unit",
+    "n": 1000,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_sum_pairwise_float16_4097.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float16_4097",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float16",
+    "generator": "hash_unit",
+    "n": 4097,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_sum_pairwise_float16_65536.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_pairwise_float16_65536",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "dtype": "float16",
+    "generator": "hash_unit",
+    "n": 65536,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_pairwise_rows.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "sum_pairwise_rows",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     1
+    ],
+    "dtype": "float64",
+    "generator": "hash_unit",
+    "n": 4096,
+    "reduction": "sum",
+    "shape": [
+     8,
+     512
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_pairwise_columns.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "sum_pairwise_columns",
+   "inputs": [],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "dtype": "float64",
+    "generator": "hash_unit",
+    "n": 4096,
+    "reduction": "sum",
+    "shape": [
+     512,
+     8
+    ]
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_sum_empty.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "sum_empty",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_prod_empty.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_empty",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
     "dtype": "<f8",
     "file": "expected_reduce_add_all.npy",
     "fortran": false,

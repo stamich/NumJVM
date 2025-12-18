@@ -169,6 +169,11 @@ def round_(a, decimals):
         return np.round(a, decimals)
 
 
+def reduction(name, a, **kw):
+    with np.errstate(all="ignore"):
+        return getattr(np, name)(a, **kw)
+
+
 def ufunc_reduce(name, a, **kw):
     with np.errstate(all="ignore"):
         return getattr(np, name).reduce(a, **kw)
@@ -418,6 +423,37 @@ def cases(arr):
     for dt in ["int8", "uint8", "int32", "int64"]:
         add(f"round_ints_{dt}_-1", NUMPY, "round", [f"round_int_{dt}"], {"decimals": -1}, lambda a: round_(a, -1))
         add(f"round_ints_{dt}_-2", NUMPY, "round", [f"round_int_{dt}"], {"decimals": -2}, lambda a: round_(a, -2))
+
+    # --- sum and prod ---------------------------------------------------------------------------
+    for name in ["sum", "prod"]:
+        for dt in NUMPY_REAL:
+            add(f"{name}_{dt}", ARRAY_API, "reduction", [f"edge_{dt}"], {"reduction": name, "axis": None},
+                lambda a, name=name: np.asarray(reduction(name, a)))
+        for axis, keep in [(None, False), ([0], False), ([1], True), ([0, 1], True), ([-1], False)]:
+            for view in ["none", "transpose"]:
+                cid = f"{name}_hash_{'all' if axis is None else '_'.join(map(str, axis))}_{view}" + (
+                    "_keepdims" if keep else "")
+                add(cid.replace("-", "m"), ARRAY_API, "reduction", ["f8_hash_7x11"],
+                    {"reduction": name, "axis": axis, "keepdims": keep, "view": view},
+                    lambda a, name=name, axis=axis, keep=keep, view=view: np.asarray(reduction(
+                        name, a.T if view == "transpose" else a, axis=None if axis is None else tuple(axis),
+                        keepdims=keep)))
+    # pairwise summation, bit for bit: inputs generated identically in Java (hash_unit)
+    for dt in ["float64", "float32", "float16"]:
+        for n in [7, 8, 9, 127, 128, 129, 1000, 4097, 65536]:
+            add(f"sum_pairwise_{dt}_{n}", ARRAY_API, "reduction", [],
+                {"reduction": "sum", "axis": None, "generator": "hash_unit", "n": n, "dtype": dt},
+                lambda n=n, dt=dt: np.asarray(np.sum(hash_unit(n).astype(dt))))
+    add("sum_pairwise_rows", ARRAY_API, "reduction", [],
+        {"reduction": "sum", "axis": [1], "generator": "hash_unit", "n": 4096, "dtype": "float64", "shape": [8, 512]},
+        lambda: np.sum(hash_unit(4096).reshape(8, 512), axis=1))
+    add("sum_pairwise_columns", ARRAY_API, "reduction", [],
+        {"reduction": "sum", "axis": [0], "generator": "hash_unit", "n": 4096, "dtype": "float64", "shape": [512, 8]},
+        lambda: np.sum(hash_unit(4096).reshape(512, 8), axis=0))
+    add("sum_empty", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": "sum", "axis": [0]},
+        lambda a: np.sum(a, axis=0))
+    add("prod_empty", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": "prod", "axis": None},
+        lambda a: np.asarray(np.prod(a)))
 
     # --- ufunc.reduce --------------------------------------------------------------------------
     for name in ["add", "multiply", "maximum", "minimum", "fmax", "logical_and", "logical_or", "bitwise_or",

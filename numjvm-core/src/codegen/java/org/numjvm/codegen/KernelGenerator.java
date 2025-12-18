@@ -32,7 +32,8 @@ public final class KernelGenerator {
     private final Map<String, String> templates = new HashMap<>();
 
     private KernelGenerator(Path templateDir) throws IOException {
-        for (String name : List.of("LoopClass", "BinaryLoop", "UnaryLoop", "CopyLoop", "GeneratedLoops", "ReducePath")) {
+        for (String name : List.of("LoopClass", "BinaryLoop", "UnaryLoop", "CopyLoop", "GeneratedLoops", "ReducePath",
+                "PairwiseReducePath")) {
             templates.put(name, Files.readString(templateDir.resolve(name + ".java.tmpl"), StandardCharsets.UTF_8));
         }
     }
@@ -164,7 +165,10 @@ public final class KernelGenerator {
         boolean reduces = op.arity() == 2 && !op.boolOutput();
         v.put("EXPR", t.narrow(expr));
         v.put("WRITE_X", o.write("o", "po", "x"));
-        v.put("REDUCE", reduces ? fill("ReducePath", v) : "");
+        // add reduces floating-point runs with NumPy's pairwise summation
+        boolean pairwise = reduces && op.name().equals("add") && t.isFloat();
+        v.put("PAIRWISE", pairwise ? "Pairwise." + t.dtype().toLowerCase() : "");
+        v.put("REDUCE", pairwise ? fill("PairwiseReducePath", v) : reduces ? fill("ReducePath", v) : "");
         return fill(op.arity() == 2 ? "BinaryLoop" : "UnaryLoop", v);
     }
 

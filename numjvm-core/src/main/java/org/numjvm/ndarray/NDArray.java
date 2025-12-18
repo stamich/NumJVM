@@ -15,6 +15,7 @@ import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.internal.memory.MemoryErrors;
 import org.numjvm.internal.memory.Sizes;
 import org.numjvm.memory.MemoryOwner;
+import org.numjvm.ufunc.Reductions;
 import org.numjvm.ufunc.Rounding;
 import org.numjvm.ufunc.Ufuncs;
 
@@ -1334,6 +1335,68 @@ public final class NDArray {
      */
     public NDArray ceil() {
         return Ufuncs.CEIL.apply(this);
+    }
+
+    /**
+     * Sum over all elements ({@link org.numjvm.ufunc.Reductions#sum(NDArray)}).
+     *
+     * @return a 0-D array
+     */
+    public NDArray sum() {
+        return Reductions.sum(this);
+    }
+
+    /**
+     * Sum over one axis ({@link org.numjvm.ufunc.Reductions#sum(NDArray, int)}).
+     *
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public NDArray sum(int axis) {
+        return Reductions.sum(this, axis);
+    }
+
+    /**
+     * Sum over several axes
+     * ({@link org.numjvm.ufunc.Reductions#sum(NDArray, int[], boolean)}).
+     *
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public NDArray sum(int[] axes, boolean keepdims) {
+        return Reductions.sum(this, axes, keepdims);
+    }
+
+    /**
+     * Product over all elements ({@link org.numjvm.ufunc.Reductions#prod(NDArray)}).
+     *
+     * @return a 0-D array
+     */
+    public NDArray prod() {
+        return Reductions.prod(this);
+    }
+
+    /**
+     * Product over one axis ({@link org.numjvm.ufunc.Reductions#prod(NDArray, int)}).
+     *
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public NDArray prod(int axis) {
+        return Reductions.prod(this, axis);
+    }
+
+    /**
+     * Product over several axes
+     * ({@link org.numjvm.ufunc.Reductions#prod(NDArray, int[], boolean)}).
+     *
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public NDArray prod(int[] axes, boolean keepdims) {
+        return Reductions.prod(this, axes, keepdims);
     }
 
     // ------------------------------------------------------------------ element access: helpers

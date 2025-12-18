@@ -14,6 +14,7 @@ import org.numjvm.internal.memory.NativeMemoryTracker;
 import org.numjvm.memory.MemoryStats;
 import org.numjvm.memory.NJScope;
 import org.numjvm.ndarray.NDArray;
+import org.numjvm.ufunc.Reductions;
 import org.numjvm.ufunc.Rounding;
 import org.numjvm.ufunc.Ufuncs;
 
@@ -1254,6 +1255,72 @@ public final class NJ {
      */
     public static NDArray ceil(NDArray x) {
         return Ufuncs.CEIL.apply(x);
+    }
+
+    /**
+     * Sum over all elements ({@link Reductions#sum(NDArray)}).
+     *
+     * @param x the array
+     * @return a 0-D array
+     */
+    public static NDArray sum(NDArray x) {
+        return Reductions.sum(x);
+    }
+
+    /**
+     * Sum over one axis ({@link Reductions#sum(NDArray, int)}).
+     *
+     * @param x    the array
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public static NDArray sum(NDArray x, int axis) {
+        return Reductions.sum(x, axis);
+    }
+
+    /**
+     * Sum over several axes ({@link Reductions#sum(NDArray, int[], boolean)}).
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public static NDArray sum(NDArray x, int[] axes, boolean keepdims) {
+        return Reductions.sum(x, axes, keepdims);
+    }
+
+    /**
+     * Product over all elements ({@link Reductions#prod(NDArray)}).
+     *
+     * @param x the array
+     * @return a 0-D array
+     */
+    public static NDArray prod(NDArray x) {
+        return Reductions.prod(x);
+    }
+
+    /**
+     * Product over one axis ({@link Reductions#prod(NDArray, int)}).
+     *
+     * @param x    the array
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public static NDArray prod(NDArray x, int axis) {
+        return Reductions.prod(x, axis);
+    }
+
+    /**
+     * Product over several axes ({@link Reductions#prod(NDArray, int[], boolean)}).
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public static NDArray prod(NDArray x, int[] axes, boolean keepdims) {
+        return Reductions.prod(x, axes, keepdims);
     }
 
     // ------------------------------------------------------------------ type promotion
