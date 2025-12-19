@@ -1399,6 +1399,68 @@ public final class NDArray {
         return Reductions.prod(this, axes, keepdims);
     }
 
+    /**
+     * Maximum over all elements ({@link org.numjvm.ufunc.Reductions#max(NDArray)}).
+     *
+     * @return a 0-D array
+     */
+    public NDArray max() {
+        return Reductions.max(this);
+    }
+
+    /**
+     * Maximum over one axis ({@link org.numjvm.ufunc.Reductions#max(NDArray, int)}).
+     *
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public NDArray max(int axis) {
+        return Reductions.max(this, axis);
+    }
+
+    /**
+     * Maximum over several axes
+     * ({@link org.numjvm.ufunc.Reductions#max(NDArray, int[], boolean)}).
+     *
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public NDArray max(int[] axes, boolean keepdims) {
+        return Reductions.max(this, axes, keepdims);
+    }
+
+    /**
+     * Minimum over all elements ({@link org.numjvm.ufunc.Reductions#min(NDArray)}).
+     *
+     * @return a 0-D array
+     */
+    public NDArray min() {
+        return Reductions.min(this);
+    }
+
+    /**
+     * Minimum over one axis ({@link org.numjvm.ufunc.Reductions#min(NDArray, int)}).
+     *
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public NDArray min(int axis) {
+        return Reductions.min(this, axis);
+    }
+
+    /**
+     * Minimum over several axes
+     * ({@link org.numjvm.ufunc.Reductions#min(NDArray, int[], boolean)}).
+     *
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public NDArray min(int[] axes, boolean keepdims) {
+        return Reductions.min(this, axes, keepdims);
+    }
+
     // ------------------------------------------------------------------ element access: helpers
 
     private long idx(long i, int axis) {

@@ -94,6 +94,7 @@ def inputs():
     arr["round_int_uint8"] = np.array([125, 255, 15, 25, 35, 0, 254, 245], dtype=np.uint8)
     arr["round_int_int32"] = np.array([125, 135, -125, -2 ** 31 + 50, 2 ** 31 - 50, 15, 250, -350], dtype=np.int32)
     arr["round_int_int64"] = np.array([2 ** 62 + 1, 2 ** 62 + 15, -15, 25, -25, 2 ** 53 + 5, -2 ** 63, 7], dtype=np.int64)
+    arr["nan_grid"] = np.array([[1.0, np.nan, 3.0, -np.inf], [np.nan, 2.0, -1.0, 5.0], [0.5, 0.25, np.nan, 7.0]])
     arr["cmp_i8"] = np.array([2 ** 63 - 1, -1, 5, -2 ** 63, 0, 2 ** 53 + 1], dtype=np.int64)
     arr["cmp_u8"] = np.array([2 ** 63, 2 ** 64 - 1, 5, 0, 0, 2 ** 53], dtype=np.uint64)
     arr["nan_x_float64"] = np.array([np.nan, 1.0, np.nan, -np.inf, 2.0, np.inf])
@@ -438,6 +439,24 @@ def cases(arr):
                     lambda a, name=name, axis=axis, keep=keep, view=view: np.asarray(reduction(
                         name, a.T if view == "transpose" else a, axis=None if axis is None else tuple(axis),
                         keepdims=keep)))
+    for name in ["max", "min"]:
+        for dt in NUMPY_REAL:
+            add(f"{name}_{dt}", ARRAY_API, "reduction", [f"edge_{dt}"], {"reduction": name, "axis": None},
+                lambda a, name=name: np.asarray(reduction(name, a)))
+            add(f"{name}_{dt}_no_nan", ARRAY_API, "reduction", [f"edge2_{dt}"], {"reduction": name, "axis": None},
+                lambda a, name=name: np.asarray(reduction(name, a)))
+        for axis, keep in [([0], False), ([1], True), ([0, 1], False)]:
+            cid = f"{name}_hash_{'_'.join(map(str, axis))}" + ("_keepdims" if keep else "")
+            add(cid, ARRAY_API, "reduction", ["f8_hash_7x11"], {"reduction": name, "axis": axis, "keepdims": keep,
+                                                                 "view": "transpose"},
+                lambda a, name=name, axis=axis, keep=keep: np.asarray(reduction(name, a.T, axis=tuple(axis),
+                                                                                  keepdims=keep)))
+        add(f"{name}_nan_columns", ARRAY_API, "reduction", ["nan_grid"], {"reduction": name, "axis": [0]},
+            lambda a, name=name: reduction(name, a, axis=0))
+        add(f"{name}_empty", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": name, "axis": None}, None)
+        add(f"{name}_empty_axis0", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": name, "axis": [0]}, None)
+        add(f"{name}_empty_axis1", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": name, "axis": [1]},
+            lambda a, name=name: reduction(name, a, axis=1))
     # pairwise summation, bit for bit: inputs generated identically in Java (hash_unit)
     for dt in ["float64", "float32", "float16"]:
         for n in [7, 8, 9, 127, 128, 129, 1000, 4097, 65536]:

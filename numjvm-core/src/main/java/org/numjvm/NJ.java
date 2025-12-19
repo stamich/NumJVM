@@ -1323,6 +1323,72 @@ public final class NJ {
         return Reductions.prod(x, axes, keepdims);
     }
 
+    /**
+     * Maximum over all elements ({@link Reductions#max(NDArray)}).
+     *
+     * @param x the array
+     * @return a 0-D array
+     */
+    public static NDArray max(NDArray x) {
+        return Reductions.max(x);
+    }
+
+    /**
+     * Maximum over one axis ({@link Reductions#max(NDArray, int)}).
+     *
+     * @param x    the array
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public static NDArray max(NDArray x, int axis) {
+        return Reductions.max(x, axis);
+    }
+
+    /**
+     * Maximum over several axes ({@link Reductions#max(NDArray, int[], boolean)}).
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public static NDArray max(NDArray x, int[] axes, boolean keepdims) {
+        return Reductions.max(x, axes, keepdims);
+    }
+
+    /**
+     * Minimum over all elements ({@link Reductions#min(NDArray)}).
+     *
+     * @param x the array
+     * @return a 0-D array
+     */
+    public static NDArray min(NDArray x) {
+        return Reductions.min(x);
+    }
+
+    /**
+     * Minimum over one axis ({@link Reductions#min(NDArray, int)}).
+     *
+     * @param x    the array
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public static NDArray min(NDArray x, int axis) {
+        return Reductions.min(x, axis);
+    }
+
+    /**
+     * Minimum over several axes ({@link Reductions#min(NDArray, int[], boolean)}).
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public static NDArray min(NDArray x, int[] axes, boolean keepdims) {
+        return Reductions.min(x, axes, keepdims);
+    }
+
     // ------------------------------------------------------------------ type promotion
 
     /**

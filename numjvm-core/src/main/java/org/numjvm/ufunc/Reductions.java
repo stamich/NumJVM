@@ -91,4 +91,82 @@ public final class Reductions {
     public static NDArray prod(NDArray x, int[] axes, boolean keepdims) {
         return Ufuncs.MULTIPLY.reduce(x, axes, keepdims);
     }
+
+    // ------------------------------------------------------------------ max
+
+    /**
+     * The largest element ({@code ARRAY_API}: {@code max}). NaN propagates: any NaN
+     * gives NaN. The result keeps the input's dtype.
+     *
+     * @param x the array
+     * @return a 0-D array
+     * @throws org.numjvm.exception.ValueException if {@code x} is empty (there is no identity)
+     */
+    public static NDArray max(NDArray x) {
+        return Ufuncs.MAXIMUM.reduce(x);
+    }
+
+    /**
+     * The largest element along one axis; see {@link #max(NDArray)}.
+     *
+     * @param x    the array
+     * @param axis the axis
+     * @return the results, with that axis removed
+     * @throws org.numjvm.exception.ValueException if the axis has length 0 and the result
+     *                                             is not empty
+     */
+    public static NDArray max(NDArray x, int axis) {
+        return Ufuncs.MAXIMUM.reduce(x, axis);
+    }
+
+    /**
+     * The largest element over several axes; see {@link #max(NDArray)}.
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the results
+     */
+    public static NDArray max(NDArray x, int[] axes, boolean keepdims) {
+        return Ufuncs.MAXIMUM.reduce(x, axes, keepdims);
+    }
+
+    // ------------------------------------------------------------------ min
+
+    /**
+     * The smallest element ({@code ARRAY_API}: {@code min}). NaN propagates: any NaN
+     * gives NaN. The result keeps the input's dtype.
+     *
+     * @param x the array
+     * @return a 0-D array
+     * @throws org.numjvm.exception.ValueException if {@code x} is empty (there is no identity)
+     */
+    public static NDArray min(NDArray x) {
+        return Ufuncs.MINIMUM.reduce(x);
+    }
+
+    /**
+     * The smallest element along one axis; see {@link #min(NDArray)}.
+     *
+     * @param x    the array
+     * @param axis the axis
+     * @return the results, with that axis removed
+     * @throws org.numjvm.exception.ValueException if the axis has length 0 and the result
+     *                                             is not empty
+     */
+    public static NDArray min(NDArray x, int axis) {
+        return Ufuncs.MINIMUM.reduce(x, axis);
+    }
+
+    /**
+     * The smallest element over several axes; see {@link #min(NDArray)}.
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the results
+     */
+    public static NDArray min(NDArray x, int[] axes, boolean keepdims) {
+        return Ufuncs.MINIMUM.reduce(x, axes, keepdims);
+    }
 }

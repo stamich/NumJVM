@@ -218,6 +218,8 @@ class OracleTest {
         return switch ((String) p.get("reduction")) {
             case "sum" -> Reductions.sum(x, axes, keep);
             case "prod" -> Reductions.prod(x, axes, keep);
+            case "max" -> Reductions.max(x, axes, keep);
+            case "min" -> Reductions.min(x, axes, keep);
             default -> throw new AssertionError("unknown reduction " + p);
         };
     }
