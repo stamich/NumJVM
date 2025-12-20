@@ -1389,6 +1389,105 @@ public final class NJ {
         return Reductions.min(x, axes, keepdims);
     }
 
+    /**
+     * Mean over all elements ({@link Reductions#mean(NDArray)}).
+     *
+     * @param x the array
+     * @return a 0-D array
+     */
+    public static NDArray mean(NDArray x) {
+        return Reductions.mean(x);
+    }
+
+    /**
+     * Mean over one axis ({@link Reductions#mean(NDArray, int)}).
+     *
+     * @param x    the array
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public static NDArray mean(NDArray x, int axis) {
+        return Reductions.mean(x, axis);
+    }
+
+    /**
+     * Mean over several axes ({@link Reductions#mean(NDArray, int[], boolean)}).
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public static NDArray mean(NDArray x, int[] axes, boolean keepdims) {
+        return Reductions.mean(x, axes, keepdims);
+    }
+
+    /**
+     * Whether any element is true over all elements ({@link Reductions#any(NDArray)}).
+     *
+     * @param x the array
+     * @return a 0-D array
+     */
+    public static NDArray any(NDArray x) {
+        return Reductions.any(x);
+    }
+
+    /**
+     * Whether any element is true over one axis ({@link Reductions#any(NDArray, int)}).
+     *
+     * @param x    the array
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public static NDArray any(NDArray x, int axis) {
+        return Reductions.any(x, axis);
+    }
+
+    /**
+     * Whether any element is true over several axes ({@link Reductions#any(NDArray, int[], boolean)}).
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public static NDArray any(NDArray x, int[] axes, boolean keepdims) {
+        return Reductions.any(x, axes, keepdims);
+    }
+
+    /**
+     * Whether every element is true over all elements ({@link Reductions#all(NDArray)}).
+     *
+     * @param x the array
+     * @return a 0-D array
+     */
+    public static NDArray all(NDArray x) {
+        return Reductions.all(x);
+    }
+
+    /**
+     * Whether every element is true over one axis ({@link Reductions#all(NDArray, int)}).
+     *
+     * @param x    the array
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public static NDArray all(NDArray x, int axis) {
+        return Reductions.all(x, axis);
+    }
+
+    /**
+     * Whether every element is true over several axes ({@link Reductions#all(NDArray, int[], boolean)}).
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public static NDArray all(NDArray x, int[] axes, boolean keepdims) {
+        return Reductions.all(x, axes, keepdims);
+    }
+
     // ------------------------------------------------------------------ type promotion
 
     /**

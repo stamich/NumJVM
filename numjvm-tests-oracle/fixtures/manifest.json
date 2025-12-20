@@ -21936,6 +21936,1800 @@
   {
    "expect": {
     "dtype": "<f8",
+    "file": "expected_mean_bool.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_bool",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_bool_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_bool_shifted",
+   "inputs": [
+    "in_edge2_bool.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_int8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_int8",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_int8_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_int8_shifted",
+   "inputs": [
+    "in_edge2_int8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_uint8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_uint8",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_uint8_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_uint8_shifted",
+   "inputs": [
+    "in_edge2_uint8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_int16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_int16",
+   "inputs": [
+    "in_edge_int16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_int16_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_int16_shifted",
+   "inputs": [
+    "in_edge2_int16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_uint16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_uint16",
+   "inputs": [
+    "in_edge_uint16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_uint16_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_uint16_shifted",
+   "inputs": [
+    "in_edge2_uint16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_int32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_int32",
+   "inputs": [
+    "in_edge_int32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_int32_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_int32_shifted",
+   "inputs": [
+    "in_edge2_int32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_uint32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_uint32",
+   "inputs": [
+    "in_edge_uint32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_uint32_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_uint32_shifted",
+   "inputs": [
+    "in_edge2_uint32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_int64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_int64",
+   "inputs": [
+    "in_edge_int64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_int64_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_int64_shifted",
+   "inputs": [
+    "in_edge2_int64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_uint64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_uint64",
+   "inputs": [
+    "in_edge_uint64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_uint64_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_uint64_shifted",
+   "inputs": [
+    "in_edge2_uint64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_mean_float16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_float16",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_mean_float16_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_float16_shifted",
+   "inputs": [
+    "in_edge2_float16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_mean_float32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_float32",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_mean_float32_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_float32_shifted",
+   "inputs": [
+    "in_edge2_float32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_float64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_float64",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_float64_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_float64_shifted",
+   "inputs": [
+    "in_edge2_float64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_hash_0.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "mean_hash_0",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_hash_1_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     7,
+     1
+    ]
+   },
+   "id": "mean_hash_1_keepdims",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_hash_0_1.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_hash_0_1",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0,
+     1
+    ],
+    "keepdims": false,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_hash_none.npy",
+    "fortran": false,
+    "shape": [
+     7,
+     11
+    ]
+   },
+   "id": "mean_hash_none",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [],
+    "keepdims": false,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_int_columns.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "mean_int_columns",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "reduction": "mean",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_empty.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "mean_empty",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_mean_empty_all.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_empty_all",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_bool.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_bool",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_bool_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_bool_shifted",
+   "inputs": [
+    "in_edge2_bool.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_int8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_int8",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_int8_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_int8_shifted",
+   "inputs": [
+    "in_edge2_int8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_uint8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_uint8",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_uint8_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_uint8_shifted",
+   "inputs": [
+    "in_edge2_uint8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_int16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_int16",
+   "inputs": [
+    "in_edge_int16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_int16_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_int16_shifted",
+   "inputs": [
+    "in_edge2_int16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_uint16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_uint16",
+   "inputs": [
+    "in_edge_uint16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_uint16_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_uint16_shifted",
+   "inputs": [
+    "in_edge2_uint16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_int32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_int32",
+   "inputs": [
+    "in_edge_int32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_int32_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_int32_shifted",
+   "inputs": [
+    "in_edge2_int32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_uint32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_uint32",
+   "inputs": [
+    "in_edge_uint32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_uint32_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_uint32_shifted",
+   "inputs": [
+    "in_edge2_uint32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_int64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_int64",
+   "inputs": [
+    "in_edge_int64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_int64_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_int64_shifted",
+   "inputs": [
+    "in_edge2_int64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_uint64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_uint64",
+   "inputs": [
+    "in_edge_uint64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_uint64_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_uint64_shifted",
+   "inputs": [
+    "in_edge2_uint64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_float16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_float16",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_float16_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_float16_shifted",
+   "inputs": [
+    "in_edge2_float16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_float32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_float32",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_float32_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_float32_shifted",
+   "inputs": [
+    "in_edge2_float32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_float64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_float64",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_float64_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_float64_shifted",
+   "inputs": [
+    "in_edge2_float64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_hash_0.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "any_hash_0",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_hash_1_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     7,
+     1
+    ]
+   },
+   "id": "any_hash_1_keepdims",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_hash_0_1.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_hash_0_1",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0,
+     1
+    ],
+    "keepdims": false,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_hash_none.npy",
+    "fortran": false,
+    "shape": [
+     7,
+     11
+    ]
+   },
+   "id": "any_hash_none",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [],
+    "keepdims": false,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_int_columns.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "any_int_columns",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "reduction": "any",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_empty.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "any_empty",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_any_empty_all.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "any_empty_all",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "any"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_bool.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_bool",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_bool_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_bool_shifted",
+   "inputs": [
+    "in_edge2_bool.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_int8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_int8",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_int8_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_int8_shifted",
+   "inputs": [
+    "in_edge2_int8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_uint8.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_uint8",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_uint8_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_uint8_shifted",
+   "inputs": [
+    "in_edge2_uint8.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_int16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_int16",
+   "inputs": [
+    "in_edge_int16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_int16_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_int16_shifted",
+   "inputs": [
+    "in_edge2_int16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_uint16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_uint16",
+   "inputs": [
+    "in_edge_uint16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_uint16_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_uint16_shifted",
+   "inputs": [
+    "in_edge2_uint16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_int32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_int32",
+   "inputs": [
+    "in_edge_int32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_int32_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_int32_shifted",
+   "inputs": [
+    "in_edge2_int32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_uint32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_uint32",
+   "inputs": [
+    "in_edge_uint32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_uint32_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_uint32_shifted",
+   "inputs": [
+    "in_edge2_uint32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_int64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_int64",
+   "inputs": [
+    "in_edge_int64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_int64_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_int64_shifted",
+   "inputs": [
+    "in_edge2_int64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_uint64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_uint64",
+   "inputs": [
+    "in_edge_uint64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_uint64_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_uint64_shifted",
+   "inputs": [
+    "in_edge2_uint64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_float16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_float16",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_float16_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_float16_shifted",
+   "inputs": [
+    "in_edge2_float16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_float32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_float32",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_float32_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_float32_shifted",
+   "inputs": [
+    "in_edge2_float32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_float64.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_float64",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_float64_shifted.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_float64_shifted",
+   "inputs": [
+    "in_edge2_float64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_hash_0.npy",
+    "fortran": false,
+    "shape": [
+     11
+    ]
+   },
+   "id": "all_hash_0",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "keepdims": false,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_hash_1_keepdims.npy",
+    "fortran": false,
+    "shape": [
+     7,
+     1
+    ]
+   },
+   "id": "all_hash_1_keepdims",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     1
+    ],
+    "keepdims": true,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_hash_0_1.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_hash_0_1",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0,
+     1
+    ],
+    "keepdims": false,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_hash_none.npy",
+    "fortran": false,
+    "shape": [
+     7,
+     11
+    ]
+   },
+   "id": "all_hash_none",
+   "inputs": [
+    "in_f8_hash_7x11.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [],
+    "keepdims": false,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_int_columns.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "all_int_columns",
+   "inputs": [
+    "in_i4_3x4.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "reduction": "all",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_empty.npy",
+    "fortran": false,
+    "shape": [
+     3
+    ]
+   },
+   "id": "all_empty",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_all_empty_all.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "all_empty_all",
+   "inputs": [
+    "in_f8_empty_0x3.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "all"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_mean_dense_float16.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_dense_float16",
+   "inputs": [
+    "in_dense_float16.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_mean_dense_float32.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_dense_float32",
+   "inputs": [
+    "in_dense_float32.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
     "file": "expected_sum_pairwise_float64_7.npy",
     "fortran": false,
     "shape": []

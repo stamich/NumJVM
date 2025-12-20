@@ -20,6 +20,7 @@ import json
 import os
 import sys
 import tempfile
+import warnings
 
 import numpy as np
 
@@ -171,7 +172,9 @@ def round_(a, decimals):
 
 
 def reduction(name, a, **kw):
-    with np.errstate(all="ignore"):
+    """Applies a NumPy reduction with its warnings silenced (empty means warn and give NaN)."""
+    with np.errstate(all="ignore"), warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
         return getattr(np, name)(a, **kw)
 
 
@@ -457,6 +460,27 @@ def cases(arr):
         add(f"{name}_empty_axis0", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": name, "axis": [0]}, None)
         add(f"{name}_empty_axis1", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": name, "axis": [1]},
             lambda a, name=name: reduction(name, a, axis=1))
+    for name in ["mean", "any", "all"]:
+        for dt in NUMPY_REAL:
+            add(f"{name}_{dt}", ARRAY_API, "reduction", [f"edge_{dt}"], {"reduction": name, "axis": None},
+                lambda a, name=name: np.asarray(reduction(name, a)))
+            add(f"{name}_{dt}_shifted", ARRAY_API, "reduction", [f"edge2_{dt}"], {"reduction": name, "axis": None},
+                lambda a, name=name: np.asarray(reduction(name, a)))
+        for axis, keep in [([0], False), ([1], True), ([0, 1], False), ([], False)]:
+            cid = f"{name}_hash_{'_'.join(map(str, axis)) or 'none'}" + ("_keepdims" if keep else "")
+            add(cid, ARRAY_API, "reduction", ["f8_hash_7x11"], {"reduction": name, "axis": axis, "keepdims": keep},
+                lambda a, name=name, axis=axis, keep=keep: np.asarray(reduction(name, a, axis=tuple(axis),
+                                                                                  keepdims=keep)))
+        add(f"{name}_int_columns", ARRAY_API, "reduction", ["i4_3x4"], {"reduction": name, "axis": [0],
+                                                                         "view": "transpose"},
+            lambda a, name=name: reduction(name, a.T, axis=0))
+        add(f"{name}_empty", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": name, "axis": [0]},
+            lambda a, name=name: reduction(name, a, axis=0))
+        add(f"{name}_empty_all", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": name, "axis": None},
+            lambda a, name=name: np.asarray(reduction(name, a)))
+    for dt in ["float16", "float32"]:
+        add(f"mean_dense_{dt}", ARRAY_API, "reduction", [f"dense_{dt}"], {"reduction": "mean", "axis": None},
+            lambda a: np.asarray(np.mean(a)))
     # pairwise summation, bit for bit: inputs generated identically in Java (hash_unit)
     for dt in ["float64", "float32", "float16"]:
         for n in [7, 8, 9, 127, 128, 129, 1000, 4097, 65536]:

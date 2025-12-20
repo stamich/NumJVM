@@ -1,5 +1,6 @@
 package org.numjvm.ufunc;
 
+import org.numjvm.dtype.DType;
 import org.numjvm.ndarray.NDArray;
 
 /**
@@ -168,5 +169,125 @@ public final class Reductions {
      */
     public static NDArray min(NDArray x, int[] axes, boolean keepdims) {
         return Ufuncs.MINIMUM.reduce(x, axes, keepdims);
+    }
+
+    // ------------------------------------------------------------------ mean
+
+    /**
+     * The arithmetic mean ({@code ARRAY_API}: {@code mean}), computed as NumPy does: the sum
+     * divided by the number of elements reduced. Bool and integer arrays are summed in
+     * float64 and give float64; float16 and bfloat16 are summed and divided in float32 and the
+     * result rounded back; other dtypes keep theirs. The mean of an empty array is NaN.
+     *
+     * @param x the array
+     * @return a 0-D array
+     */
+    public static NDArray mean(NDArray x) {
+        return mean(x, null, false);
+    }
+
+    /**
+     * The mean along one axis; see {@link #mean(NDArray)}.
+     *
+     * @param x    the array
+     * @param axis the axis
+     * @return the means, with that axis removed
+     */
+    public static NDArray mean(NDArray x, int axis) {
+        return mean(x, new int[]{axis}, false);
+    }
+
+    /**
+     * The mean over several axes; see {@link #mean(NDArray)}.
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the means
+     */
+    public static NDArray mean(NDArray x, int[] axes, boolean keepdims) {
+        DType t = x.dtype();
+        DType sumType = t.isBool() || t.isInteger() ? DType.FLOAT64
+                : t == DType.FLOAT16 || t == DType.BFLOAT16 ? DType.FLOAT32 : t;
+        boolean[] reduced = Reducer.reducedAxes(axes, x.ndim());
+        long count = 1;
+        for (int d = 0; d < reduced.length; d++) {
+            if (reduced[d]) {
+                count *= x.dim(d);
+            }
+        }
+        NDArray sum = Ufuncs.ADD.reduce(Operands.cast(x, sumType), axes, keepdims);
+        NDArray mean = Ufuncs.DIVIDE.apply(sum, count);
+        return sumType == t || t.isBool() || t.isInteger() ? mean : mean.astype(t);
+    }
+
+    // ------------------------------------------------------------------ any / all
+
+    /**
+     * Whether any element is true, that is non-zero ({@code ARRAY_API}: {@code any}). NaN
+     * counts as true; an empty array gives {@code false}.
+     *
+     * @param x the array
+     * @return a 0-D bool array
+     */
+    public static NDArray any(NDArray x) {
+        return Ufuncs.LOGICAL_OR.reduce(x);
+    }
+
+    /**
+     * Whether any element along one axis is true; see {@link #any(NDArray)}.
+     *
+     * @param x    the array
+     * @param axis the axis
+     * @return a bool array with that axis removed
+     */
+    public static NDArray any(NDArray x, int axis) {
+        return Ufuncs.LOGICAL_OR.reduce(x, axis);
+    }
+
+    /**
+     * Whether any element over several axes is true; see {@link #any(NDArray)}.
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return a bool array
+     */
+    public static NDArray any(NDArray x, int[] axes, boolean keepdims) {
+        return Ufuncs.LOGICAL_OR.reduce(x, axes, keepdims);
+    }
+
+    /**
+     * Whether every element is true, that is non-zero ({@code ARRAY_API}: {@code all}). NaN
+     * counts as true; an empty array gives {@code true}.
+     *
+     * @param x the array
+     * @return a 0-D bool array
+     */
+    public static NDArray all(NDArray x) {
+        return Ufuncs.LOGICAL_AND.reduce(x);
+    }
+
+    /**
+     * Whether every element along one axis is true; see {@link #all(NDArray)}.
+     *
+     * @param x    the array
+     * @param axis the axis
+     * @return a bool array with that axis removed
+     */
+    public static NDArray all(NDArray x, int axis) {
+        return Ufuncs.LOGICAL_AND.reduce(x, axis);
+    }
+
+    /**
+     * Whether every element over several axes is true; see {@link #all(NDArray)}.
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return a bool array
+     */
+    public static NDArray all(NDArray x, int[] axes, boolean keepdims) {
+        return Ufuncs.LOGICAL_AND.reduce(x, axes, keepdims);
     }
 }

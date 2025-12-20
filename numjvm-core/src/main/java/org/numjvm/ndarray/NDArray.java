@@ -1461,6 +1461,99 @@ public final class NDArray {
         return Reductions.min(this, axes, keepdims);
     }
 
+    /**
+     * Mean over all elements ({@link org.numjvm.ufunc.Reductions#mean(NDArray)}).
+     *
+     * @return a 0-D array
+     */
+    public NDArray mean() {
+        return Reductions.mean(this);
+    }
+
+    /**
+     * Mean over one axis ({@link org.numjvm.ufunc.Reductions#mean(NDArray, int)}).
+     *
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public NDArray mean(int axis) {
+        return Reductions.mean(this, axis);
+    }
+
+    /**
+     * Mean over several axes
+     * ({@link org.numjvm.ufunc.Reductions#mean(NDArray, int[], boolean)}).
+     *
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public NDArray mean(int[] axes, boolean keepdims) {
+        return Reductions.mean(this, axes, keepdims);
+    }
+
+    /**
+     * Whether any element is true over all elements ({@link org.numjvm.ufunc.Reductions#any(NDArray)}).
+     *
+     * @return a 0-D array
+     */
+    public NDArray any() {
+        return Reductions.any(this);
+    }
+
+    /**
+     * Whether any element is true over one axis ({@link org.numjvm.ufunc.Reductions#any(NDArray, int)}).
+     *
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public NDArray any(int axis) {
+        return Reductions.any(this, axis);
+    }
+
+    /**
+     * Whether any element is true over several axes
+     * ({@link org.numjvm.ufunc.Reductions#any(NDArray, int[], boolean)}).
+     *
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public NDArray any(int[] axes, boolean keepdims) {
+        return Reductions.any(this, axes, keepdims);
+    }
+
+    /**
+     * Whether every element is true over all elements ({@link org.numjvm.ufunc.Reductions#all(NDArray)}).
+     *
+     * @return a 0-D array
+     */
+    public NDArray all() {
+        return Reductions.all(this);
+    }
+
+    /**
+     * Whether every element is true over one axis ({@link org.numjvm.ufunc.Reductions#all(NDArray, int)}).
+     *
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public NDArray all(int axis) {
+        return Reductions.all(this, axis);
+    }
+
+    /**
+     * Whether every element is true over several axes
+     * ({@link org.numjvm.ufunc.Reductions#all(NDArray, int[], boolean)}).
+     *
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public NDArray all(int[] axes, boolean keepdims) {
+        return Reductions.all(this, axes, keepdims);
+    }
+
     // ------------------------------------------------------------------ element access: helpers
 
     private long idx(long i, int axis) {
