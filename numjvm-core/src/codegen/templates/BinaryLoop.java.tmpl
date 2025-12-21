@@ -33,6 +33,13 @@ ${REDUCE}        if (so == ${OSIZE} && sa == ${ISIZE} && sb == ${ISIZE}) {
                 ${CT} x = ${READ_A_I};
                 ${WRITE_I};
             }
+        } else if (so == ${OSIZE}) {
+            // contiguous output, inputs at any stride: an indexed loop the JIT can unroll
+            for (long i = 0; i < n; i++) {
+                ${CT} x = ${READ_A_S};
+                ${CT} y = ${READ_B_S};
+                ${WRITE_I};
+            }
         } else {
             for (long i = 0; i < n; i++, pa += sa, pb += sb, po += so) {
                 ${CT} x = ${READ_A};

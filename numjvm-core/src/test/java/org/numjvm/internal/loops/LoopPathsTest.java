@@ -61,6 +61,10 @@ class LoopPathsTest {
         NDArray so = NJ.zeros(out, 2 * N).slice(Slice.step(2));
         LoopExecutor.binary(loop, strided(a), strided(b), so);
         assertSame(sig + " strided", reference, so);
+        // strided inputs into a contiguous output
+        NDArray co = NJ.zeros(out, N);
+        LoopExecutor.binary(loop, strided(a), b, co);
+        assertSame(sig + " strided input", reference, co);
         NDArray a0 = a.slice(Slice.range(0, 1)).reshape();
         NDArray b0 = b.slice(Slice.range(2, 3)).reshape();
         assertSame(sig + " broadcast first", binary(loop, fill(a0, N), b, out), binary(loop, a0.broadcastTo(N), b, out));

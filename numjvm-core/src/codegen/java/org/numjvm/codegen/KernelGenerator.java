@@ -158,6 +158,8 @@ public final class KernelGenerator {
         v.put("READ_A_I", t.read("a", indexed("pa", t.size())));
         v.put("READ_B", t.read("b", "pb"));
         v.put("READ_B_I", t.read("b", indexed("pb", t.size())));
+        v.put("READ_A_S", t.read("a", "pa + i * sa"));
+        v.put("READ_B_S", t.read("b", "pb + i * sb"));
         v.put("WRITE", o.write("o", "po", expr));
         v.put("WRITE_I", o.write("o", indexed("po", o.size()), expr));
         // binary operations whose output dtype is the input dtype can reduce (ADR-004): the
