@@ -98,6 +98,29 @@ public final class UnaryUfunc extends Ufunc {
     }
 
     /**
+     * Applies the ufunc and writes the result into {@code out} ({@code NUMPY_COMPATIBILITY}:
+     * the {@code out=} argument); {@code ufunc.apply(x, x)} works in place. The rules for
+     * {@code out} are those of {@link BinaryUfunc#apply(NDArray, NDArray, NDArray)}.
+     *
+     * @param x   the input
+     * @param out the output, of the input's shape
+     * @return {@code out}
+     */
+    public NDArray apply(NDArray x, NDArray out) {
+        Objects.requireNonNull(x, "x");
+        Resolution r = resolve(x.dtype());
+        Outputs.check(name(), out, x.shape(), r.out());
+        NDArray in = Operands.cast(x, r.in());
+        if (out.dtype() == r.out() && !Outputs.unsafeOverlap(out, in)) {
+            LoopExecutor.unary(r.loop(), in, out);
+            return out;
+        }
+        NDArray tmp = Operands.allocate(r.out(), in.shape(), in);
+        LoopExecutor.unary(r.loop(), in, tmp);
+        return Outputs.copyInto(tmp, out);
+    }
+
+    /**
      * Returns the dtype of the result for an input of this dtype.
      *
      * @param x the input dtype

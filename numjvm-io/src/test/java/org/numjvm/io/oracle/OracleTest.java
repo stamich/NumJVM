@@ -196,6 +196,11 @@ class OracleTest {
         }
         if (u instanceof BinaryUfunc b) {
             NDArray y = transpose ? in.get(1).transpose() : in.get(1);
+            if (p.containsKey("out")) {
+                NDArray out = NJ.zeros(DType.fromName((String) p.get("out")),
+                        Broadcasting.broadcastShapes(x.shape(), y.shape()).dimensions());
+                return b.apply(x, y, out);
+            }
             return b.apply(x, y);
         }
         return ((UnaryUfunc) u).apply(x);

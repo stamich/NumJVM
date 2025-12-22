@@ -1554,6 +1554,174 @@ public final class NDArray {
         return Reductions.all(this, axes, keepdims);
     }
 
+    /**
+     * {@code this += other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.ADD.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.addInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray addInPlace(NDArray other) {
+        return Ufuncs.ADD.apply(this, other, this);
+    }
+
+    /**
+     * {@code this += other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.ADD.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.addInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray addInPlace(double other) {
+        return Ufuncs.ADD.apply(this, other, this);
+    }
+
+    /**
+     * {@code this += other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.ADD.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.addInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray addInPlace(long other) {
+        return Ufuncs.ADD.apply(this, other, this);
+    }
+
+    /**
+     * {@code this -= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.SUBTRACT.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.subtractInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray subtractInPlace(NDArray other) {
+        return Ufuncs.SUBTRACT.apply(this, other, this);
+    }
+
+    /**
+     * {@code this -= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.SUBTRACT.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.subtractInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray subtractInPlace(double other) {
+        return Ufuncs.SUBTRACT.apply(this, other, this);
+    }
+
+    /**
+     * {@code this -= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.SUBTRACT.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.subtractInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray subtractInPlace(long other) {
+        return Ufuncs.SUBTRACT.apply(this, other, this);
+    }
+
+    /**
+     * {@code this *= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.MULTIPLY.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.multiplyInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray multiplyInPlace(NDArray other) {
+        return Ufuncs.MULTIPLY.apply(this, other, this);
+    }
+
+    /**
+     * {@code this *= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.MULTIPLY.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.multiplyInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray multiplyInPlace(double other) {
+        return Ufuncs.MULTIPLY.apply(this, other, this);
+    }
+
+    /**
+     * {@code this *= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.MULTIPLY.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.multiplyInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray multiplyInPlace(long other) {
+        return Ufuncs.MULTIPLY.apply(this, other, this);
+    }
+
+    /**
+     * {@code this /= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.DIVIDE.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.divideInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray divideInPlace(NDArray other) {
+        return Ufuncs.DIVIDE.apply(this, other, this);
+    }
+
+    /**
+     * {@code this /= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.DIVIDE.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.divideInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray divideInPlace(double other) {
+        return Ufuncs.DIVIDE.apply(this, other, this);
+    }
+
+    /**
+     * {@code this /= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.DIVIDE.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.divideInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray divideInPlace(long other) {
+        return Ufuncs.DIVIDE.apply(this, other, this);
+    }
+
     // ------------------------------------------------------------------ element access: helpers
 
     private long idx(long i, int axis) {

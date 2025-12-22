@@ -290,4 +290,72 @@ public final class Reductions {
     public static NDArray all(NDArray x, int[] axes, boolean keepdims) {
         return Ufuncs.LOGICAL_AND.reduce(x, axes, keepdims);
     }
+
+    // ------------------------------------------------------------------ into an output
+
+    /**
+     * Sums into {@code out}, which must have the reduced shape; the result dtype must convert to
+     * {@code out}'s with {@code SAME_KIND} casting.
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @param out      the output
+     * @return {@code out}
+     */
+    public static NDArray sum(NDArray x, int[] axes, boolean keepdims, NDArray out) {
+        return Outputs.store("add", sum(x, axes, keepdims), out);
+    }
+
+    /**
+     * Multiplies into {@code out}; see {@link #sum(NDArray, int[], boolean, NDArray)}.
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @param out      the output
+     * @return {@code out}
+     */
+    public static NDArray prod(NDArray x, int[] axes, boolean keepdims, NDArray out) {
+        return Outputs.store("multiply", prod(x, axes, keepdims), out);
+    }
+
+    /**
+     * The largest elements into {@code out}; see {@link #sum(NDArray, int[], boolean, NDArray)}.
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @param out      the output
+     * @return {@code out}
+     */
+    public static NDArray max(NDArray x, int[] axes, boolean keepdims, NDArray out) {
+        return Outputs.store("maximum", max(x, axes, keepdims), out);
+    }
+
+    /**
+     * The smallest elements into {@code out}; see {@link #sum(NDArray, int[], boolean, NDArray)}.
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @param out      the output
+     * @return {@code out}
+     */
+    public static NDArray min(NDArray x, int[] axes, boolean keepdims, NDArray out) {
+        return Outputs.store("minimum", min(x, axes, keepdims), out);
+    }
+
+    /**
+     * The means into {@code out}; see {@link #sum(NDArray, int[], boolean, NDArray)}.
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @param out      the output
+     * @return {@code out}
+     */
+    public static NDArray mean(NDArray x, int[] axes, boolean keepdims, NDArray out) {
+        return Outputs.store("mean", mean(x, axes, keepdims), out);
+    }
 }

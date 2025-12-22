@@ -219,6 +219,79 @@ public final class BinaryUfunc extends Ufunc {
     }
 
     /**
+     * Applies the ufunc and writes the result into {@code out} ({@code NUMPY_COMPATIBILITY}:
+     * the {@code out=} argument). {@code ufunc.apply(a, b, a)} is the in-place operation.
+     *
+     * <p>{@code out} must have exactly the broadcast shape and be writeable, and the result
+     * dtype must convert to its dtype with {@code SAME_KIND} casting: an int8 array can
+     * receive an int8 or int16 sum but not a float64 one. When {@code out} has the result
+     * dtype and does not overlap the inputs (other than being one of them, viewed
+     * identically), the loop writes into it directly without allocating; otherwise the result
+     * goes through a temporary.
+     *
+     * @param a   first input
+     * @param b   second input
+     * @param out the output
+     * @return {@code out}
+     * @throws org.numjvm.exception.ShapeException         if {@code out} has another shape
+     * @throws org.numjvm.exception.ReadOnlyArrayException if {@code out} is read-only
+     * @throws DTypeException                              if the result dtype cannot be cast
+     *                                                     to {@code out}'s dtype
+     */
+    public NDArray apply(NDArray a, NDArray b, NDArray out) {
+        if (comparison && signedWithUInt64(a.dtype(), b.dtype())) {
+            return Outputs.store(name(), exact(a, b), out);
+        }
+        return runInto(a, b, TypePromotion.resultType(a.dtype(), b.dtype()), out);
+    }
+
+    /**
+     * Applies the ufunc with a weak {@code double} second operand into {@code out}; see
+     * {@link #apply(NDArray, NDArray, NDArray)}.
+     *
+     * @param a   first input
+     * @param b   second input, a Java scalar
+     * @param out the output
+     * @return {@code out}
+     */
+    public NDArray apply(NDArray a, double b, NDArray out) {
+        DType common = TypePromotion.resultTypeWithDouble(a.dtype());
+        return runInto(a, Operands.weakDouble(common, b), common, out);
+    }
+
+    /**
+     * Applies the ufunc with a weak {@code long} second operand into {@code out}; see
+     * {@link #apply(NDArray, NDArray, NDArray)}.
+     *
+     * @param a   first input
+     * @param b   second input, a Java scalar
+     * @param out the output
+     * @return {@code out}
+     */
+    public NDArray apply(NDArray a, long b, NDArray out) {
+        DType common = TypePromotion.resultTypeWithLong(a.dtype());
+        if (comparison && common.isInteger() && !Operands.fits(common, b)) {
+            return Outputs.store(name(), exact(a, int64(b)), out);
+        }
+        return runInto(a, Operands.weakLong(common, b), common, out);
+    }
+
+    private NDArray runInto(NDArray a, NDArray b, DType common, NDArray out) {
+        Resolution r = resolve(common, a.dtype(), b.dtype());
+        Shape shape = Broadcasting.broadcastShapes(a.shape(), b.shape());
+        Outputs.check(name(), out, shape, r.out());
+        NDArray x = Operands.cast(a, r.in());
+        NDArray y = Operands.cast(b, r.in());
+        if (out.dtype() == r.out() && !Outputs.unsafeOverlap(out, x) && !Outputs.unsafeOverlap(out, y)) {
+            LoopExecutor.binary(r.loop(), x, y, out);
+            return out;
+        }
+        NDArray tmp = Operands.allocate(r.out(), shape, x, y);
+        LoopExecutor.binary(r.loop(), x, y, tmp);
+        return Outputs.copyInto(tmp, out);
+    }
+
+    /**
      * Returns the dtype of the result for inputs of these dtypes, without computing anything.
      *
      * @param a first input dtype
@@ -288,6 +361,20 @@ public final class BinaryUfunc extends Ufunc {
             throw Reducer.notReducible(name());
         }
         return Reducer.reduce(name(), r.loop(), Operands.cast(x, r.in()), reduced, keepdims, identity, reorderable);
+    }
+
+    /**
+     * Reduces into {@code out}; see {@link #reduce(NDArray, int[], boolean)} and, for the rules
+     * on {@code out}, {@link #apply(NDArray, NDArray, NDArray)}.
+     *
+     * @param x        the array
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @param out      the output, of the reduced shape
+     * @return {@code out}
+     */
+    public NDArray reduce(NDArray x, int[] axes, boolean keepdims, NDArray out) {
+        return Outputs.store(name(), reduce(x, axes, keepdims), out);
     }
 
     /**

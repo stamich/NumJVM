@@ -183,6 +183,15 @@ def ufunc_reduce(name, a, **kw):
         return getattr(np, name).reduce(a, **kw)
 
 
+def ufunc_out(name, out_dtype, *args):
+    """A ufunc writing into a zero-filled out= array of out_dtype."""
+    shape = np.broadcast_shapes(*[np.shape(a) for a in args])
+    out = np.zeros(shape, dtype=out_dtype)
+    with np.errstate(all="ignore"):
+        getattr(np, name)(*args, out=out, casting="same_kind")
+    return out
+
+
 def ufunc(name, *args):
     """Applies a NumPy ufunc with floating-point warnings silenced (NumJVM has no warnings)."""
     with np.errstate(all="ignore"):
@@ -538,6 +547,17 @@ def cases(arr):
         add(f"ufunc_{name}_nan", ARRAY_API if name in ("maximum", "minimum") else NUMPY, "ufunc",
             ["nan_x_float64", "nan_y_float64"], {"ufunc": name}, lambda a, b, name=name: ufunc(name, a, b))
 
+    # out= arrays: the loop dtype comes from the inputs; the result is converted to out's dtype
+    for name, x, y, out_dtype in [("add", "edge_int8", "edge2_int8", "int16"), ("add", "edge_int8", "edge2_int8", "float64"),
+                                  ("multiply", "edge_float64", "edge2_float64", "float32"),
+                                  ("less", "edge_int32", "edge2_int32", "int8"),
+                                  ("divide", "edge_int16", "edge2_int16", "float16"),
+                                  ("maximum", "edge_uint8", "edge2_uint8", "uint64")]:
+        add(f"ufunc_{name}_{x[5:]}_out_{out_dtype}", NUMPY, "ufunc", [x, y], {"ufunc": name, "out": out_dtype},
+            lambda a, b, name=name, out_dtype=out_dtype: ufunc_out(name, out_dtype, a, b))
+    add("ufunc_add_float64_out_int32", NUMPY, "ufunc", ["edge_float64", "edge2_float64"],
+        {"ufunc": "add", "out": "int32"}, None)
+
     # Java long and double arguments are weak scalars, as Python int and float (NEP 50)
     weak = [("uint8", 1, "long"), ("int8", -128, "long"), ("int8", 1.5, "double"), ("bool", 1, "long"),
             ("bool", 1.5, "double"), ("float16", 100000, "long"), ("float32", 0.1, "double"),
@@ -601,7 +621,7 @@ def generate(out_dir):
         else:
             try:
                 result = fn(*[arr[n] for n in ins])
-            except (ValueError, TypeError):
+            except (ValueError, TypeError):  # NumPy errors become error expectations
                 result = None
             if result is None:
                 entry["expect"] = {"error": True}
