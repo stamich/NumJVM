@@ -7,6 +7,7 @@ import org.numjvm.internal.SharedSecrets;
 import org.numjvm.internal.memory.HybridAllocator;
 import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.iteration.IterationPlan;
+import org.numjvm.memory.NJScope;
 import org.numjvm.ndarray.NDArray;
 import org.numjvm.ndarray.Order;
 import org.numjvm.ndarray.Shape;
@@ -20,7 +21,18 @@ final class Operands {
     private Operands() {
     }
 
-    static MemoryAllocator allocator() {
+    /**
+     * Where an operation's result and temporaries come from (T4.7): the scope of the first
+     * operand that lives in an open {@link NJScope}, otherwise automatic memory. Operations on
+     * scoped arrays therefore leave nothing behind when the scope closes; use
+     * {@link NJScope#keep(NDArray)} to keep a result.
+     */
+    static MemoryAllocator allocator(NDArray... operands) {
+        for (NDArray a : operands) {
+            if (a.memoryOwner() instanceof NJScope scope && scope.isAlive()) {
+                return SharedSecrets.scopeAccess().allocator(scope);
+            }
+        }
         return HybridAllocator.defaultInstance();
     }
 
@@ -67,15 +79,15 @@ final class Operands {
     /**
      * {@code a} converted to {@code t}, or {@code a} itself if it already has that dtype.
      */
-    static NDArray cast(NDArray a, DType t) {
-        return a.dtype() == t ? a : a.astype(t);
+    static NDArray cast(NDArray a, DType t, MemoryAllocator allocator) {
+        return a.dtype() == t ? a : SharedSecrets.arrayAccess().convert(a, allocator, t, Order.C);
     }
 
     /**
      * A new array of {@code shape} laid out in the memory order of the inputs (NumPy's
      * {@code order='K'}): C order unless the inputs agree on another order.
      */
-    static NDArray allocate(DType dtype, Shape shape, NDArray... inputs) {
+    static NDArray allocate(MemoryAllocator allocator, DType dtype, Shape shape, NDArray... inputs) {
         long[] dims = shape.dimensions();
         long[][] strides = new long[inputs.length][];
         for (int i = 0; i < inputs.length; i++) {
@@ -88,7 +100,7 @@ final class Operands {
         }
         SharedSecrets.ArrayAccess access = SharedSecrets.arrayAccess();
         if (identity) {
-            return access.allocate(allocator(), dtype, shape, Order.C);
+            return access.allocate(allocator, dtype, shape, Order.C);
         }
         long[] permuted = new long[dims.length];
         int[] inverse = new int[dims.length];
@@ -96,6 +108,6 @@ final class Operands {
             permuted[i] = dims[order[i]];
             inverse[order[i]] = i;
         }
-        return access.allocate(allocator(), dtype, Shape.of(permuted), Order.C).permuteDims(inverse);
+        return access.allocate(allocator, dtype, Shape.of(permuted), Order.C).permuteDims(inverse);
     }
 }

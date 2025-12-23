@@ -216,9 +216,10 @@ public final class Reductions {
                 count *= x.dim(d);
             }
         }
-        NDArray sum = Ufuncs.ADD.reduce(Operands.cast(x, sumType), axes, keepdims);
+        org.numjvm.internal.memory.MemoryAllocator allocator = Operands.allocator(x);
+        NDArray sum = Ufuncs.ADD.reduce(Operands.cast(x, sumType, allocator), axes, keepdims);
         NDArray mean = Ufuncs.DIVIDE.apply(sum, count);
-        return sumType == t || t.isBool() || t.isInteger() ? mean : mean.astype(t);
+        return sumType == t || t.isBool() || t.isInteger() ? mean : Operands.cast(mean, t, allocator);
     }
 
     // ------------------------------------------------------------------ any / all

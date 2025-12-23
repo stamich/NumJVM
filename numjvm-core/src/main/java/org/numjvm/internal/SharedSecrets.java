@@ -83,6 +83,18 @@ public final class SharedSecrets {
         NDArray allocate(MemoryAllocator allocator, DType dtype, Shape shape, Order order);
 
         /**
+         * Copies an array into new contiguous memory from {@code allocator}, converting its
+         * dtype: {@code astype} with a chosen allocator.
+         *
+         * @param array     the source
+         * @param allocator where the copy's memory comes from
+         * @param target    dtype of the copy
+         * @param order     memory order of the copy
+         * @return the copy
+         */
+        NDArray convert(NDArray array, MemoryAllocator allocator, DType target, Order order);
+
+        /**
          * Returns its buffer.
          *
          * @param array an array

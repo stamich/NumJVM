@@ -11,6 +11,7 @@ import org.numjvm.internal.loops.KernelRegistry;
 import org.numjvm.internal.loops.LoopExecutor;
 import org.numjvm.internal.loops.LoopSignature;
 import org.numjvm.internal.loops.UnaryLoop;
+import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.ndarray.NDArray;
 
 /**
@@ -91,8 +92,9 @@ public final class UnaryUfunc extends Ufunc {
     public NDArray apply(NDArray x) {
         Objects.requireNonNull(x, "x");
         Resolution r = resolve(x.dtype());
-        NDArray in = Operands.cast(x, r.in());
-        NDArray out = Operands.allocate(r.out(), in.shape(), in);
+        MemoryAllocator allocator = Operands.allocator(x);
+        NDArray in = Operands.cast(x, r.in(), allocator);
+        NDArray out = Operands.allocate(allocator, r.out(), in.shape(), in);
         LoopExecutor.unary(r.loop(), in, out);
         return out;
     }
@@ -110,12 +112,13 @@ public final class UnaryUfunc extends Ufunc {
         Objects.requireNonNull(x, "x");
         Resolution r = resolve(x.dtype());
         Outputs.check(name(), out, x.shape(), r.out());
-        NDArray in = Operands.cast(x, r.in());
+        MemoryAllocator allocator = Operands.allocator(out, x);
+        NDArray in = Operands.cast(x, r.in(), allocator);
         if (out.dtype() == r.out() && !Outputs.unsafeOverlap(out, in)) {
             LoopExecutor.unary(r.loop(), in, out);
             return out;
         }
-        NDArray tmp = Operands.allocate(r.out(), in.shape(), in);
+        NDArray tmp = Operands.allocate(allocator, r.out(), in.shape(), in);
         LoopExecutor.unary(r.loop(), in, tmp);
         return Outputs.copyInto(tmp, out);
     }

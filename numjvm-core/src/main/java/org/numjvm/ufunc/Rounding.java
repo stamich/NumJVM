@@ -55,7 +55,7 @@ public final class Rounding {
             throw new DTypeException("round is not supported for " + t.typeName());
         }
         if (t.isInteger() && decimals >= 0) {
-            return x.copy();
+            return Ufuncs.POSITIVE.apply(x);
         }
         if (decimals == 0) {
             return Ufuncs.RINT.apply(x);
@@ -69,7 +69,7 @@ public final class Rounding {
             return Ufuncs.DIVIDE.apply(Ufuncs.RINT.apply(Ufuncs.MULTIPLY.apply(x, f)), f);
         }
         NDArray r = Ufuncs.MULTIPLY.apply(Ufuncs.RINT.apply(Ufuncs.DIVIDE.apply(x, f)), f);
-        return r.dtype() == t ? r : r.astype(t);
+        return Operands.cast(r, t, Operands.allocator(x));
     }
 
     /**

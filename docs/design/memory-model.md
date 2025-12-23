@@ -107,3 +107,23 @@ arrays.
 | Native memory exhausted (`MaxDirectMemorySize`)        | `MemoryException` naming the flag                  |
 | Size overflow when computing bytes                     | `ShapeException`                                   |
 | Creating a view on closed memory                       | `MemoryException`                                  |
+
+## Results of operations (0.2)
+
+Ufuncs and reductions allocate their result, and every temporary conversion of an operand, in the scope of their
+first operand that lives in an open `NJScope`; with no scoped operand they use automatic memory. So a loop that
+computes on scoped arrays leaves nothing behind when the scope closes:
+
+```java
+try (NJScope scope = NJ.scope()) {
+    NDArray x = scope.zeros(DType.FLOAT64, 1_000_000);
+    for (int i = 0; i < 100; i++) {
+        x = NJ.add(NJ.multiply(x, 0.5), 1.0);   // both results live in the scope
+    }
+    result = scope.keep(x);                     // copy out what must survive
+}
+```
+
+`copy()` and `astype()` keep returning automatic, independent memory, and `out=` arrays are written wherever they
+live. A result that escapes its scope is not usable after `close()`: access throws `MemoryException`. Operations on a
+confined scope's arrays from another thread fail with `MemoryException` before computing.

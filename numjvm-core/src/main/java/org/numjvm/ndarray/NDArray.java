@@ -86,6 +86,11 @@ public final class NDArray {
             }
 
             @Override
+            public NDArray convert(NDArray array, MemoryAllocator allocator, DType target, Order order) {
+                return Copier.copy(array, allocator, target, order);
+            }
+
+            @Override
             public Buffer buffer(NDArray array) {
                 return array.buffer;
             }

@@ -9,6 +9,7 @@ import org.numjvm.internal.loops.BinaryLoop;
 import org.numjvm.internal.loops.KernelRegistry;
 import org.numjvm.internal.loops.LoopExecutor;
 import org.numjvm.internal.loops.UnaryLoop;
+import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.ndarray.NDArray;
 import org.numjvm.ndarray.Order;
 import org.numjvm.ndarray.Shape;
@@ -57,9 +58,10 @@ final class Reducer {
      * @param keepdims    keep reduced axes with length 1
      * @param identity    the identity, or {@code null}
      * @param reorderable whether several axes may be reduced at once
+     * @param allocator   where the result's memory comes from
      */
     static NDArray reduce(String name, BinaryLoop loop, NDArray x, boolean[] reduced, boolean keepdims, Long identity,
-                          boolean reorderable) {
+                          boolean reorderable, MemoryAllocator allocator) {
         int nd = x.ndim();
         long[] dims = x.shape().dimensions();
         int count = 0;
@@ -79,7 +81,7 @@ final class Reducer {
                     + "be specified");
         }
         DType t = x.dtype();
-        NDArray out = SharedSecrets.arrayAccess().allocate(Operands.allocator(), t, Shape.of(keep), Order.C);
+        NDArray out = SharedSecrets.arrayAccess().allocate(allocator, t, Shape.of(keep), Order.C);
         if (out.size() > 0) {
             long[] outStrides = out.strides().values();
             for (int d = 0; d < nd; d++) {

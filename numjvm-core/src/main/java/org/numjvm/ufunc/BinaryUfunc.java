@@ -13,6 +13,7 @@ import org.numjvm.internal.loops.BinaryLoop;
 import org.numjvm.internal.loops.KernelRegistry;
 import org.numjvm.internal.loops.LoopExecutor;
 import org.numjvm.internal.loops.LoopSignature;
+import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.ndarray.NDArray;
 import org.numjvm.ndarray.Shape;
 import org.numjvm.shape.Broadcasting;
@@ -280,13 +281,14 @@ public final class BinaryUfunc extends Ufunc {
         Resolution r = resolve(common, a.dtype(), b.dtype());
         Shape shape = Broadcasting.broadcastShapes(a.shape(), b.shape());
         Outputs.check(name(), out, shape, r.out());
-        NDArray x = Operands.cast(a, r.in());
-        NDArray y = Operands.cast(b, r.in());
+        MemoryAllocator allocator = Operands.allocator(out, a, b);
+        NDArray x = Operands.cast(a, r.in(), allocator);
+        NDArray y = Operands.cast(b, r.in(), allocator);
         if (out.dtype() == r.out() && !Outputs.unsafeOverlap(out, x) && !Outputs.unsafeOverlap(out, y)) {
             LoopExecutor.binary(r.loop(), x, y, out);
             return out;
         }
-        NDArray tmp = Operands.allocate(r.out(), shape, x, y);
+        NDArray tmp = Operands.allocate(allocator, r.out(), shape, x, y);
         LoopExecutor.binary(r.loop(), x, y, tmp);
         return Outputs.copyInto(tmp, out);
     }
@@ -360,7 +362,9 @@ public final class BinaryUfunc extends Ufunc {
         if (r.in() != r.out()) {
             throw Reducer.notReducible(name());
         }
-        return Reducer.reduce(name(), r.loop(), Operands.cast(x, r.in()), reduced, keepdims, identity, reorderable);
+        MemoryAllocator allocator = Operands.allocator(x);
+        return Reducer.reduce(name(), r.loop(), Operands.cast(x, r.in(), allocator), reduced, keepdims, identity,
+                reorderable, allocator);
     }
 
     /**
@@ -404,10 +408,12 @@ public final class BinaryUfunc extends Ufunc {
     private NDArray exact(NDArray a, NDArray b) {
         DType ta = a.dtype() == DType.UINT64 ? DType.UINT64 : DType.INT64;
         DType tb = b.dtype() == DType.UINT64 ? DType.UINT64 : DType.INT64;
-        NDArray x = Operands.cast(a, ta);
-        NDArray y = Operands.cast(b, tb);
+        MemoryAllocator allocator = Operands.allocator(a, b);
+        NDArray x = Operands.cast(a, ta, allocator);
+        NDArray y = Operands.cast(b, tb, allocator);
         BinaryLoop loop = KernelRegistry.binary(loopName(), ta, tb);
-        NDArray out = Operands.allocate(DType.BOOL, Broadcasting.broadcastShapes(a.shape(), b.shape()), x, y);
+        Shape shape = Broadcasting.broadcastShapes(a.shape(), b.shape());
+        NDArray out = Operands.allocate(allocator, DType.BOOL, shape, x, y);
         LoopExecutor.binary(loop, x, y, out);
         return out;
     }
@@ -417,9 +423,10 @@ public final class BinaryUfunc extends Ufunc {
         Objects.requireNonNull(b, "b");
         Resolution r = resolve(common, a.dtype(), b.dtype());
         Shape shape = Broadcasting.broadcastShapes(a.shape(), b.shape());
-        NDArray x = Operands.cast(a, r.in());
-        NDArray y = Operands.cast(b, r.in());
-        NDArray out = Operands.allocate(r.out(), shape, x, y);
+        MemoryAllocator allocator = Operands.allocator(a, b);
+        NDArray x = Operands.cast(a, r.in(), allocator);
+        NDArray y = Operands.cast(b, r.in(), allocator);
+        NDArray out = Operands.allocate(allocator, r.out(), shape, x, y);
         LoopExecutor.binary(r.loop(), x, y, out);
         return out;
     }

@@ -8,8 +8,10 @@
  * {@link org.numjvm.ufunc.Ufuncs}; {@link org.numjvm.NJ} and {@link org.numjvm.ndarray.NDArray}
  * offer shortcuts for the common ones.
  *
- * <p>Results are new arrays in automatically managed memory, laid out in the memory order of
- * the operands (NumPy's {@code order='K'}): adding two transposed arrays gives a transposed,
- * contiguous result.
+ * <p>Results are new arrays laid out in the memory order of the operands (NumPy's
+ * {@code order='K'}): adding two transposed arrays gives a transposed, contiguous result. They
+ * live in the scope of the first operand allocated in an open
+ * {@link org.numjvm.memory.NJScope}, otherwise in automatically managed memory; temporary
+ * conversions of operands follow the same rule. Every ufunc also accepts an {@code out} array.
  */
 package org.numjvm.ufunc;
