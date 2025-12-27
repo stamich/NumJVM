@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.numjvm.NJ;
+import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
 import org.numjvm.internal.SharedSecrets;
 import org.numjvm.memory.NJScope;
@@ -58,6 +59,42 @@ class FormatTest {
         assertEquals("array([18446744073709551615], dtype=uint64)",
                 NJ.array(new long[]{-1}).astype(DType.UINT64).toString());
         assertEquals("array([1.+0.j, 2.+0.j])", NJ.array(new double[]{1, 2}).astype(DType.COMPLEX128).toString());
+    }
+
+    /**
+     * Expected strings from NumPy 2.5 {@code repr}: real and imaginary parts are aligned as
+     * separate columns, the imaginary part always signed.
+     */
+    @Test
+    void complexArrays() {
+        assertEquals("array([1. +2.j, 3.5-1.j])",
+                NJ.array(new Complex[]{c(1, 2), c(3.5, -1)}).toString());
+        assertEquals("array([1. +2.25j, 3.5-1.j  ])",
+                NJ.array(new Complex[]{c(1, 2.25), c(3.5, -1)}).toString());
+        assertEquals("array([1.e+09+1.e+00j, 1.e+00-1.e-06j])",
+                NJ.array(new Complex[]{c(1e9, 1), c(1, -1e-6)}).toString());
+        assertEquals("array([ nan +1.j,   1.+infj, -inf -2.j])",
+                NJ.array(new Complex[]{c(Double.NaN, 1), c(1, Double.POSITIVE_INFINITY), c(Double.NEGATIVE_INFINITY, -2)}).toString());
+        assertEquals("array([-1.  -1.j, 10.+100.j])",
+                NJ.array(new Complex[]{c(-1, -1), c(10, 100)}).toString());
+        assertEquals("array([1.+1.e+10j])",
+                NJ.array(new Complex[]{c(1, 1e10)}).toString());
+        assertEquals("array([ 0.+nanj, -0. -0.j])",
+                NJ.array(new Complex[]{c(0, Double.NaN), c(-0.0, -0.0)}).toString());
+        assertEquals("array([[1.+1.j, 2.+0.j],\n       [3.+0.j, 0.+4.j]])",
+                NJ.array(new Complex[]{c(1, 1), c(2, 0), c(3, 0), c(0, 4)}, 2, 2).toString());
+        assertEquals("array([1. +2.j, 3.5-1.j], dtype=complex64)",
+                NJ.array(DType.COMPLEX64, new Complex[]{c(1, 2), c(3.5, -1)}).toString());
+        assertEquals("array([0.1+0.2j], dtype=complex64)",
+                NJ.array(DType.COMPLEX64, new Complex[]{c(0.1, 0.2)}).toString());
+        assertEquals("array(1.5-2.j)",
+                NJ.scalar(c(1.5, -2)).toString());
+        assertEquals("array([0.000e+00+0.j, 1.000e+00+0.j, 2.000e+00+0.j, ..., 1.997e+03+0.j,\n       1.998e+03+0.j, 1.999e+03+0.j], shape=(2000,))",
+                NJ.arange(2000).astype(DType.COMPLEX128).toString());
+    }
+
+    private static Complex c(double re, double im) {
+        return Complex.of(re, im);
     }
 
     @Test

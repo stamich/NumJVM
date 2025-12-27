@@ -4,6 +4,7 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
 import org.numjvm.exception.MemoryException;
 import org.numjvm.internal.Factories;
@@ -201,7 +202,7 @@ public final class NJScope implements MemoryOwner, AutoCloseable {
     /**
      * Returns a new scoped array filled with ones.
      *
-     * @param dtype element type (real)
+     * @param dtype element type
      * @param shape dimensions
      * @return the array, valid until this scope closes
      */
@@ -223,7 +224,7 @@ public final class NJScope implements MemoryOwner, AutoCloseable {
     /**
      * Returns a new scoped array with every element set to {@code value}.
      *
-     * @param dtype element type (real)
+     * @param dtype element type
      * @param value fill value
      * @param shape dimensions
      * @return the array, valid until this scope closes
@@ -241,6 +242,17 @@ public final class NJScope implements MemoryOwner, AutoCloseable {
      */
     public NDArray array(double[] values, long... shape) {
         return Factories.of(allocator, values, shape);
+    }
+
+    /**
+     * Returns a scoped complex128 array holding a copy of {@code values}.
+     *
+     * @param values elements in C order
+     * @param shape  dimensions whose product is {@code values.length}; none for 1-D
+     * @return the array, valid until this scope closes
+     */
+    public NDArray array(Complex[] values, long... shape) {
+        return Factories.of(allocator, DType.COMPLEX128, values, shape);
     }
 
     /**

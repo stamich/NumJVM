@@ -6,6 +6,7 @@ import java.io.UncheckedIOException;
 import java.util.Properties;
 
 import org.numjvm.dtype.Casting;
+import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
 import org.numjvm.dtype.TypePromotion;
 import org.numjvm.internal.Factories;
@@ -81,7 +82,7 @@ public final class NJ {
     /**
      * Returns a new array filled with ones.
      *
-     * @param dtype element type (real)
+     * @param dtype element type
      * @param shape dimensions
      * @return the array
      */
@@ -116,7 +117,7 @@ public final class NJ {
     /**
      * Returns a new array with every element set to {@code value}.
      *
-     * @param dtype element type (real); the value is converted like {@code setDouble}
+     * @param dtype element type; the value is converted like {@code setDouble}
      * @param value fill value
      * @param shape dimensions
      * @return the array
@@ -181,7 +182,7 @@ public final class NJ {
     }
 
     /**
-     * Returns an array of any real dtype built from {@code double} values, each converted
+     * Returns an array of any dtype built from {@code double} values, each converted
      * like {@code setDouble}.
      *
      * @param dtype  element type of the result
@@ -190,6 +191,31 @@ public final class NJ {
      * @return the array
      */
     public static NDArray array(DType dtype, double[] values, long... shape) {
+        return Factories.of(automatic(), dtype, values, shape);
+    }
+
+    /**
+     * Returns a complex128 array holding a copy of {@code values}.
+     *
+     * @param values elements in C order
+     * @param shape  dimensions whose product is {@code values.length}; none for 1-D
+     * @return the array
+     */
+    public static NDArray array(Complex[] values, long... shape) {
+        return Factories.of(automatic(), DType.COMPLEX128, values, shape);
+    }
+
+    /**
+     * Returns a complex64 or complex128 array holding a copy of {@code values}, each
+     * converted like {@code setComplex}.
+     *
+     * @param dtype  complex64 or complex128
+     * @param values elements in C order
+     * @param shape  dimensions whose product is {@code values.length}; none for 1-D
+     * @return the array
+     * @throws org.numjvm.exception.DTypeException if {@code dtype} is not complex
+     */
+    public static NDArray array(DType dtype, Complex[] values, long... shape) {
         return Factories.of(automatic(), dtype, values, shape);
     }
 
@@ -214,6 +240,18 @@ public final class NJ {
     public static NDArray scalar(long value) {
         NDArray a = zeros(DType.INT64);
         a.setLong(value);
+        return a;
+    }
+
+    /**
+     * Returns a 0-D complex128 array.
+     *
+     * @param value the single element
+     * @return the array, with shape {@code []}
+     */
+    public static NDArray scalar(Complex value) {
+        NDArray a = zeros(DType.COMPLEX128);
+        a.setComplex(value);
         return a;
     }
 

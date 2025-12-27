@@ -14,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.numjvm.NJ;
+import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
 import org.numjvm.dtype.Unsigned;
 import org.numjvm.exception.DTypeException;
@@ -182,13 +183,59 @@ class AccessorTest {
 
     @ParameterizedTest
     @EnumSource(value = DType.class, names = {"COMPLEX64", "COMPLEX128"})
-    void complexIsStorageOnly(DType dtype) {
+    void complexAccessors(DType dtype) {
+        NDArray a = zeros(dtype, 2, 2, 2);
+        assertThrows(DTypeException.class, () -> a.getDouble(0, 0, 0));
+        assertThrows(DTypeException.class, () -> a.getLong(0, 0, 0));
+        assertFalse(a.getBoolean(0, 0, 0));
+        a.setComplex(0, 0, 1, Complex.of(0, -0.5));
+        assertTrue(a.getBoolean(0, 0, 1));
+        assertEquals(Complex.of(0, -0.5), a.getComplex(0, 0, 1));
+        assertEquals(Complex.of(0, -0.5), a.getComplex(new long[]{0, 0, 1}));
+        a.setDouble(1, 1, 1, 2.5);
+        assertEquals(Complex.of(2.5, 0), a.getComplex(1, 1, 1));
+        a.setLong(1, 0, 0, 7);
+        assertEquals(Complex.of(7, 0), a.getComplex(1, 0, 0));
+        a.setBoolean(0, 1, 0, true);
+        assertEquals(Complex.ONE, a.getComplex(0, 1, 0));
+        a.setComplex(new long[]{1, 0, 1}, Complex.of(Double.NaN, Double.NEGATIVE_INFINITY));
+        assertEquals(Complex.of(Double.NaN, Double.NEGATIVE_INFINITY), a.getComplex(1, 0, 1));
+        assertThrows(NullPointerException.class, () -> a.setComplex(0, 0, 0, null));
+
+        NDArray v = zeros(dtype, 3);
+        v.setComplex(2, Complex.of(1, 2));
+        assertEquals(Complex.of(1, 2), v.getComplex(2));
+        NDArray m = zeros(dtype, 2, 2);
+        m.setComplex(1, 0, Complex.of(-3, 4));
+        assertEquals(Complex.of(-3, 4), m.getComplex(1, 0));
+        NDArray s = zeros(dtype);
+        s.setComplex(Complex.I);
+        assertEquals(Complex.I, s.getComplex());
+    }
+
+    @Test
+    void complex64RoundsEachPart() {
+        NDArray a = zeros(DType.COMPLEX64, 1);
+        a.setComplex(0, Complex.of(0.1, 1e300));
+        assertEquals(Complex.of((float) 0.1, Double.POSITIVE_INFINITY), a.getComplex(0));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = DType.class, mode = EnumSource.Mode.EXCLUDE, names = {"COMPLEX64", "COMPLEX128"})
+    void realArraysReadAsComplexButRejectComplexWrites(DType dtype) {
         NDArray a = zeros(dtype, 2);
-        assertThrows(DTypeException.class, () -> a.getDouble(0));
-        assertThrows(DTypeException.class, () -> a.getLong(0));
-        assertThrows(DTypeException.class, () -> a.getBoolean(0));
-        assertThrows(DTypeException.class, () -> a.setDouble(0, 1));
-        assertThrows(DTypeException.class, () -> a.setLong(0, 1));
+        a.setBoolean(1, true);
+        assertEquals(Complex.ONE, a.getComplex(1));
+        assertEquals(Complex.ZERO, a.getComplex(0));
+        DTypeException e = assertThrows(DTypeException.class, () -> a.setComplex(0, Complex.ONE));
+        assertTrue(e.getMessage().contains("setDouble"), e.getMessage());
+    }
+
+    @Test
+    void uint64ReadsAsComplexUnsigned() {
+        NDArray a = zeros(DType.UINT64, 1);
+        a.setLong(0, -1);
+        assertEquals(Complex.ofReal(18446744073709551615.0), a.getComplex(0));
     }
 
     @Test

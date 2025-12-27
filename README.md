@@ -71,7 +71,7 @@ Runnable versions: [`examples/basic-arrays`](examples/basic-arrays) and
 
 | Area           | Contents                                                                                                         |
 |----------------|------------------------------------------------------------------------------------------------------------------|
-| Dtypes         | bool, int8–64, uint8–64, float16, bfloat16, float32, float64, complex64/128 (complex is storage-only)            |
+| Dtypes         | bool, int8–64, uint8–64, float16, bfloat16, float32, float64, complex64/128                                      |
 | Memory         | heap (`long[]`) and 64-byte aligned native buffers, `NJScope` (confined or shared), `keep()`, `NJ.memoryStats()` |
 | Arrays         | shape, byte strides (negative and zero allowed), 0-D and empty arrays, invariants checked once per array         |
 | Element access | `getDouble/getLong/getBoolean` and setters, rank-specialised, allocation-free                                    |

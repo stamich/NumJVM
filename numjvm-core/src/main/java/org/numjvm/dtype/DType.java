@@ -16,8 +16,8 @@ import org.numjvm.exception.DTypeException;
  *
  * <p>All dtypes can be stored, copied, viewed and read from or written to {@code .npy}
  * files (except {@link #BFLOAT16}, which NumPy does not define). Scalar access and
- * conversions are available for all real dtypes; complex dtypes are storage-only in
- * NumJVM 0.1.
+ * conversions are available for all dtypes; complex elements are read and written as
+ * {@link Complex} values.
  *
  * <p>Client code should use the query methods ({@link #size()}, {@link #kind()},
  * {@link #isFloatingPoint()}, ...) rather than switching on the constants, so that

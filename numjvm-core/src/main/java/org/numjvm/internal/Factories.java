@@ -3,7 +3,9 @@ package org.numjvm.internal;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 
+import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
+import org.numjvm.exception.DTypeException;
 import org.numjvm.exception.ShapeException;
 import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.ndarray.NDArray;
@@ -44,7 +46,7 @@ public final class Factories {
      * Returns a C-contiguous array with every element set to {@code value}.
      *
      * @param allocator memory source
-     * @param dtype     element type (not complex)
+     * @param dtype     element type
      * @param value     fill value, converted like {@code setDouble}
      * @param shape     dimensions
      * @return a C-contiguous array with every element set to {@code value}
@@ -146,7 +148,7 @@ public final class Factories {
      * Returns the array.
      *
      * @param allocator memory source
-     * @param dtype     element type of the result (not complex)
+     * @param dtype     element type of the result
      * @param values    elements in C order, converted like {@code setDouble}
      * @param shape     dimensions, or empty for 1-D
      * @return the array
@@ -156,6 +158,28 @@ public final class Factories {
         NDArray flat = flat(a);
         for (int i = 0; i < values.length; i++) {
             flat.setDouble(i, values[i]);
+        }
+        return a;
+    }
+
+    /**
+     * Returns a complex array.
+     *
+     * @param allocator memory source
+     * @param dtype     complex64 or complex128
+     * @param values    elements in C order, converted like {@code setComplex}
+     * @param shape     dimensions, or empty for 1-D
+     * @return the array
+     * @throws org.numjvm.exception.DTypeException if {@code dtype} is not complex
+     */
+    public static NDArray of(MemoryAllocator allocator, DType dtype, Complex[] values, long[] shape) {
+        if (!dtype.isComplex()) {
+            throw new DTypeException("a Complex[] needs a complex dtype, not " + dtype.typeName());
+        }
+        NDArray a = allocate(allocator, dtype, shapeFor(values.length, shape));
+        NDArray flat = flat(a);
+        for (int i = 0; i < values.length; i++) {
+            flat.setComplex(i, values[i]);
         }
         return a;
     }

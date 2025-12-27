@@ -12,11 +12,11 @@ layout. Elements are always stored in the platform's native byte order; byte ord
 | `FLOAT16`                 | `float16` (`f2`)          |     2 |         2 | `f`  | yes, via `Float.float16ToFloat` | yes                        |
 | `BFLOAT16`                | none                      |     2 |         2 | `f`  | yes                             | **no** (`NUMJVM_SPECIFIC`) |
 | `FLOAT32`, `FLOAT64`      | `float32`, `float64`      |  4, 8 |    = size | `f`  | yes                             | yes                        |
-| `COMPLEX64`, `COMPLEX128` | `complex64`, `complex128` | 8, 16 |      4, 8 | `c`  | **no** (storage only)           | yes                        |
+| `COMPLEX64`, `COMPLEX128` | `complex64`, `complex128` | 8, 16 |      4, 8 | `c`  | yes, as `Complex`               | yes                        |
 
-Complex arrays can be created (`zeros`, `astype` from real), copied, viewed, broadcast, printed and saved; element
-accessors and the validation kernels reject them with
-`DTypeException` until M1.
+Complex elements are read and written as `org.numjvm.dtype.Complex` values (a record of two `double` parts) with
+`getComplex` / `setComplex`. complex64 parts widen to `double` exactly and round to `float` independently on writes.
+Complex arrays print as NumPy does: real and imaginary parts aligned as separate columns, `1. +2.j`.
 
 Client code should use the query methods (`size()`, `alignment()`, `kind()`,
 `isInteger()`, `isFloatingPoint()`, ...) rather than switching on constants, so that dtypes added later (strings,
@@ -30,9 +30,11 @@ Element accessors convert between dtypes and Java primitives:
 |-------------------|-------------------------------------------------------------------------------------------|
 | read as `double`  | any real dtype; bool → 0/1; uint64 as its unsigned value                                  |
 | read as `long`    | bool and integers; uint64 returns the raw 64 bits                                         |
-| read as `boolean` | any real dtype; non-zero (including NaN) → `true`                                         |
-| write `double`    | integers: truncate toward zero, wrap to the width; bool: `!= 0`; floats: round to nearest |
-| write `long`      | integers: keep the low bits; floats: round to nearest                                     |
+| read as `boolean` | any dtype; non-zero (including NaN, and complex with either part non-zero) → `true`       |
+| read as `Complex` | any dtype; real values get a zero imaginary part                                          |
+| write `double`    | integers: truncate toward zero, wrap to the width; bool: `!= 0`; floats: round to nearest; complex: real part, imaginary 0 |
+| write `long`      | integers: keep the low bits; floats and complex: round to nearest                         |
+| write `Complex`   | complex dtypes only; real dtypes throw `DTypeException` rather than drop the imaginary part |
 
 `astype(target)` runs a generated cast loop for each pair of dtypes (`cast:<target>` in the kernel registry). Integer
 and bool pairs keep the low bits, so 64-bit values survive. Every conversion to a floating-point type rounds **once**:

@@ -3,6 +3,7 @@ package org.numjvm.ndarray;
 import java.lang.foreign.MemorySegment;
 import java.util.Objects;
 
+import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
 import org.numjvm.exception.IndexException;
 import org.numjvm.exception.MemoryException;
@@ -44,28 +45,36 @@ import org.numjvm.ufunc.Ufuncs;
  * Because of (4), element access only checks each index against its axis length.
  *
  * <h2>Element access</h2>
- * Accessors exist for {@code double}, {@code long} and {@code boolean}, each for rank 0
- * to 3 with one index argument per axis and, for any rank, with a {@code long[]}
- * index (ADR-002). Setters take the value last. Indices must lie in
+ * Accessors exist for {@code double}, {@code long}, {@code boolean} and {@link Complex},
+ * each for rank 0 to 3 with one index argument per axis and, for any rank, with a
+ * {@code long[]} index (ADR-002). Setters take the value last. Indices must lie in
  * {@code [0, dim)}; negative indices are not wrapped (use {@link Slice} for that).
  * Values are converted as follows:
  * <table>
  *   <caption>Conversion rules</caption>
  *   <tr><th>Accessor</th><th>Rule</th></tr>
  *   <tr><td>{@code getDouble}</td><td>any real dtype; bool reads as 0 or 1, uint64 as
- *       its unsigned value, float16 and bfloat16 are widened exactly</td></tr>
+ *       its unsigned value, float16 and bfloat16 are widened exactly; complex dtypes
+ *       throw (use {@code getComplex})</td></tr>
  *   <tr><td>{@code getLong}</td><td>bool and integer dtypes; uint64 returns the raw
- *       bits (see {@link org.numjvm.dtype.Unsigned}); floating-point dtypes throw</td></tr>
- *   <tr><td>{@code getBoolean}</td><td>any real dtype; {@code true} for any non-zero
- *       value, including NaN</td></tr>
+ *       bits (see {@link org.numjvm.dtype.Unsigned}); floating-point and complex dtypes
+ *       throw</td></tr>
+ *   <tr><td>{@code getBoolean}</td><td>any dtype; {@code true} for any non-zero value,
+ *       including NaN, and for a complex value with either part non-zero</td></tr>
+ *   <tr><td>{@code getComplex}</td><td>any dtype; real values as {@code getDouble} with
+ *       a zero imaginary part, complex64 parts widened exactly</td></tr>
  *   <tr><td>{@code setDouble}</td><td>integer dtypes truncate toward zero and wrap to
  *       the dtype's width; bool stores {@code value != 0}; float types round once to
- *       nearest (float16 and bfloat16 directly from the {@code double})</td></tr>
- *   <tr><td>{@code setLong}</td><td>integer dtypes keep the low bits; float types round
- *       to nearest; bool stores {@code value != 0}</td></tr>
- *   <tr><td>{@code setBoolean}</td><td>stores 1 or 0 in any real dtype</td></tr>
+ *       nearest (float16 and bfloat16 directly from the {@code double}); complex dtypes
+ *       store the value as the real part and zero as the imaginary part</td></tr>
+ *   <tr><td>{@code setLong}</td><td>integer dtypes keep the low bits; float and complex
+ *       types round to nearest; bool stores {@code value != 0}</td></tr>
+ *   <tr><td>{@code setBoolean}</td><td>stores 1 or 0 in any dtype</td></tr>
+ *   <tr><td>{@code setComplex}</td><td>complex dtypes only; complex64 rounds each part
+ *       to {@code float}; real dtypes throw, since dropping the imaginary part silently
+ *       would lose data</td></tr>
  * </table>
- * Complex dtypes are storage-only in this release; their accessors throw
+ * Conversions a getter or setter does not support throw
  * {@link org.numjvm.exception.DTypeException}. Writing to a read-only array throws
  * {@link ReadOnlyArrayException}; accessing an array whose scope is closed, or a
  * confined scope's array from another thread, throws {@link MemoryException}.
@@ -1828,6 +1837,24 @@ public final class NDArray {
         }
     }
 
+    private Complex readComplex(long off) {
+        try {
+            return ElementCodec.readComplex(segment, off, dtype);
+        } catch (IllegalStateException | WrongThreadException e) {
+            throw MemoryErrors.translate(e, buffer.owner());
+        }
+    }
+
+    private void writeComplex(long off, Complex v) {
+        Objects.requireNonNull(v, "value");
+        requireWriteable();
+        try {
+            ElementCodec.writeComplex(segment, off, dtype, v.re(), v.im());
+        } catch (IllegalStateException | WrongThreadException e) {
+            throw MemoryErrors.translate(e, buffer.owner());
+        }
+    }
+
     // ------------------------------------------------------------------ double
 
     /**
@@ -2144,5 +2171,111 @@ public final class NDArray {
      */
     public void setBoolean(long[] index, boolean value) {
         writeLong(elementOffset(index), value ? 1 : 0);
+    }
+
+    // ------------------------------------------------------------------ complex
+
+    /**
+     * Returns the single element of a 0-D array, as a {@link Complex}.
+     *
+     * @return the single element of a 0-D array, as a {@link Complex}
+     */
+    public Complex getComplex() {
+        return readComplex(at0());
+    }
+
+    /**
+     * Returns the element, as a {@link Complex}.
+     *
+     * @param i index on axis 0
+     * @return the element, as a {@link Complex}
+     */
+    public Complex getComplex(long i) {
+        return readComplex(at1(i));
+    }
+
+    /**
+     * Returns the element, as a {@link Complex}.
+     *
+     * @param i index on axis 0
+     * @param j index on axis 1
+     * @return the element, as a {@link Complex}
+     */
+    public Complex getComplex(long i, long j) {
+        return readComplex(at2(i, j));
+    }
+
+    /**
+     * Returns the element, as a {@link Complex}.
+     *
+     * @param i index on axis 0
+     * @param j index on axis 1
+     * @param k index on axis 2
+     * @return the element, as a {@link Complex}
+     */
+    public Complex getComplex(long i, long j, long k) {
+        return readComplex(at3(i, j, k));
+    }
+
+    /**
+     * Returns the element, as a {@link Complex}.
+     *
+     * @param index one index per axis
+     * @return the element, as a {@link Complex}
+     */
+    public Complex getComplex(long[] index) {
+        return readComplex(elementOffset(index));
+    }
+
+    /**
+     * Writes one element of a complex array, as described in the class documentation.
+     *
+     * @param value new value of the single element of a 0-D array
+     */
+    public void setComplex(Complex value) {
+        writeComplex(at0(), value);
+    }
+
+    /**
+     * Writes one element of a complex array, as described in the class documentation.
+     *
+     * @param i     index on axis 0
+     * @param value new value
+     */
+    public void setComplex(long i, Complex value) {
+        writeComplex(at1(i), value);
+    }
+
+    /**
+     * Writes one element of a complex array, as described in the class documentation.
+     *
+     * @param i     index on axis 0
+     * @param j     index on axis 1
+     * @param value new value
+     */
+    public void setComplex(long i, long j, Complex value) {
+        writeComplex(at2(i, j), value);
+    }
+
+    /**
+     * Writes one element of a complex array, as described in the class documentation.
+     *
+     * @param i     index on axis 0
+     * @param j     index on axis 1
+     * @param k     index on axis 2
+     * @param value new value
+     */
+    public void setComplex(long i, long j, long k, Complex value) {
+        writeComplex(at3(i, j, k), value);
+    }
+
+    /**
+     * Writes one element of a complex array, as described in the class documentation.
+     *
+     * @param index one index per axis
+     * @param value new value
+     */
+    public void setComplex(long[] index, Complex value) {
+        writeComplex(elementOffset(index), value);
     }
 }

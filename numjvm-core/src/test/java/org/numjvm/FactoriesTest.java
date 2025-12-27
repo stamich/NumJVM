@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
 import org.numjvm.exception.DTypeException;
 import org.numjvm.exception.MemoryException;
@@ -64,8 +65,19 @@ class FactoriesTest {
     }
 
     @Test
-    void fullOfComplexIsRejected() {
-        assertThrows(DTypeException.class, () -> NJ.ones(DType.COMPLEX128, 2));
+    void complexFactories() {
+        assertEquals(Complex.ONE, NJ.ones(DType.COMPLEX128, 2).getComplex(1));
+        assertEquals(Complex.of(2.5, 0), NJ.full(DType.COMPLEX64, 2.5, 3).getComplex(2));
+        NDArray a = NJ.array(new Complex[]{Complex.of(1, 2), Complex.of(3, -4), Complex.I, Complex.ZERO}, 2, 2);
+        assertEquals(DType.COMPLEX128, a.dtype());
+        assertEquals(Complex.of(3, -4), a.getComplex(0, 1));
+        NDArray b = NJ.array(DType.COMPLEX64, new Complex[]{Complex.of(0.1, 1e40)});
+        assertEquals(Complex.of((float) 0.1, Double.POSITIVE_INFINITY), b.getComplex(0));
+        assertThrows(DTypeException.class, () -> NJ.array(DType.FLOAT64, new Complex[]{Complex.ONE}));
+        assertEquals(Complex.of(-1, 1), NJ.scalar(Complex.of(-1, 1)).getComplex());
+        try (var scope = NJ.scope()) {
+            assertEquals(Complex.I, scope.array(new Complex[]{Complex.I}).getComplex(0));
+        }
     }
 
     @Test
