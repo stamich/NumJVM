@@ -17455,6 +17455,1042 @@
   },
   {
    "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_add_complex64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_add_complex64",
+   "inputs": [
+    "in_cedge_complex64.npy",
+    "in_cedge2_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "add"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_add_complex64_self.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_add_complex64_self",
+   "inputs": [
+    "in_cedge_complex64.npy",
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "add"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_subtract_complex64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_subtract_complex64",
+   "inputs": [
+    "in_cedge_complex64.npy",
+    "in_cedge2_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "subtract"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_subtract_complex64_self.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_subtract_complex64_self",
+   "inputs": [
+    "in_cedge_complex64.npy",
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "subtract"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_ufunc_equal_complex64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_equal_complex64",
+   "inputs": [
+    "in_cedge_complex64.npy",
+    "in_cedge2_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "equal"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_ufunc_equal_complex64_self.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_equal_complex64_self",
+   "inputs": [
+    "in_cedge_complex64.npy",
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "equal"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_ufunc_not_equal_complex64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_not_equal_complex64",
+   "inputs": [
+    "in_cedge_complex64.npy",
+    "in_cedge2_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "not_equal"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_ufunc_not_equal_complex64_self.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_not_equal_complex64_self",
+   "inputs": [
+    "in_cedge_complex64.npy",
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "not_equal"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_multiply_complex64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_multiply_complex64",
+   "inputs": [
+    "in_cmul_complex64.npy",
+    "in_cmul2_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "multiply"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_divide_complex64_cedge.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_divide_complex64_cedge",
+   "inputs": [
+    "in_cedge_complex64.npy",
+    "in_cedge2_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "divide",
+    "ulp": 2
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_divide_complex64_cmul.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_divide_complex64_cmul",
+   "inputs": [
+    "in_cmul_complex64.npy",
+    "in_cmul2_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "divide",
+    "ulp": 2
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_negative_complex64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_negative_complex64",
+   "inputs": [
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "negative"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_positive_complex64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_positive_complex64",
+   "inputs": [
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "positive"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_conjugate_complex64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_conjugate_complex64",
+   "inputs": [
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "conjugate"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_square_complex64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_square_complex64",
+   "inputs": [
+    "in_cmul_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "square"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_ufunc_absolute_complex64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_absolute_complex64",
+   "inputs": [
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "absolute",
+    "ulp": 2
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "error": true
+   },
+   "id": "ufunc_floor_divide_complex64",
+   "inputs": [
+    "in_cmul_complex64.npy",
+    "in_cmul2_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor_divide"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_add_complex128.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_add_complex128",
+   "inputs": [
+    "in_cedge_complex128.npy",
+    "in_cedge2_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "add"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_add_complex128_self.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_add_complex128_self",
+   "inputs": [
+    "in_cedge_complex128.npy",
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "add"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_subtract_complex128.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_subtract_complex128",
+   "inputs": [
+    "in_cedge_complex128.npy",
+    "in_cedge2_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "subtract"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_subtract_complex128_self.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_subtract_complex128_self",
+   "inputs": [
+    "in_cedge_complex128.npy",
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "subtract"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_ufunc_equal_complex128.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_equal_complex128",
+   "inputs": [
+    "in_cedge_complex128.npy",
+    "in_cedge2_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "equal"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_ufunc_equal_complex128_self.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_equal_complex128_self",
+   "inputs": [
+    "in_cedge_complex128.npy",
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "equal"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_ufunc_not_equal_complex128.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_not_equal_complex128",
+   "inputs": [
+    "in_cedge_complex128.npy",
+    "in_cedge2_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "not_equal"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_ufunc_not_equal_complex128_self.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_not_equal_complex128_self",
+   "inputs": [
+    "in_cedge_complex128.npy",
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "not_equal"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_multiply_complex128.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_multiply_complex128",
+   "inputs": [
+    "in_cmul_complex128.npy",
+    "in_cmul2_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "multiply"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_divide_complex128_cedge.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_divide_complex128_cedge",
+   "inputs": [
+    "in_cedge_complex128.npy",
+    "in_cedge2_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "divide",
+    "ulp": 2
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_divide_complex128_cmul.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_divide_complex128_cmul",
+   "inputs": [
+    "in_cmul_complex128.npy",
+    "in_cmul2_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "divide",
+    "ulp": 2
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_negative_complex128.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_negative_complex128",
+   "inputs": [
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "negative"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_positive_complex128.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_positive_complex128",
+   "inputs": [
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "positive"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_conjugate_complex128.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_conjugate_complex128",
+   "inputs": [
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "conjugate"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_square_complex128.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_square_complex128",
+   "inputs": [
+    "in_cmul_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "square"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_ufunc_absolute_complex128.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_absolute_complex128",
+   "inputs": [
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "absolute",
+    "ulp": 2
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "error": true
+   },
+   "id": "ufunc_floor_divide_complex128",
+   "inputs": [
+    "in_cmul_complex128.npy",
+    "in_cmul2_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "floor_divide"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_add_float32_complex64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_add_float32_complex64",
+   "inputs": [
+    "in_edge_float32.npy",
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "add"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_add_float64_complex64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_add_float64_complex64",
+   "inputs": [
+    "in_edge_float64.npy",
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "add"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_add_int64_complex64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_add_int64_complex64",
+   "inputs": [
+    "in_edge_int64.npy",
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_add_uint8_complex128.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_add_uint8_complex128",
+   "inputs": [
+    "in_edge_uint8.npy",
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_add_float16_complex64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_add_float16_complex64",
+   "inputs": [
+    "in_edge_float16.npy",
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "add"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_add_bool_complex128.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_add_bool_complex128",
+   "inputs": [
+    "in_edge_bool.npy",
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_multiply_complex128_transposed.npy",
+    "fortran": true,
+    "shape": [
+     2,
+     2
+    ]
+   },
+   "id": "ufunc_multiply_complex128_transposed",
+   "inputs": [
+    "in_c16_2x2.npy",
+    "in_c16_2x2.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "multiply",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|i1",
+    "file": "expected_ufunc_conjugate_bool.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_conjugate_bool",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "conjugate"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|i1",
+    "file": "expected_ufunc_conjugate_int8.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_conjugate_int8",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "conjugate"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "|u1",
+    "file": "expected_ufunc_conjugate_uint8.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_conjugate_uint8",
+   "inputs": [
+    "in_edge_uint8.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "conjugate"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i2",
+    "file": "expected_ufunc_conjugate_int16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_conjugate_int16",
+   "inputs": [
+    "in_edge_int16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "conjugate"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u2",
+    "file": "expected_ufunc_conjugate_uint16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_conjugate_uint16",
+   "inputs": [
+    "in_edge_uint16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "conjugate"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i4",
+    "file": "expected_ufunc_conjugate_int32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_conjugate_int32",
+   "inputs": [
+    "in_edge_int32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "conjugate"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u4",
+    "file": "expected_ufunc_conjugate_uint32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_conjugate_uint32",
+   "inputs": [
+    "in_edge_uint32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "conjugate"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<i8",
+    "file": "expected_ufunc_conjugate_int64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_conjugate_int64",
+   "inputs": [
+    "in_edge_int64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "conjugate"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<u8",
+    "file": "expected_ufunc_conjugate_uint64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_conjugate_uint64",
+   "inputs": [
+    "in_edge_uint64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "conjugate"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f2",
+    "file": "expected_ufunc_conjugate_float16.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_conjugate_float16",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "conjugate"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f4",
+    "file": "expected_ufunc_conjugate_float32.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_conjugate_float32",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "conjugate"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<f8",
+    "file": "expected_ufunc_conjugate_float64.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_conjugate_float64",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "conjugate"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
     "dtype": "|b1",
     "file": "expected_ufunc_floor_bool.npy",
     "fortran": false,

@@ -30,7 +30,7 @@ class GeneratedLoopsTest {
         }
         assertEquals(List.of(DType.BOOL, DType.INT8, DType.UINT8, DType.INT16, DType.UINT16, DType.INT32,
                 DType.UINT32, DType.INT64, DType.UINT64, DType.FLOAT16, DType.FLOAT32, DType.FLOAT64,
-                DType.BFLOAT16), order);
+                DType.BFLOAT16, DType.COMPLEX64, DType.COMPLEX128), order);
         for (DType t : REAL) {
             assertNotNull(KernelRegistry.find("copy", t), t.typeName());
         }
@@ -38,9 +38,10 @@ class GeneratedLoopsTest {
         for (String op : KernelRegistry.operations()) {
             registered += KernelRegistry.signatures(op).size();
         }
-        // generated loops plus the hand-written ones: 8 complex copies and casts, 12 exact
-        // int64/uint64 comparisons
-        assertEquals(GeneratedLoops.LOOP_COUNT + 8 + 12, registered);
+        // generated loops plus the hand-written ones: 8 complex copies and casts, 22 complex
+        // arithmetic loops (11 operations), conjugate as copy for the 12 real non-bool dtypes,
+        // and 12 exact int64/uint64 comparisons
+        assertEquals(GeneratedLoops.LOOP_COUNT + 8 + 22 + 12 + 12, registered);
     }
 
     /**

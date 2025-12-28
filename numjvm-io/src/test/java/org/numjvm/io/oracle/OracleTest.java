@@ -235,10 +235,15 @@ class OracleTest {
     /**
      * Exact comparison of two arrays of the same dtype and shape: integers and bools byte for
      * byte; floats value by value with signed zeros distinguished and any NaN equal to any NaN
-     * (NaN payloads are not part of NumPy's or NumJVM's contract).
+     * (NaN payloads are not part of NumPy's or NumJVM's contract); complex part by part.
      */
     static void assertSameElements(String id, NDArray expected, NDArray actual) {
         DType t = expected.dtype();
+        if (t.isComplex()) {
+            assertSameElements(id + " real", expected.real(), actual.real());
+            assertSameElements(id + " imag", expected.imag(), actual.imag());
+            return;
+        }
         if (!t.isFloatingPoint()) {
             assertArrayEquals(bytes(expected), bytes(actual), id + " values");
             return;
@@ -263,6 +268,11 @@ class OracleTest {
      */
     static void assertWithinUlps(String id, NDArray expected, NDArray actual, long maxUlps) {
         DType t = expected.dtype();
+        if (t.isComplex()) {
+            assertWithinUlps(id + " real", expected.real(), actual.real(), maxUlps);
+            assertWithinUlps(id + " imag", expected.imag(), actual.imag(), maxUlps);
+            return;
+        }
         if (!t.isFloatingPoint()) {
             assertSameElements(id, expected, actual);
             return;

@@ -88,10 +88,11 @@ class UfuncTest {
     }
 
     @Test
-    void complexHasNoLoopYet() {
+    void complexHasNoLoopForRealOnlyUfuncs() {
         DTypeException e = assertThrows(DTypeException.class,
-                () -> NJ.add(NJ.zeros(DType.COMPLEX64, 2), NJ.zeros(DType.COMPLEX64, 2)));
-        assertTrue(e.getMessage().contains("ufunc 'add' has no loop for (complex64, complex64)"), e.getMessage());
+                () -> NJ.floorDivide(NJ.zeros(DType.COMPLEX64, 2), NJ.zeros(DType.COMPLEX64, 2)));
+        assertTrue(e.getMessage().contains("ufunc 'floor_divide' has no loop for (complex64, complex64)"),
+                e.getMessage());
     }
 
     @Test

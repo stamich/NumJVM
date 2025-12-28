@@ -51,6 +51,7 @@ EDGE = {
     "float64": [-np.inf, -1.0e308, -1.5, -0.0, 0.0, 0.1, 7.0, np.nan],
 }
 NUMPY_REAL = list(EDGE)
+COMPLEX = ["complex64", "complex128"]
 
 
 def edge(dtype):
@@ -87,6 +88,17 @@ def inputs():
         arr[f"dense_{dt}"] = (u * 24.0 - 12.0).astype(dt)
         # ldexp is exact; exp2 is not correctly rounded and its last bit depends on the CPU
         arr[f"dense_pos_{dt}"] = np.ldexp(1.0 + u, np.floor(u * 1e6).astype(np.int64) % 20 - 10).astype(dt)
+    # complex values: signed zeros, infinities and NaN in either part (cedge), and finite
+    # dyadic values whose products are exact (cmul), so that NumPy's fused SIMD multiply and
+    # the textbook formula agree bit for bit
+    cedge = [complex(-np.inf, 1), complex(-1.5, -0.0), complex(-0.0, 2.5), 0j, complex(0.1, -0.1),
+             complex(3, 4), complex(np.nan, 1), complex(1, np.inf)]
+    cmul = [1 + 2j, -0.5 + 0.25j, 3 - 4j, complex(-0.0, 1), complex(0.75, -0.0), -2 - 2j, 1.5 + 0.5j, 8 + 0.125j]
+    for dt in COMPLEX:
+        arr[f"cedge_{dt}"] = np.array(cedge, dtype=dt)
+        arr[f"cedge2_{dt}"] = np.roll(arr[f"cedge_{dt}"], 3)
+        arr[f"cmul_{dt}"] = np.array(cmul, dtype=dt)
+        arr[f"cmul2_{dt}"] = np.roll(arr[f"cmul_{dt}"], 3)
     arr["halves_float64"] = np.array([-2.5, -1.5, -0.5, -0.0, 0.5, 1.5, 2.5, 3.5, 1e300, -0.49999999999999994])
     for dt in ["float16", "float32", "float64"]:
         arr[f"round_in_{dt}"] = np.array([1.005, 2.675, 0.125, -0.125, 1234.5, -1250.0, 1.5e-5, 99.95,
@@ -410,6 +422,38 @@ def cases(arr):
             src = "dense_pos" if name in ("sqrt", "log") else "dense"
             add(f"ufunc_{name}_{dt}_{src}", ARRAY_API, "ufunc", [f"{src}_{dt}"], {"ufunc": name},
                 lambda a, name=name: ufunc(name, a))
+
+    # --- complex arithmetic ------------------------------------------------------------------
+    # Complex division and absolute value may differ from NumPy in the last bit (C compilers may
+    # contract Smith's formula into fused multiply-adds; hypot is libm's), so they carry a
+    # 2-ulp tolerance per part; everything else is exact.
+    for dt in COMPLEX:
+        for name in ["add", "subtract", "equal", "not_equal"]:
+            add(f"ufunc_{name}_{dt}", ARRAY_API, "ufunc", [f"cedge_{dt}", f"cedge2_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+            add(f"ufunc_{name}_{dt}_self", ARRAY_API, "ufunc", [f"cedge_{dt}", f"cedge_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        add(f"ufunc_multiply_{dt}", ARRAY_API, "ufunc", [f"cmul_{dt}", f"cmul2_{dt}"], {"ufunc": "multiply"},
+            lambda a, b: ufunc("multiply", a, b))
+        for x in ["cedge", "cmul"]:
+            add(f"ufunc_divide_{dt}_{x}", ARRAY_API, "ufunc", [f"{x}_{dt}", f"{x}2_{dt}"], {"ufunc": "divide", "ulp": 2},
+                lambda a, b: ufunc("divide", a, b))
+        for name in ["negative", "positive", "conjugate"]:
+            add(f"ufunc_{name}_{dt}", ARRAY_API, "ufunc", [f"cedge_{dt}"], {"ufunc": name},
+                lambda a, name=name: ufunc(name, a))
+        add(f"ufunc_square_{dt}", ARRAY_API, "ufunc", [f"cmul_{dt}"], {"ufunc": "square"}, lambda a: ufunc("square", a))
+        add(f"ufunc_absolute_{dt}", ARRAY_API, "ufunc", [f"cedge_{dt}"], {"ufunc": "absolute", "ulp": 2},
+            lambda a: ufunc("absolute", a))
+        add(f"ufunc_floor_divide_{dt}", NUMPY, "ufunc", [f"cmul_{dt}", f"cmul2_{dt}"], {"ufunc": "floor_divide"}, None)
+    for x, y in [("float32", "complex64"), ("float64", "complex64"), ("int64", "complex64"), ("uint8", "complex128"),
+                 ("float16", "complex64"), ("bool", "complex128")]:
+        add(f"ufunc_add_{x}_{y}", promotion_tag(x, y), "ufunc", [f"edge_{x}", f"cedge_{y}"], {"ufunc": "add"},
+            lambda a, b: ufunc("add", a, b))
+    add("ufunc_multiply_complex128_transposed", ARRAY_API, "ufunc", ["c16_2x2", "c16_2x2"],
+        {"ufunc": "multiply", "view": "transpose"}, lambda a, b: ufunc("multiply", a.T, b.T))
+    for dt in NUMPY_REAL:
+        add(f"ufunc_conjugate_{dt}", ARRAY_API if dt != "bool" else NUMPY, "ufunc", [f"edge_{dt}"],
+            {"ufunc": "conjugate"}, lambda a: ufunc("conjugate", a))
 
     # --- rounding -----------------------------------------------------------------------------
     for name in ["floor", "ceil", "trunc", "rint"]:

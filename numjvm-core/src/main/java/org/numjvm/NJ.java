@@ -1526,6 +1526,16 @@ public final class NJ {
         return Reductions.all(x, axes, keepdims);
     }
 
+    /**
+     * Element-wise {@code conj(x)}: the complex conjugate; real numbers are unchanged ({@link Ufuncs#CONJUGATE}).
+     *
+     * @param x the input
+     * @return a new array with the shape of {@code x}
+     */
+    public static NDArray conjugate(NDArray x) {
+        return Ufuncs.CONJUGATE.apply(x);
+    }
+
     // ------------------------------------------------------------------ type promotion
 
     /**

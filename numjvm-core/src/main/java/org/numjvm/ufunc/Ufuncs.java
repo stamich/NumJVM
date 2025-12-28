@@ -39,7 +39,8 @@ public final class Ufuncs {
 
     /**
      * True division {@code x / y} ({@code ARRAY_API}: {@code divide}). Integer and bool
-     * operands give float64, as in NumPy; float16 is computed in float32.
+     * operands give float64, as in NumPy; float16 is computed in float32. Complex division
+     * uses Smith's algorithm, as NumPy, which avoids overflow in the intermediate products.
      */
     public static final BinaryUfunc DIVIDE = BinaryUfunc.builder("divide")
             .loopFor(t -> t.isInteger() || t.isBool() ? DType.FLOAT64 : null)
@@ -89,9 +90,9 @@ public final class Ufuncs {
 
     /**
      * {@code x == y}, giving bool ({@code ARRAY_API}: {@code equal}). Comparisons follow IEEE 754
-     * (NaN is unequal to everything); signed integers against uint64, and integers against a
-     * Java {@code long} outside their range, are compared exactly ({@code NUMPY_COMPATIBILITY},
-     * as NumPy 2).
+     * (NaN is unequal to everything); complex numbers are equal when both parts are. Signed
+     * integers against uint64, and integers against a Java {@code long} outside their range,
+     * are compared exactly ({@code NUMPY_COMPATIBILITY}, as NumPy 2).
      */
     public static final BinaryUfunc EQUAL = BinaryUfunc.builder("equal").comparison().build();
 
@@ -185,8 +186,17 @@ public final class Ufuncs {
     /**
      * {@code |x|} ({@code ARRAY_API}: {@code abs}; NumPy's {@code absolute}). {@code abs(MIN)}
      * wraps to {@code MIN}; {@code abs(-0.0) == 0.0}; bool and unsigned values are unchanged.
+     * The absolute value of a complex number is real: {@code hypot(re, im)}, float32 for
+     * complex64 and float64 for complex128.
      */
     public static final UnaryUfunc ABSOLUTE = UnaryUfunc.builder("absolute").build();
+
+    /**
+     * {@code conj(x)}, the complex conjugate {@code re - im·j} ({@code ARRAY_API}: {@code conj};
+     * NumPy's {@code conjugate}). Real numbers are returned unchanged, in their own dtype; bool
+     * has no loop and becomes int8, as in NumPy.
+     */
+    public static final UnaryUfunc CONJUGATE = UnaryUfunc.builder("conjugate").build();
 
     /**
      * -1, 0 or 1 by the sign of {@code x} ({@code ARRAY_API}: {@code sign}); NaN gives NaN and
@@ -298,10 +308,10 @@ public final class Ufuncs {
      */
     private static final class ByName {
         static final Map<String, Ufunc> MAP = build(List.of(
-                ADD, SUBTRACT, MULTIPLY, DIVIDE, FLOOR_DIVIDE, REMAINDER, POWER, MAXIMUM, MINIMUM, FMAX, FMIN,
-                EQUAL, NOT_EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL, LOGICAL_AND, LOGICAL_OR, LOGICAL_XOR,
-                LOGICAL_NOT, BITWISE_AND, BITWISE_OR, BITWISE_XOR, INVERT, NEGATIVE, POSITIVE, ABSOLUTE, SIGN,
-                SQUARE, SQRT, EXP, LOG, SIN, COS, TANH, FLOOR, CEIL, TRUNC, RINT));
+                ADD, SUBTRACT, MULTIPLY, DIVIDE, FLOOR_DIVIDE, REMAINDER, POWER, MAXIMUM, MINIMUM, FMAX, FMIN, EQUAL,
+                NOT_EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL, LOGICAL_AND, LOGICAL_OR, LOGICAL_XOR, LOGICAL_NOT,
+                BITWISE_AND, BITWISE_OR, BITWISE_XOR, INVERT, NEGATIVE, POSITIVE, ABSOLUTE, CONJUGATE, SIGN, SQUARE,
+                SQRT, EXP, LOG, SIN, COS, TANH, FLOOR, CEIL, TRUNC, RINT));
 
         private static Map<String, Ufunc> build(List<Ufunc> all) {
             Map<String, Ufunc> m = new LinkedHashMap<>();

@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.numjvm.dtype.DType;
@@ -76,6 +77,24 @@ public final class KernelRegistry {
          */
         public void binary(String op, DType in1, DType in2, DType out, BinaryLoop loop) {
             table(op).add(new LoopSignature(op, List.of(in1, in2), out), loop);
+        }
+
+        /**
+         * Registers, under {@code op}, the loops already registered for {@code from} whose
+         * first input satisfies {@code which}, in their registration order.
+         *
+         * @param op    the new operation
+         * @param from  an operation registered earlier
+         * @param which selects loops by their first input dtype
+         */
+        public void alias(String op, String from, Predicate<DType> which) {
+            Table source = table(from);
+            for (LoopSignature sig : List.copyOf(source.order)) {
+                if (which.test(sig.inputs().getFirst())) {
+                    table(op).add(new LoopSignature(op, sig.inputs(), sig.output()),
+                            source.loops.get(key(sig.inputs())));
+                }
+            }
         }
     }
 

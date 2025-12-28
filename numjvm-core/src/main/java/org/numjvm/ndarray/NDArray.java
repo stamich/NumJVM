@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
+import org.numjvm.dtype.TypePromotion;
 import org.numjvm.exception.IndexException;
 import org.numjvm.exception.MemoryException;
 import org.numjvm.exception.ReadOnlyArrayException;
@@ -383,6 +384,51 @@ public final class NDArray {
             axes[i] = n - 1 - i;
         }
         return permuteDims(axes);
+    }
+
+    /**
+     * Returns the real part ({@code NUMPY_COMPATIBILITY}: {@code ndarray.real}).
+     *
+     * <p>For a complex array this is a view of float32 (complex64) or float64 (complex128)
+     * elements on the same memory, with the same shape and strides: writing to it changes the
+     * real parts of this array, and it is writeable when this array is. For a real array it is
+     * this array itself.
+     *
+     * @return the real parts, as a view
+     */
+    public NDArray real() {
+        if (!dtype.isComplex()) {
+            return this;
+        }
+        return new NDArray(buffer, TypePromotion.component(dtype), offset, shape, strides, writeable);
+    }
+
+    /**
+     * Returns the imaginary part ({@code NUMPY_COMPATIBILITY}: {@code ndarray.imag}).
+     *
+     * <p>For a complex array this is a view of the imaginary parts on the same memory, like
+     * {@link #real()}. For a real array it is a new read-only array of zeros with this array's
+     * dtype and shape, as in NumPy.
+     *
+     * @return the imaginary parts
+     */
+    public NDArray imag() {
+        if (!dtype.isComplex()) {
+            NDArray zeros = allocate(HybridAllocator.defaultInstance(), dtype, shape, Order.C);
+            return new NDArray(zeros.buffer, dtype, 0, shape, zeros.strides, false);
+        }
+        return new NDArray(buffer, TypePromotion.component(dtype), offset + dtype.size() / 2, shape, strides,
+                writeable);
+    }
+
+    /**
+     * Returns the complex conjugate ({@code ARRAY_API}: {@code conj}); the same as
+     * {@link #conjugate()}.
+     *
+     * @return a new array; real arrays are copied unchanged
+     */
+    public NDArray conj() {
+        return Ufuncs.CONJUGATE.apply(this);
     }
 
     /**
@@ -1734,6 +1780,16 @@ public final class NDArray {
      */
     public NDArray divideInPlace(long other) {
         return Ufuncs.DIVIDE.apply(this, other, this);
+    }
+
+    /**
+     * Returns {@code conj(this)}, element-wise: the complex conjugate; real numbers are unchanged
+     * ({@link org.numjvm.ufunc.Ufuncs#CONJUGATE}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray conjugate() {
+        return Ufuncs.CONJUGATE.apply(this);
     }
 
     // ------------------------------------------------------------------ element access: helpers

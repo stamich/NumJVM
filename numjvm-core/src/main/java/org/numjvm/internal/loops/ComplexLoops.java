@@ -9,7 +9,8 @@ import org.numjvm.dtype.DType;
  * Copy and cast loops between complex64 and complex128, and from complex to bool (true when
  * either part is non-zero). Conversions from real dtypes to complex are generated with the
  * real loops; complex to any other real dtype has no loop, because it would discard the
- * imaginary part ({@code NUMJVM_SPECIFIC}: NumPy discards it with a warning).
+ * imaginary part ({@code NUMJVM_SPECIFIC}: NumPy discards it with a warning). Arithmetic is
+ * in {@link ComplexArithmetic}.
  */
 final class ComplexLoops {
 
@@ -29,6 +30,7 @@ final class ComplexLoops {
         r.unary("cast:complex128", DType.COMPLEX128, DType.COMPLEX128, ComplexLoops::copy128);
         r.unary("cast:bool", DType.COMPLEX64, DType.BOOL, ComplexLoops::nonZero64);
         r.unary("cast:bool", DType.COMPLEX128, DType.BOOL, ComplexLoops::nonZero128);
+        ComplexArithmetic.register(r);
     }
 
     static void nonZero64(MemorySegment a, long pa, long sa, MemorySegment o, long po, long so, long n) {
