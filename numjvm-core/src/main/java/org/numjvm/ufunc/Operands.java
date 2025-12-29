@@ -1,6 +1,7 @@
 package org.numjvm.ufunc;
 
 import org.numjvm.NJ;
+import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
 import org.numjvm.exception.ValueException;
 import org.numjvm.internal.SharedSecrets;
@@ -55,6 +56,15 @@ final class Operands {
     static NDArray weakDouble(DType t, double v) {
         NDArray s = NJ.zeros(t);
         s.setDouble(v);
+        return s;
+    }
+
+    /**
+     * A Java {@link Complex} as a 0-D array of the promoted complex dtype {@code t}.
+     */
+    static NDArray weakComplex(DType t, Complex v) {
+        NDArray s = NJ.zeros(t);
+        s.setComplex(java.util.Objects.requireNonNull(v, "scalar"));
         return s;
     }
 

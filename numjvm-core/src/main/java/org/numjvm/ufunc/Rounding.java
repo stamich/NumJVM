@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import org.numjvm.dtype.DType;
 import org.numjvm.exception.DTypeException;
+import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.ndarray.NDArray;
 
 /**
@@ -20,6 +21,7 @@ import org.numjvm.ndarray.NDArray;
  *       float64 and converted back with {@code astype}, so values wrap at the dtype's width
  *       ({@code round(uint8 255, -1) == 4}) and int64 values above 2<sup>53</sup> lose
  *       precision, as in NumPy;</li>
+ *   <li>complex arrays round the real and imaginary parts separately, as in NumPy;</li>
  *   <li>bool with {@code decimals != 0} is a {@link DTypeException}, as in NumPy.</li>
  * </ul>
  */
@@ -46,13 +48,18 @@ public final class Rounding {
      * @param x        the array
      * @param decimals number of decimal places; negative values round to tens, hundreds, ...
      * @return a new array of the same dtype (bool with {@code decimals == 0} gives float16)
-     * @throws DTypeException for bool with {@code decimals != 0}, and for complex arrays
+     * @throws DTypeException for bool with {@code decimals != 0}
      */
     public static NDArray round(NDArray x, int decimals) {
         Objects.requireNonNull(x, "x");
         DType t = x.dtype();
         if (t.isComplex()) {
-            throw new DTypeException("round is not supported for " + t.typeName());
+            // as NumPy's PyArray_Round: the real and imaginary parts are rounded separately
+            MemoryAllocator allocator = Operands.allocator(x);
+            NDArray r = Operands.allocate(allocator, t, x.shape(), x);
+            Outputs.copyInto(round(x.real(), decimals), r.real());
+            Outputs.copyInto(round(x.imag(), decimals), r.imag());
+            return r;
         }
         if (t.isInteger() && decimals >= 0) {
             return Ufuncs.POSITIVE.apply(x);

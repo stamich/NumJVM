@@ -176,8 +176,10 @@ public final class Reductions {
     /**
      * The arithmetic mean ({@code ARRAY_API}: {@code mean}), computed as NumPy does: the sum
      * divided by the number of elements reduced. Bool and integer arrays are summed in
-     * float64 and give float64; float16 and bfloat16 are summed and divided in float32 and the
-     * result rounded back; other dtypes keep theirs. The mean of an empty array is NaN.
+     * float64 and give float64; float16 and bfloat16 are summed in float32; other dtypes are
+     * summed in their own. The count is an int64, as NumPy's intp, so float32 sums are divided
+     * in float64 and complex64 sums in complex128, and the result is rounded back to the
+     * array's dtype. The mean of an empty array is NaN.
      *
      * @param x the array
      * @return a 0-D array
@@ -218,8 +220,18 @@ public final class Reductions {
         }
         org.numjvm.internal.memory.MemoryAllocator allocator = Operands.allocator(x);
         NDArray sum = Ufuncs.ADD.reduce(Operands.cast(x, sumType, allocator), axes, keepdims);
-        NDArray mean = Ufuncs.DIVIDE.apply(sum, count);
-        return sumType == t || t.isBool() || t.isInteger() ? mean : Operands.cast(mean, t, allocator);
+        // NumPy divides by the count as an intp, which is not a weak scalar: float32 sums are
+        // divided in float64 and complex64 sums in complex128, then converted back
+        NDArray n = Operands.weakLong(DType.INT64, count);
+        NDArray mean = Ufuncs.DIVIDE.apply(sum, n);
+        DType target = t.isBool() || t.isInteger() ? DType.FLOAT64 : t;
+        if (sum.ndim() == 0) {
+            // a scalar result is converted once, to the array's dtype
+            return Operands.cast(mean, target, allocator);
+        }
+        // an array result is divided into the sum array (casting='unsafe'), then float16
+        // and bfloat16 results are converted from it
+        return Operands.cast(Operands.cast(mean, sumType, allocator), target, allocator);
     }
 
     // ------------------------------------------------------------------ any / all

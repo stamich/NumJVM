@@ -31,6 +31,7 @@ final class ComplexLoops {
         r.unary("cast:bool", DType.COMPLEX64, DType.BOOL, ComplexLoops::nonZero64);
         r.unary("cast:bool", DType.COMPLEX128, DType.BOOL, ComplexLoops::nonZero128);
         ComplexArithmetic.register(r);
+        ComplexMath.register(r);
     }
 
     static void nonZero64(MemorySegment a, long pa, long sa, MemorySegment o, long po, long so, long n) {

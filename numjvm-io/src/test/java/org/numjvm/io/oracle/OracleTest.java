@@ -21,6 +21,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.numjvm.NJ;
 import org.numjvm.dtype.Casting;
+import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
 import org.numjvm.dtype.TypePromotion;
 import org.numjvm.exception.NumJVMException;
@@ -187,8 +188,13 @@ class OracleTest {
         NDArray x = transpose ? in.get(0).transpose() : in.get(0);
         if (p.containsKey("scalar")) {
             BinaryUfunc b = (BinaryUfunc) u;
-            Number v = (Number) p.get("scalar");
             boolean right = "right".equals(p.get("scalar_side"));
+            if ("complex".equals(p.get("scalar_type"))) {
+                List<?> parts = (List<?>) p.get("scalar");
+                Complex z = Complex.of(((Number) parts.get(0)).doubleValue(), ((Number) parts.get(1)).doubleValue());
+                return right ? b.apply(x, z) : b.apply(z, x);
+            }
+            Number v = (Number) p.get("scalar");
             if ("long".equals(p.get("scalar_type"))) {
                 return right ? b.apply(x, v.longValue()) : b.apply(v.longValue(), x);
             }

@@ -164,4 +164,88 @@ public final class Pairwise {
         n2 -= n2 % 8;
         return sum(s, off, stride, n2, type) + sum(s, off + n2 * stride, stride, n - n2, type);
     }
+
+    /**
+     * One part (real or imaginary) of NumPy's pairwise sum of {@code n} complex128 elements:
+     * {@code CDOUBLE_pairwise_sum} sums both parts with independent accumulators, so each part
+     * is summed on its own here with the same blocking (four accumulators, blocks of 64
+     * elements). {@code off} addresses the part of the first element.
+     *
+     * @param s      memory
+     * @param off    byte offset of the part of the first element
+     * @param stride byte stride between elements
+     * @param n      number of elements
+     * @return the sum of that part
+     */
+    public static double complex128Part(MemorySegment s, long off, long stride, long n) {
+        if (n < 4) {
+            double res = 0.0;
+            for (long i = 0; i < n; i++) {
+                res += s.get(F64, off + i * stride);
+            }
+            return res;
+        } else if (n <= BLOCK / 2) {
+            double r0 = s.get(F64, off);
+            double r1 = s.get(F64, off + stride);
+            double r2 = s.get(F64, off + 2 * stride);
+            double r3 = s.get(F64, off + 3 * stride);
+            long limit = n - n % 4;
+            long i;
+            for (i = 4; i < limit; i += 4) {
+                long p = off + i * stride;
+                r0 += s.get(F64, p);
+                r1 += s.get(F64, p + stride);
+                r2 += s.get(F64, p + 2 * stride);
+                r3 += s.get(F64, p + 3 * stride);
+            }
+            double res = (r0 + r1) + (r2 + r3);
+            for (; i < n; i++) {
+                res += s.get(F64, off + i * stride);
+            }
+            return res;
+        }
+        long n2 = (n - n % 8) / 2;
+        return complex128Part(s, off, stride, n2) + complex128Part(s, off + n2 * stride, stride, n - n2);
+    }
+
+    /**
+     * One part of NumPy's pairwise sum of {@code n} complex64 elements, in {@code float}; see
+     * {@link #complex128Part}.
+     *
+     * @param s      memory
+     * @param off    byte offset of the part of the first element
+     * @param stride byte stride between elements
+     * @param n      number of elements
+     * @return the sum of that part
+     */
+    public static float complex64Part(MemorySegment s, long off, long stride, long n) {
+        if (n < 4) {
+            float res = 0.0f;
+            for (long i = 0; i < n; i++) {
+                res += s.get(F32, off + i * stride);
+            }
+            return res;
+        } else if (n <= BLOCK / 2) {
+            float r0 = s.get(F32, off);
+            float r1 = s.get(F32, off + stride);
+            float r2 = s.get(F32, off + 2 * stride);
+            float r3 = s.get(F32, off + 3 * stride);
+            long limit = n - n % 4;
+            long i;
+            for (i = 4; i < limit; i += 4) {
+                long p = off + i * stride;
+                r0 += s.get(F32, p);
+                r1 += s.get(F32, p + stride);
+                r2 += s.get(F32, p + 2 * stride);
+                r3 += s.get(F32, p + 3 * stride);
+            }
+            float res = (r0 + r1) + (r2 + r3);
+            for (; i < n; i++) {
+                res += s.get(F32, off + i * stride);
+            }
+            return res;
+        }
+        long n2 = (n - n % 8) / 2;
+        return complex64Part(s, off, stride, n2) + complex64Part(s, off + n2 * stride, stride, n - n2);
+    }
 }

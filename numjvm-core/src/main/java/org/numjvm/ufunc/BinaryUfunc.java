@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
+import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
 import org.numjvm.dtype.DTypeKind;
 import org.numjvm.dtype.TypePromotion;
@@ -220,6 +221,32 @@ public final class BinaryUfunc extends Ufunc {
     }
 
     /**
+     * Applies the ufunc with a weak {@link Complex} second operand: complex arrays keep their
+     * dtype, float32 and narrower floats become complex64, everything else complex128.
+     *
+     * @param a first input
+     * @param b second input, a Java scalar
+     * @return a new array with the shape of {@code a}
+     */
+    public NDArray apply(NDArray a, Complex b) {
+        DType common = TypePromotion.resultTypeWithComplex(a.dtype());
+        return run(a, Operands.weakComplex(common, b), common);
+    }
+
+    /**
+     * Applies the ufunc with a weak {@link Complex} first operand; see
+     * {@link #apply(NDArray, Complex)}.
+     *
+     * @param a first input, a Java scalar
+     * @param b second input
+     * @return a new array with the shape of {@code b}
+     */
+    public NDArray apply(Complex a, NDArray b) {
+        DType common = TypePromotion.resultTypeWithComplex(b.dtype());
+        return run(Operands.weakComplex(common, a), b, common);
+    }
+
+    /**
      * Applies the ufunc and writes the result into {@code out} ({@code NUMPY_COMPATIBILITY}:
      * the {@code out=} argument). {@code ufunc.apply(a, b, a)} is the in-place operation.
      *
@@ -275,6 +302,20 @@ public final class BinaryUfunc extends Ufunc {
             return Outputs.store(name(), exact(a, int64(b)), out);
         }
         return runInto(a, Operands.weakLong(common, b), common, out);
+    }
+
+    /**
+     * Applies the ufunc with a weak {@link Complex} second operand into {@code out}; see
+     * {@link #apply(NDArray, NDArray, NDArray)}.
+     *
+     * @param a   first input
+     * @param b   second input, a Java scalar
+     * @param out the output
+     * @return {@code out}
+     */
+    public NDArray apply(NDArray a, Complex b, NDArray out) {
+        DType common = TypePromotion.resultTypeWithComplex(a.dtype());
+        return runInto(a, Operands.weakComplex(common, b), common, out);
     }
 
     private NDArray runInto(NDArray a, NDArray b, DType common, NDArray out) {

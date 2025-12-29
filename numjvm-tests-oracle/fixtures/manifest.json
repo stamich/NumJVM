@@ -18122,6 +18122,1491 @@
   {
    "expect": {
     "dtype": "<c8",
+    "file": "expected_ufunc_exp_complex64_cedge.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_exp_complex64_cedge",
+   "inputs": [
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "exp",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_exp_complex64_cdense.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "ufunc_exp_complex64_cdense",
+   "inputs": [
+    "in_cdense_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "exp",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_exp_complex64_cunit.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_exp_complex64_cunit",
+   "inputs": [
+    "in_cunit_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "exp",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_log_complex64_cedge.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_log_complex64_cedge",
+   "inputs": [
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "log",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_log_complex64_cdense.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "ufunc_log_complex64_cdense",
+   "inputs": [
+    "in_cdense_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "log",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_log_complex64_cunit.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_log_complex64_cunit",
+   "inputs": [
+    "in_cunit_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "log",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_sqrt_complex64_cedge.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_sqrt_complex64_cedge",
+   "inputs": [
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "sqrt",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_sqrt_complex64_cdense.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "ufunc_sqrt_complex64_cdense",
+   "inputs": [
+    "in_cdense_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "sqrt",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_sqrt_complex64_cunit.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_sqrt_complex64_cunit",
+   "inputs": [
+    "in_cunit_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "sqrt",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_sign_complex64_cedge.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_sign_complex64_cedge",
+   "inputs": [
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "sign",
+    "ulp": 2
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_sign_complex64_cdense.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "ufunc_sign_complex64_cdense",
+   "inputs": [
+    "in_cdense_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "sign",
+    "ulp": 2
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_sign_complex64_cunit.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_sign_complex64_cunit",
+   "inputs": [
+    "in_cunit_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "sign",
+    "ulp": 2
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_rint_complex64_cedge.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_complex64_cedge",
+   "inputs": [
+    "in_cedge_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_rint_complex64_cdense.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "ufunc_rint_complex64_cdense",
+   "inputs": [
+    "in_cdense_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_rint_complex64_cunit.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_complex64_cunit",
+   "inputs": [
+    "in_cunit_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_round_complex64_0.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "round_complex64_0",
+   "inputs": [
+    "in_cdense_complex64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_round_complex64_1.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "round_complex64_1",
+   "inputs": [
+    "in_cdense_complex64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_round_complex64_2.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "round_complex64_2",
+   "inputs": [
+    "in_cdense_complex64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_round_complex64_-1.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "round_complex64_-1",
+   "inputs": [
+    "in_cdense_complex64.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_sum_complex64_cedge.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_complex64_cedge",
+   "inputs": [
+    "in_cedge_complex64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_prod_complex64_cmul.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_complex64_cmul",
+   "inputs": [
+    "in_cmul_complex64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_mean_complex64_cedge.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_complex64_cedge",
+   "inputs": [
+    "in_cedge_complex64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_sum_complex64_pairwise.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_complex64_pairwise",
+   "inputs": [
+    "in_csum_complex64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_mean_complex64_pairwise.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_complex64_pairwise",
+   "inputs": [
+    "in_csum_complex64.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_add_complex64_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_add_complex64_complex_scalar",
+   "inputs": [
+    "in_cmul_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "right",
+    "scalar_type": "complex",
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_multiply_complex64_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_multiply_complex64_complex_scalar",
+   "inputs": [
+    "in_cmul_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "right",
+    "scalar_type": "complex",
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_subtract_complex64_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_subtract_complex64_complex_scalar",
+   "inputs": [
+    "in_cmul_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "right",
+    "scalar_type": "complex",
+    "ufunc": "subtract"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_divide_complex64_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_divide_complex64_complex_scalar",
+   "inputs": [
+    "in_cmul_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "right",
+    "scalar_type": "complex",
+    "ufunc": "divide",
+    "ulp": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_ufunc_equal_complex64_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_equal_complex64_complex_scalar",
+   "inputs": [
+    "in_cmul_complex64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "right",
+    "scalar_type": "complex",
+    "ufunc": "equal"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_exp_complex128_cedge.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_exp_complex128_cedge",
+   "inputs": [
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "exp",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_exp_complex128_cdense.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "ufunc_exp_complex128_cdense",
+   "inputs": [
+    "in_cdense_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "exp",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_exp_complex128_cunit.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_exp_complex128_cunit",
+   "inputs": [
+    "in_cunit_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "exp",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_log_complex128_cedge.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_log_complex128_cedge",
+   "inputs": [
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "log",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_log_complex128_cdense.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "ufunc_log_complex128_cdense",
+   "inputs": [
+    "in_cdense_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "log",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_log_complex128_cunit.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_log_complex128_cunit",
+   "inputs": [
+    "in_cunit_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "log",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_sqrt_complex128_cedge.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_sqrt_complex128_cedge",
+   "inputs": [
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "sqrt",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_sqrt_complex128_cdense.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "ufunc_sqrt_complex128_cdense",
+   "inputs": [
+    "in_cdense_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "sqrt",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_sqrt_complex128_cunit.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_sqrt_complex128_cunit",
+   "inputs": [
+    "in_cunit_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "sqrt",
+    "ulp": 4
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_sign_complex128_cedge.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_sign_complex128_cedge",
+   "inputs": [
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "sign",
+    "ulp": 2
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_sign_complex128_cdense.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "ufunc_sign_complex128_cdense",
+   "inputs": [
+    "in_cdense_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "sign",
+    "ulp": 2
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_sign_complex128_cunit.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_sign_complex128_cunit",
+   "inputs": [
+    "in_cunit_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "sign",
+    "ulp": 2
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_rint_complex128_cedge.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_complex128_cedge",
+   "inputs": [
+    "in_cedge_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_rint_complex128_cdense.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "ufunc_rint_complex128_cdense",
+   "inputs": [
+    "in_cdense_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_rint_complex128_cunit.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_rint_complex128_cunit",
+   "inputs": [
+    "in_cunit_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "ufunc": "rint"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_round_complex128_0.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "round_complex128_0",
+   "inputs": [
+    "in_cdense_complex128.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 0
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_round_complex128_1.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "round_complex128_1",
+   "inputs": [
+    "in_cdense_complex128.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_round_complex128_2.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "round_complex128_2",
+   "inputs": [
+    "in_cdense_complex128.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_round_complex128_-1.npy",
+    "fortran": false,
+    "shape": [
+     64
+    ]
+   },
+   "id": "round_complex128_-1",
+   "inputs": [
+    "in_cdense_complex128.npy"
+   ],
+   "op": "round",
+   "params": {
+    "decimals": -1
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_sum_complex128_cedge.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_complex128_cedge",
+   "inputs": [
+    "in_cedge_complex128.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_prod_complex128_cmul.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "prod_complex128_cmul",
+   "inputs": [
+    "in_cmul_complex128.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "prod"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_mean_complex128_cedge.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_complex128_cedge",
+   "inputs": [
+    "in_cedge_complex128.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_sum_complex128_pairwise.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_complex128_pairwise",
+   "inputs": [
+    "in_csum_complex128.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "sum"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_mean_complex128_pairwise.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_complex128_pairwise",
+   "inputs": [
+    "in_csum_complex128.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": null,
+    "reduction": "mean"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_add_complex128_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_add_complex128_complex_scalar",
+   "inputs": [
+    "in_cmul_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "right",
+    "scalar_type": "complex",
+    "ufunc": "add"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_multiply_complex128_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_multiply_complex128_complex_scalar",
+   "inputs": [
+    "in_cmul_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "right",
+    "scalar_type": "complex",
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_subtract_complex128_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_subtract_complex128_complex_scalar",
+   "inputs": [
+    "in_cmul_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "right",
+    "scalar_type": "complex",
+    "ufunc": "subtract"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_divide_complex128_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_divide_complex128_complex_scalar",
+   "inputs": [
+    "in_cmul_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "right",
+    "scalar_type": "complex",
+    "ufunc": "divide",
+    "ulp": 2
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "|b1",
+    "file": "expected_ufunc_equal_complex128_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_equal_complex128_complex_scalar",
+   "inputs": [
+    "in_cmul_complex128.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "right",
+    "scalar_type": "complex",
+    "ufunc": "equal"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_sum_complex128_grid_0_none.npy",
+    "fortran": false,
+    "shape": [
+     40
+    ]
+   },
+   "id": "sum_complex128_grid_0_none",
+   "inputs": [
+    "in_c16_grid.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "reduction": "sum",
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_sum_complex128_grid_1_none.npy",
+    "fortran": false,
+    "shape": [
+     25
+    ]
+   },
+   "id": "sum_complex128_grid_1_none",
+   "inputs": [
+    "in_c16_grid.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     1
+    ],
+    "reduction": "sum",
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_sum_complex128_grid_0_transpose.npy",
+    "fortran": false,
+    "shape": [
+     25
+    ]
+   },
+   "id": "sum_complex128_grid_0_transpose",
+   "inputs": [
+    "in_c16_grid.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "reduction": "sum",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_sum_complex128_grid_0_1_transpose.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "sum_complex128_grid_0_1_transpose",
+   "inputs": [
+    "in_c16_grid.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0,
+     1
+    ],
+    "reduction": "sum",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_mean_complex128_grid_0_none.npy",
+    "fortran": false,
+    "shape": [
+     40
+    ]
+   },
+   "id": "mean_complex128_grid_0_none",
+   "inputs": [
+    "in_c16_grid.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "reduction": "mean",
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_mean_complex128_grid_1_none.npy",
+    "fortran": false,
+    "shape": [
+     25
+    ]
+   },
+   "id": "mean_complex128_grid_1_none",
+   "inputs": [
+    "in_c16_grid.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     1
+    ],
+    "reduction": "mean",
+    "view": "none"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_mean_complex128_grid_0_transpose.npy",
+    "fortran": false,
+    "shape": [
+     25
+    ]
+   },
+   "id": "mean_complex128_grid_0_transpose",
+   "inputs": [
+    "in_c16_grid.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0
+    ],
+    "reduction": "mean",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_mean_complex128_grid_0_1_transpose.npy",
+    "fortran": false,
+    "shape": []
+   },
+   "id": "mean_complex128_grid_0_1_transpose",
+   "inputs": [
+    "in_c16_grid.npy"
+   ],
+   "op": "reduction",
+   "params": {
+    "axis": [
+     0,
+     1
+    ],
+    "reduction": "mean",
+    "view": "transpose"
+   },
+   "tag": "ARRAY_API"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_multiply_float32_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_multiply_float32_complex_scalar",
+   "inputs": [
+    "in_edge_float32.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "left",
+    "scalar_type": "complex",
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
+    "file": "expected_ufunc_multiply_float16_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_multiply_float16_complex_scalar",
+   "inputs": [
+    "in_edge_float16.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "left",
+    "scalar_type": "complex",
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_multiply_int8_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_multiply_int8_complex_scalar",
+   "inputs": [
+    "in_edge_int8.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "left",
+    "scalar_type": "complex",
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_multiply_bool_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_multiply_bool_complex_scalar",
+   "inputs": [
+    "in_edge_bool.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "left",
+    "scalar_type": "complex",
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c16",
+    "file": "expected_ufunc_multiply_float64_complex_scalar.npy",
+    "fortran": false,
+    "shape": [
+     8
+    ]
+   },
+   "id": "ufunc_multiply_float64_complex_scalar",
+   "inputs": [
+    "in_edge_float64.npy"
+   ],
+   "op": "ufunc",
+   "params": {
+    "scalar": [
+     0.5,
+     -2.0
+    ],
+    "scalar_side": "left",
+    "scalar_type": "complex",
+    "ufunc": "multiply"
+   },
+   "tag": "NUMPY_COMPATIBILITY"
+  },
+  {
+   "expect": {
+    "dtype": "<c8",
     "file": "expected_ufunc_add_float32_complex64.npy",
     "fortran": false,
     "shape": [

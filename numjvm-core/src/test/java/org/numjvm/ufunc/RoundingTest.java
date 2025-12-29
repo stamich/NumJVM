@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.numjvm.NJ;
+import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
 import org.numjvm.exception.DTypeException;
 import org.numjvm.ndarray.NDArray;
@@ -50,7 +51,12 @@ class RoundingTest {
         NDArray b = NJ.array(new boolean[]{true, false});
         assertEquals(DType.FLOAT16, NJ.round(b).dtype());
         assertThrows(DTypeException.class, () -> NJ.round(b, 1));
-        assertThrows(DTypeException.class, () -> NJ.round(NJ.zeros(DType.COMPLEX64, 1)));
+        // complex: each part rounded on its own (NumPy: [1.25-2.68j] and [0.-0.j])
+        NDArray c = NJ.array(new Complex[]{Complex.of(1.25, -2.675)});
+        assertEquals(Complex.of(1.25, -2.68), NJ.round(c, 2).getComplex(0));
+        assertEquals(Complex.of(0.0, -0.0), NJ.round(c, -1).getComplex(0));
+        assertEquals(Complex.of(1.0, -3.0), NJ.round(c).getComplex(0));
+        assertEquals(DType.COMPLEX64, NJ.round(c.astype(DType.COMPLEX64), 1).dtype());
     }
 
     @Test

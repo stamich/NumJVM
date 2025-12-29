@@ -200,7 +200,8 @@ public final class Ufuncs {
 
     /**
      * -1, 0 or 1 by the sign of {@code x} ({@code ARRAY_API}: {@code sign}); NaN gives NaN and
-     * {@code -0.0} gives {@code 0.0}. Bool is not supported, as in NumPy.
+     * {@code -0.0} gives {@code 0.0}. Bool is not supported, as in NumPy. For complex
+     * {@code z} it is {@code z / |z|} (NumPy 2), 0 for 0 and ±1 or ±i for infinite {@code z}.
      */
     public static final UnaryUfunc SIGN = UnaryUfunc.builder("sign")
             .unsupported(DType.BOOL, "ufunc 'sign' has no loop for (bool)")
@@ -215,7 +216,9 @@ public final class Ufuncs {
      * The square root, correctly rounded ({@code ARRAY_API}: {@code sqrt}).
      * Exact, as IEEE 754 requires.
      * Integer and bool inputs give the first float dtype they convert to safely: float16
-     * for bool, int8 and uint8, float32 for 16-bit integers, float64 otherwise.
+     * for bool, int8 and uint8, float32 for 16-bit integers, float64 otherwise. The complex
+     * square root is the principal branch, with C99 special values; complex results may
+     * differ from NumPy by up to 4 ulp per part (decision D6).
      */
     public static final UnaryUfunc SQRT = UnaryUfunc.builder("sqrt").build();
 
@@ -223,7 +226,8 @@ public final class Ufuncs {
      * E to the power {@code x} ({@code ARRAY_API}: {@code exp}).
      * Computed with {@link Math#exp(double)}; results may differ from NumPy by up to 4 ulp (decision D6).
      * Integer and bool inputs give the first float dtype they convert to safely: float16
-     * for bool, int8 and uint8, float32 for 16-bit integers, float64 otherwise.
+     * for bool, int8 and uint8, float32 for 16-bit integers, float64 otherwise. For complex
+     * {@code x = a + bi} it is {@code e^a (cos b + i sin b)} with C99 special values.
      */
     public static final UnaryUfunc EXP = UnaryUfunc.builder("exp").build();
 
@@ -231,7 +235,8 @@ public final class Ufuncs {
      * The natural logarithm; {@code log(0) == -inf}, negative values give nan ({@code ARRAY_API}: {@code log}).
      * Computed with {@link Math#log(double)}; results may differ from NumPy by up to 4 ulp (decision D6).
      * Integer and bool inputs give the first float dtype they convert to safely: float16
-     * for bool, int8 and uint8, float32 for 16-bit integers, float64 otherwise.
+     * for bool, int8 and uint8, float32 for 16-bit integers, float64 otherwise. For complex
+     * {@code z} it is the principal branch {@code log|z| + i arg(z)}, with C99 special values.
      */
     public static final UnaryUfunc LOG = UnaryUfunc.builder("log").build();
 
@@ -280,6 +285,7 @@ public final class Ufuncs {
      * {@code x} rounded to the nearest integer, halves to even ({@code NUMPY_COMPATIBILITY}:
      * {@code rint}). Integer and bool inputs give a float dtype, as in NumPy; for rounding
      * that keeps integer dtypes and supports decimals, see {@link Rounding#round(NDArray, int)}.
+     * Complex values round each part.
      */
     public static final UnaryUfunc RINT = UnaryUfunc.builder("rint").build();
 

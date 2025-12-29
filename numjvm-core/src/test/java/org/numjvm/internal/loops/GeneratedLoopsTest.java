@@ -40,8 +40,8 @@ class GeneratedLoopsTest {
         }
         // generated loops plus the hand-written ones: 8 complex copies and casts, 22 complex
         // arithmetic loops (11 operations), conjugate as copy for the 12 real non-bool dtypes,
-        // and 12 exact int64/uint64 comparisons
-        assertEquals(GeneratedLoops.LOOP_COUNT + 8 + 22 + 12 + 12, registered);
+        // 10 complex functions (exp, log, sqrt, sign, rint) and 12 exact int64/uint64 comparisons
+        assertEquals(GeneratedLoops.LOOP_COUNT + 8 + 22 + 12 + 10 + 12, registered);
     }
 
     /**

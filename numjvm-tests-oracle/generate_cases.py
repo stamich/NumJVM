@@ -99,6 +99,18 @@ def inputs():
         arr[f"cedge2_{dt}"] = np.roll(arr[f"cedge_{dt}"], 3)
         arr[f"cmul_{dt}"] = np.array(cmul, dtype=dt)
         arr[f"cmul2_{dt}"] = np.roll(arr[f"cmul_{dt}"], 3)
+    # moderate values for the complex functions: real parts in [-12, 12), imaginary parts in
+    # [-6, 6); values on and near the unit circle, where log|z| cancels; 1000 values for sums
+    u = hash_unit(128)
+    cdense = (u[:64] * 24.0 - 12.0) + 1j * (u[64:] * 12.0 - 6.0)
+    cunit = [complex(0.6, 0.8), complex(1.0 + 2.0 ** -30, 0), complex(0.75, 0.6614378277661477), complex(-1, 1e-9),
+             complex(0, -1), complex(0.7071067811865476, 0.7071067811865476), complex(1e-8, 1), complex(-0.28, 0.96)]
+    v = hash_unit(2000)
+    csum = (v[:1000] * 10.0 - 3.0) + 1j * (v[1000:] - 0.3)
+    for dt in COMPLEX:
+        arr[f"cdense_{dt}"] = cdense.astype(dt)
+        arr[f"cunit_{dt}"] = np.array(cunit, dtype=dt)
+        arr[f"csum_{dt}"] = csum.astype(dt)
     arr["halves_float64"] = np.array([-2.5, -1.5, -0.5, -0.0, 0.5, 1.5, 2.5, 3.5, 1e300, -0.49999999999999994])
     for dt in ["float16", "float32", "float64"]:
         arr[f"round_in_{dt}"] = np.array([1.005, 2.675, 0.125, -0.125, 1234.5, -1250.0, 1.5e-5, 99.95,
@@ -131,6 +143,7 @@ def inputs():
         "f4_2x2": np.array([[0.1, 0.2], [0.3, 0.4]], dtype=np.float32),
         "c16_2x2": (np.arange(4.0) + 1j * np.arange(4.0, 8.0)).reshape(2, 2),
         "c8_3": np.array([1 + 2j, 3 - 4j, 0j], dtype=np.complex64),
+        "c16_grid": ((hash_unit(1000) * 10.0 - 3.0) + 1j * (hash_unit(2000)[1000:] - 0.3)).reshape(25, 40),
     }
 
 
@@ -445,6 +458,37 @@ def cases(arr):
         add(f"ufunc_absolute_{dt}", ARRAY_API, "ufunc", [f"cedge_{dt}"], {"ufunc": "absolute", "ulp": 2},
             lambda a: ufunc("absolute", a))
         add(f"ufunc_floor_divide_{dt}", NUMPY, "ufunc", [f"cmul_{dt}", f"cmul2_{dt}"], {"ufunc": "floor_divide"}, None)
+    for dt in COMPLEX:
+        for name, ulp in [("exp", 4), ("log", 4), ("sqrt", 4), ("sign", 2), ("rint", 0)]:
+            for x in ["cedge", "cdense", "cunit"]:
+                params = {"ufunc": name} | ({"ulp": ulp} if ulp else {})
+                add(f"ufunc_{name}_{dt}_{x}", ARRAY_API if name != "rint" else NUMPY, "ufunc", [f"{x}_{dt}"], params,
+                    lambda a, name=name: ufunc(name, a))
+        for d in [0, 1, 2, -1]:
+            add(f"round_{dt}_{d}", NUMPY, "round", [f"cdense_{dt}"], {"decimals": d}, lambda a, d=d: round_(a, d))
+        for name in ["sum", "prod", "mean"]:
+            src = "cmul" if name == "prod" else "cedge"
+            add(f"{name}_{dt}_{src}", ARRAY_API, "reduction", [f"{src}_{dt}"], {"reduction": name, "axis": None},
+                lambda a, name=name: np.asarray(reduction(name, a)))
+        for name in ["sum", "mean"]:
+            add(f"{name}_{dt}_pairwise", ARRAY_API, "reduction", [f"csum_{dt}"], {"reduction": name, "axis": None},
+                lambda a, name=name: np.asarray(reduction(name, a)))
+        for name in ["add", "multiply", "subtract", "divide", "equal"]:
+            add(f"ufunc_{name}_{dt}_complex_scalar", NUMPY, "ufunc", [f"cmul_{dt}"],
+                {"ufunc": name, "scalar": [0.5, -2.0], "scalar_type": "complex", "scalar_side": "right",
+                 "ulp": 2} if name == "divide" else
+                {"ufunc": name, "scalar": [0.5, -2.0], "scalar_type": "complex", "scalar_side": "right"},
+                lambda a, name=name: ufunc(name, a, complex(0.5, -2.0)))
+    for name in ["sum", "mean"]:
+        for axis, view in [([0], "none"), ([1], "none"), ([0], "transpose"), ([0, 1], "transpose")]:
+            add(f"{name}_complex128_grid_{'_'.join(map(str, axis))}_{view}", ARRAY_API, "reduction", ["c16_grid"],
+                {"reduction": name, "axis": axis, "view": view},
+                lambda a, name=name, axis=axis, view=view: np.asarray(reduction(
+                    name, a.T if view == "transpose" else a, axis=tuple(axis))))
+    for dt in ["float32", "float16", "int8", "bool", "float64"]:
+        add(f"ufunc_multiply_{dt}_complex_scalar", NUMPY, "ufunc", [f"edge_{dt}"],
+            {"ufunc": "multiply", "scalar": [0.5, -2.0], "scalar_type": "complex", "scalar_side": "left"},
+            lambda a: ufunc("multiply", complex(0.5, -2.0), a))
     for x, y in [("float32", "complex64"), ("float64", "complex64"), ("int64", "complex64"), ("uint8", "complex128"),
                  ("float16", "complex64"), ("bool", "complex128")]:
         add(f"ufunc_add_{x}_{y}", promotion_tag(x, y), "ufunc", [f"edge_{x}", f"cedge_{y}"], {"ufunc": "add"},

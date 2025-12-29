@@ -21,7 +21,8 @@ import org.numjvm.dtype.DType;
  *   <li>equal: both parts equal ({@code ==}, so NaN is unequal to itself)</li>
  * </ul>
  * Every loop reads an element's inputs before writing its output, so the reduction path
- * (output aliased to the first input, both with stride 0) accumulates in order.
+ * (output aliased to the first input, both with stride 0) accumulates in order; add sums
+ * that path pairwise, part by part, as NumPy does.
  */
 final class ComplexArithmetic {
 
@@ -66,6 +67,14 @@ final class ComplexArithmetic {
 
     static void add64(MemorySegment a, long pa, long sa, MemorySegment b, long pb, long sb, MemorySegment o, long po,
                       long so, long n) {
+        if (sa == 0 && so == 0 && pa == po && a == o) {
+            // reduction into one element: NumPy's pairwise summation of the run
+            float re = a.get(F32, pa) + Pairwise.complex64Part(b, pb, sb, n);
+            float im = a.get(F32, pa + 4) + Pairwise.complex64Part(b, pb + 4, sb, n);
+            o.set(F32, po, re);
+            o.set(F32, po + 4, im);
+            return;
+        }
         for (long i = 0; i < n; i++, pa += sa, pb += sb, po += so) {
             float re = a.get(F32, pa) + b.get(F32, pb);
             float im = a.get(F32, pa + 4) + b.get(F32, pb + 4);
@@ -76,6 +85,13 @@ final class ComplexArithmetic {
 
     static void add128(MemorySegment a, long pa, long sa, MemorySegment b, long pb, long sb, MemorySegment o, long po,
                        long so, long n) {
+        if (sa == 0 && so == 0 && pa == po && a == o) {
+            double re = a.get(F64, pa) + Pairwise.complex128Part(b, pb, sb, n);
+            double im = a.get(F64, pa + 8) + Pairwise.complex128Part(b, pb + 8, sb, n);
+            o.set(F64, po, re);
+            o.set(F64, po + 8, im);
+            return;
+        }
         for (long i = 0; i < n; i++, pa += sa, pb += sb, po += so) {
             double re = a.get(F64, pa) + b.get(F64, pb);
             double im = a.get(F64, pa + 8) + b.get(F64, pb + 8);

@@ -178,6 +178,6 @@ class UfuncsTest {
         assertEquals(0.0, NJ.sin(NJ.zeros(1)).getDouble(0));
         assertEquals(1.0, NJ.zeros(1).cos().getDouble(0));
         assertEquals(1.0, NJ.tanh(NJ.array(new double[]{100})).getDouble(0));
-        assertThrows(DTypeException.class, () -> NJ.sqrt(NJ.zeros(DType.COMPLEX64, 1)));
+        assertThrows(DTypeException.class, () -> NJ.sin(NJ.zeros(DType.COMPLEX64, 1)));
     }
 }

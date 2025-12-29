@@ -167,6 +167,22 @@ public final class TypePromotion {
     }
 
     /**
+     * Returns the dtype of an operation between an array of dtype {@code array} and a Java
+     * {@link Complex} scalar, which is weak like Python's {@code complex} (ADR-005): complex
+     * arrays keep their dtype, float16, bfloat16 and float32 arrays become complex64, and
+     * float64, integer and bool arrays become complex128.
+     *
+     * @param array the array's dtype
+     * @return the promoted dtype
+     */
+    public static DType resultTypeWithComplex(DType array) {
+        if (array.isComplex()) {
+            return array;
+        }
+        return array.isFloatingPoint() && array != DType.FLOAT64 ? DType.COMPLEX64 : DType.COMPLEX128;
+    }
+
+    /**
      * Tells whether {@code from} can be converted to {@code to} with {@link Casting#SAFE}
      * casting ({@code ARRAY_API}: {@code can_cast}).
      *
