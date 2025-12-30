@@ -52,6 +52,61 @@ EDGE = {
 }
 NUMPY_REAL = list(EDGE)
 COMPLEX = ["complex64", "complex128"]
+MATRIX_DTYPES = NUMPY_REAL + COMPLEX
+
+# The ufunc x dtype x layout matrix (T6.1). Every ufunc runs on every NumPy dtype in five
+# layouts of the same logical 3x4 operands: C order, Fortran order, a transposed view, a
+# strided view (every other column of a 3x8 array) and broadcasting (a row against the
+# full array, or a row broadcast to 3x4 for unary ufuncs). The first four have the same
+# logical result, so they share one expected file.
+MATRIX_BINARY = ["add", "subtract", "multiply", "divide", "floor_divide", "remainder", "power", "maximum", "minimum",
+                 "fmax", "fmin", "equal", "not_equal", "less", "less_equal", "greater", "greater_equal",
+                 "logical_and", "logical_or", "logical_xor", "bitwise_and", "bitwise_or", "bitwise_xor"]
+MATRIX_UNARY = ["logical_not", "invert", "negative", "positive", "absolute", "conjugate", "sign", "square", "sqrt",
+                "exp", "log", "sin", "cos", "tanh", "floor", "ceil", "trunc", "rint"]
+LAYOUTS = ["C", "F", "T", "S", "B"]
+# NumPy has complex loops that NumJVM 0.2 does not: ordering comparisons and maximum/minimum
+# (lexicographic in NumPy), power and the trigonometric functions. These cases expect an error.
+NOT_IN_NUMJVM = {("maximum", "c"), ("minimum", "c"), ("fmax", "c"), ("fmin", "c"), ("less", "c"),
+                 ("less_equal", "c"), ("greater", "c"), ("greater_equal", "c"), ("power", "c"), ("sin", "c"),
+                 ("cos", "c"), ("tanh", "c")}
+# Complex results that may differ from NumPy in the last bits (see the complex cases above).
+MATRIX_ULP = {("divide", "c"): 2, ("absolute", "c"): 2, ("sign", "c"): 2, ("sqrt", "c"): 4}
+# The whole oracle (inputs, expected results, manifest) must stay below this many bytes.
+FIXTURE_BUDGET = 4_000_000
+
+
+def matrix_operands(dt):
+    """Two 3x4 operands: the eight edge values plus four small ones, the second rotated."""
+    if dt in COMPLEX:
+        values = [complex(-np.inf, 1), complex(-1.5, -0.0), complex(-0.0, 2.5), 0j, complex(0.5, -0.25),
+                  complex(3, 4), complex(np.nan, 1), complex(1, np.inf), 1 + 1j, -2 + 0.5j, 0.25 - 3j, 4 + 0j]
+    else:
+        extra = {"bool": [True, False, False, True]}.get(dt, [2, 3, 5, 1] if dt[0] in "iu" else [2.5, -0.75, 4.0, 1.0])
+        values = EDGE[dt] + extra
+    a = np.array(values, dtype=dt).reshape(3, 4)
+    return a, np.roll(a.reshape(-1), 5).reshape(3, 4)
+
+
+def layout_inputs(layout, dt, binary):
+    if layout == "C":
+        names = [f"lay_a_{dt}", f"lay_b_{dt}"]
+    elif layout == "B":
+        names = [f"lay_a_{dt}", f"lay_row_{dt}"] if binary else [f"lay_row_{dt}"]
+    else:
+        names = [f"lay_a_{layout}_{dt}", f"lay_b_{layout}_{dt}"]
+    return names if binary or layout == "B" else names[:1]
+
+
+def layout_view(layout, a):
+    """The logical operand NumJVM sees after applying the case's layout to a stored input."""
+    if layout == "T":
+        return a.T
+    if layout == "S":
+        return a[:, ::2]
+    if layout == "B" and a.ndim == 1:
+        return np.broadcast_to(a, (3, 4))
+    return a
 
 
 def edge(dtype):
@@ -111,6 +166,19 @@ def inputs():
         arr[f"cdense_{dt}"] = cdense.astype(dt)
         arr[f"cunit_{dt}"] = np.array(cunit, dtype=dt)
         arr[f"csum_{dt}"] = csum.astype(dt)
+    # the layout matrix (T6.1): one 3x4 logical operand pair per dtype, stored once per layout
+    for dt in MATRIX_DTYPES:
+        a, b = matrix_operands(dt)
+        filler = np.zeros_like(a)
+        arr[f"lay_a_{dt}"] = a
+        arr[f"lay_b_{dt}"] = b
+        arr[f"lay_a_F_{dt}"] = np.asfortranarray(a)
+        arr[f"lay_b_F_{dt}"] = np.asfortranarray(b)
+        arr[f"lay_a_T_{dt}"] = np.ascontiguousarray(a.T)
+        arr[f"lay_b_T_{dt}"] = np.ascontiguousarray(b.T)
+        arr[f"lay_a_S_{dt}"] = np.stack([a, filler], axis=2).reshape(3, 8)
+        arr[f"lay_b_S_{dt}"] = np.stack([b, filler], axis=2).reshape(3, 8)
+        arr[f"lay_row_{dt}"] = b[1]
     arr["halves_float64"] = np.array([-2.5, -1.5, -0.5, -0.0, 0.5, 1.5, 2.5, 3.5, 1e300, -0.49999999999999994])
     for dt in ["float16", "float32", "float64"]:
         arr[f"round_in_{dt}"] = np.array([1.005, 2.675, 0.125, -0.125, 1234.5, -1250.0, 1.5e-5, 99.95,
@@ -688,6 +756,24 @@ def cases(arr):
     for name in ["f8_3x4", "f8_hash_7x11", "i8_neg", "u1_5", "u8_big", "b1_2x3", "f2_4", "f4_2x2", "c16_2x2",
                  "c8_3", "f8_scalar", "f8_empty_0x3"]:
         add(f"repr_{name}", NUMPY, "repr", [name], {}, lambda a: repr(a))
+
+    # --- ufunc x dtype x layout matrix (T6.1) ---------------------------------------------------
+    for name in MATRIX_BINARY + MATRIX_UNARY:
+        binary = name in MATRIX_BINARY
+        for dt in MATRIX_DTYPES:
+            missing = (name, np.dtype(dt).kind) in NOT_IN_NUMJVM
+            for layout in LAYOUTS:
+                ins = layout_inputs(layout, dt, binary)
+                params = {"ufunc": name, "layout": layout}
+                if (name, np.dtype(dt).kind) in MATRIX_ULP:
+                    params["ulp"] = MATRIX_ULP[(name, np.dtype(dt).kind)]
+                cid = f"matrix_{name}_{dt}_{layout}"
+                if missing:
+                    add(cid, NUMJVM, "ufunc", ins, params, None)
+                    continue
+                tag = NUMPY if dt == "bool" or dt in ("uint64",) else ARRAY_API
+                add(cid, tag, "ufunc", ins, params,
+                    lambda *xs, name=name, layout=layout: ufunc(name, *[layout_view(layout, x) for x in xs]))
     return c
 
 
@@ -700,6 +786,7 @@ def generate(out_dir):
     for name, a in arr.items():
         np.save(os.path.join(out_dir, f"in_{name}.npy"), a)
     manifest = []
+    shared = {}
     for cid, tag, op, ins, params, fn in cases(arr):
         entry = {"id": cid, "tag": tag, "op": op, "inputs": [f"in_{n}.npy" for n in ins], "params": params}
         if fn is None and "expected" in params:
@@ -716,10 +803,17 @@ def generate(out_dir):
             elif isinstance(result, np.ndarray):
                 if op == "ufunc" and params["ufunc"] in ULP_TOLERANCE and result.dtype.kind in "fc":
                     params["ulp"] = ULP_TOLERANCE[params["ufunc"]]
+                fortran = bool(result.flags.f_contiguous and not result.flags.c_contiguous)
                 fname = f"expected_{cid}.npy"
-                np.save(os.path.join(out_dir, fname), result)
+                if op == "ufunc":
+                    # identical logical results share one file (the layouts of the matrix)
+                    result = np.ascontiguousarray(result)
+                    key = (result.dtype.str, result.shape, result.tobytes(), params.get("ulp"))
+                    fname = shared.setdefault(key, fname)
+                if not os.path.exists(os.path.join(out_dir, fname)):
+                    np.save(os.path.join(out_dir, fname), result)
                 entry["expect"] = {"file": fname, "shape": list(result.shape), "dtype": result.dtype.str,
-                                   "fortran": bool(result.flags.f_contiguous and not result.flags.c_contiguous)}
+                                   "fortran": fortran}
             elif isinstance(result, np.dtype):
                 entry["expect"] = {"dtype_name": result.name}
             elif isinstance(result, float):
@@ -738,6 +832,10 @@ def generate(out_dir):
     with open(os.path.join(out_dir, "manifest.json"), "w", encoding="utf-8") as f:
         json.dump({"numpy_version_used": "2.x", "cases": manifest}, f, indent=1, sort_keys=True)
         f.write("\n")
+    total = sum(os.path.getsize(os.path.join(out_dir, f)) for f in os.listdir(out_dir))
+    if total > FIXTURE_BUDGET:
+        raise SystemExit(f"fixtures take {total} bytes, over the budget of {FIXTURE_BUDGET}; "
+                         "use smaller arrays or share expected files")
     return manifest
 
 
@@ -769,7 +867,18 @@ def main():
                         and int(np.max(ulp_distance(new, old), initial=0)) <= tolerant[f]:
                     mismatch.remove(f)
         if mismatch or errors:
-            print("fixtures out of date:", mismatch + errors)
+            details = []
+            for f in mismatch:
+                new = np.load(os.path.join(tmp, f)) if f.endswith(".npy") else None
+                old = np.load(os.path.join(fixtures, f)) if f.endswith(".npy") else None
+                if new is not None and new.dtype == old.dtype and new.shape == old.shape and new.dtype.kind in "fc":
+                    details.append(f"{f} ({int(np.max(ulp_distance(new, old), initial=0))} ulp)")
+                else:
+                    details.append(f)
+            message = "fixtures out of date: " + ", ".join(details + errors)
+            print(message)
+            if os.environ.get("GITHUB_ACTIONS") == "true":
+                print(f"::error title=Oracle fixtures::{message[:4000]}")
             return 1
     print(f"fixtures are up to date ({len(expected)} files, numpy {np.__version__})")
     return 0

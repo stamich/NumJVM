@@ -87,10 +87,16 @@ final class Operands {
     }
 
     /**
-     * {@code a} converted to {@code t}, or {@code a} itself if it already has that dtype.
+     * {@code a} converted to {@code t}, or {@code a} itself if it already has that dtype. The
+     * copy keeps {@code a}'s memory order (NumPy's {@code order='K'}), so that a result
+     * allocated after the operands' order stays, say, Fortran-ordered when an input had to be
+     * converted first.
      */
     static NDArray cast(NDArray a, DType t, MemoryAllocator allocator) {
-        return a.dtype() == t ? a : SharedSecrets.arrayAccess().convert(a, allocator, t, Order.C);
+        if (a.dtype() == t) {
+            return a;
+        }
+        return Outputs.copyInto(a, allocate(allocator, t, a.shape(), a));
     }
 
     /**

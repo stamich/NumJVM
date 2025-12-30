@@ -102,7 +102,7 @@ class OracleTest {
             } else {
                 assertSameElements(id, expected, actual);
             }
-            if (Boolean.TRUE.equals(expect.get("fortran")) && op.equals("copy")) {
+            if (Boolean.TRUE.equals(expect.get("fortran")) && (op.equals("copy") || op.equals("ufunc"))) {
                 assertTrue(actual.isFContiguous(), id + " fortran order");
             }
             Npy.write(out.resolve(id + ".npy"), actual);
@@ -184,6 +184,14 @@ class OracleTest {
 
     private static NDArray ufunc(List<NDArray> in, Map<String, Object> p) {
         Ufunc u = Ufuncs.byName((String) p.get("ufunc")).orElseThrow(() -> new AssertionError("no ufunc " + p));
+        if (p.containsKey("layout")) {
+            List<NDArray> views = in.stream().map(a -> layout((String) p.get("layout"), a)).toList();
+            if (u instanceof BinaryUfunc b) {
+                return b.apply(views.get(0), views.get(1));
+            }
+            NDArray x = "B".equals(p.get("layout")) ? views.get(0).broadcastTo(3, 4) : views.get(0);
+            return ((UnaryUfunc) u).apply(x);
+        }
         boolean transpose = "transpose".equals(p.get("view"));
         NDArray x = transpose ? in.get(0).transpose() : in.get(0);
         if (p.containsKey("scalar")) {
@@ -210,6 +218,19 @@ class OracleTest {
             return b.apply(x, y);
         }
         return ((UnaryUfunc) u).apply(x);
+    }
+
+    /**
+     * The operand a matrix case sees (generate_cases.layout_view): C and F inputs as stored,
+     * T the transpose, S every other column; for B the caller broadcasts the 1-D row of a
+     * unary ufunc to 3x4 (binary ufuncs broadcast it themselves).
+     */
+    private static NDArray layout(String layout, NDArray a) {
+        return switch (layout) {
+            case "T" -> a.transpose();
+            case "S" -> a.slice(new Slice.Range(null, null, 1), Slice.step(2));
+            default -> a;
+        };
     }
 
     @SuppressWarnings("unchecked")

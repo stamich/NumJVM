@@ -23,12 +23,37 @@ A case's `expect` holds one of:
 
 | Key | Meaning |
 |-----|---------|
-| `file`, `shape`, `dtype`, `fortran` | an array result, stored as `expected_<id>.npy` and compared byte for byte |
+| `file`, `shape`, `dtype`, `fortran` | an array result, stored as `expected_<id>.npy` (or shared with an identical result) and compared byte for byte |
 | `value` | a scalar result (sums), compared with a relative tolerance of 10⁻¹² |
 | `dtype_name` | a dtype (`result_type`) |
 | `can_cast` | `np.can_cast(from, to, casting)` for every target dtype |
 | `repr`, `flags`, `shape` | printing, contiguity flags, a broadcast shape |
 | `error` | NumJVM must throw a `NumJVMException` |
+
+## The ufunc matrix
+
+Besides hand-picked cases, `generate_cases.py` runs every ufunc on every NumPy dtype (bool, the eight integer types,
+float16/32/64, complex64/128) in five layouts of the same logical 3×4 operands (case ids `matrix_<ufunc>_<dtype>_<layout>`):
+
+| Layout | Operands as NumJVM sees them                                           |
+|--------|------------------------------------------------------------------------|
+| `C`    | C-contiguous arrays                                                    |
+| `F`    | Fortran-ordered arrays (read from `.npy` files with `fortran_order`)   |
+| `T`    | transposed views of C-contiguous 4×3 arrays                            |
+| `S`    | strided views: every other column of 3×8 arrays                        |
+| `B`    | broadcasting: a row against the 3×4 array (unary: a row broadcast to 3×4) |
+
+The operands hold each dtype's edge values (extremes, signed zeros, infinities, NaN) plus a few small values. Results
+must match in value, dtype and memory order: a Fortran-ordered or transposed input gives a Fortran-ordered result, as
+NumPy's `order='K'`. Combinations NumPy supports and NumJVM 0.2 does not (complex ordering comparisons,
+maximum/minimum, power and trigonometric functions) are listed in `NOT_IN_NUMJVM` and expect an error, tagged
+`NUMJVM_SPECIFIC`.
+
+### Size budget
+
+Array-valued ufunc results with identical contents share one `expected_*.npy` file, so the four layouts of a matrix
+row cost one file. The generator fails if inputs, expected files and the manifest together exceed `FIXTURE_BUDGET`
+(4 MB); new cases should use small arrays.
 
 ## Workflow
 

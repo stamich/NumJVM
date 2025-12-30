@@ -52,7 +52,7 @@ def main():
                 failures.append(f"{case['id']}: values differ by {worst} ulp (tolerance {case['params']['ulp']})")
         elif not np.array_equal(actual, expected, equal_nan=True):
             failures.append(f"{case['id']}: values differ")
-        elif case["op"] == "copy" and expect["fortran"] and not actual.flags.f_contiguous:
+        elif case["op"] in ("copy", "ufunc") and expect["fortran"] and not actual.flags.f_contiguous:
             failures.append(f"{case['id']}: expected Fortran order")
         checked += 1
     for line in failures:
