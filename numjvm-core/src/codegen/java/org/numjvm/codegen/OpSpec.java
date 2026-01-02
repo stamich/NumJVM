@@ -17,16 +17,17 @@ import java.util.Map;
  * @param boolOutput  whether the output is bool (comparisons, logical operations)
  *                    rather than the input dtype
  * @param expressions expression per family
+ * @param overrides   expression per dtype, taking precedence over the family's
  * @param only        if not empty, generate loops only for these dtypes
  */
 record OpSpec(String name, String doc, int arity, boolean boolOutput, Map<DTypeSpec.Family, String> expressions,
-              List<String> only) {
+              Map<String, String> overrides, List<String> only) {
 
     String expression(DTypeSpec t) {
         if (!only.isEmpty() && !only.contains(t.dtype())) {
             return null;
         }
-        return expressions.get(t.family());
+        return overrides.getOrDefault(t.dtype(), expressions.get(t.family()));
     }
 
     DTypeSpec output(DTypeSpec in) {
@@ -42,6 +43,7 @@ record OpSpec(String name, String doc, int arity, boolean boolOutput, Map<DTypeS
         private final int arity;
         private boolean boolOutput;
         private final Map<DTypeSpec.Family, String> expressions = new EnumMap<>(DTypeSpec.Family.class);
+        private final Map<String, String> overrides = new java.util.HashMap<>();
         private final List<String> only = new ArrayList<>();
 
         Builder(String name, int arity, String doc) {
@@ -62,13 +64,24 @@ record OpSpec(String name, String doc, int arity, boolean boolOutput, Map<DTypeS
             return this;
         }
 
+        /**
+         * Uses {@code expression} for these dtypes instead of their family's expression.
+         */
+        Builder onDType(String expression, String... dtypes) {
+            for (String d : dtypes) {
+                overrides.put(d, expression);
+            }
+            return this;
+        }
+
         Builder only(String... dtypes) {
             only.addAll(List.of(dtypes));
             return this;
         }
 
         OpSpec build() {
-            return new OpSpec(name, doc, arity, boolOutput, Map.copyOf(expressions), List.copyOf(only));
+            return new OpSpec(name, doc, arity, boolOutput, Map.copyOf(expressions), Map.copyOf(overrides),
+                    List.copyOf(only));
         }
     }
 

@@ -100,6 +100,24 @@ class UfuncsTest {
     }
 
     @Test
+    void signedZeroTiesFollowNumpyPerDtype() {
+        // NumPy 2.5: float32/float64 maximum and minimum keep y on a tie, float16 keeps x
+        for (DType t : new DType[]{DType.FLOAT32, DType.FLOAT64}) {
+            NDArray pz = NJ.array(t, new double[]{0.0});
+            NDArray nz = NJ.array(t, new double[]{-0.0});
+            assertEquals(-0.0, NJ.maximum(pz, nz).getDouble(0), t.typeName());
+            assertEquals(0.0, NJ.minimum(nz, pz).getDouble(0), t.typeName());
+        }
+        NDArray pz = NJ.array(DType.FLOAT16, new double[]{0.0});
+        NDArray nz = NJ.array(DType.FLOAT16, new double[]{-0.0});
+        assertEquals(0.0, NJ.maximum(pz, nz).getDouble(0));
+        assertEquals(-0.0, NJ.maximum(nz, pz).getDouble(0));
+        assertEquals(-0.0, NJ.minimum(nz, pz).getDouble(0));
+        assertEquals(0.0, NJ.minimum(pz, nz).getDouble(0));
+        assertTrue(Double.isNaN(NJ.maximum(pz, NJ.array(DType.FLOAT16, new double[]{Double.NaN})).getDouble(0)));
+    }
+
+    @Test
     void comparisons() {
         NDArray x = NJ.array(new double[]{1, Double.NaN, 3});
         NDArray y = NJ.array(new double[]{1, Double.NaN, 2});

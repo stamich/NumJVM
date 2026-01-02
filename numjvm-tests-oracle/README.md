@@ -49,7 +49,36 @@ NumPy's `order='K'`. Combinations NumPy supports and NumJVM 0.2 does not (comple
 maximum/minimum, power and trigonometric functions) are listed in `NOT_IN_NUMJVM` and expect an error, tagged
 `NUMJVM_SPECIFIC`.
 
-### Size budget
+## Property cases
+
+`property_examples()` uses [Hypothesis](https://hypothesis.readthedocs.io) to draw a further set of cases (ids
+`prop_*`): binary ufuncs on random dtype pairs and mutually broadcastable shapes of up to three axes, half of them
+through strided views, and reductions (sum, prod, max, min, mean, any, all) over random shapes, axis subsets,
+`keepdims` and transposed views. Values are arbitrary, so NaN, infinities, subnormals, signed zeros and the extremes of
+each dtype appear wherever Hypothesis puts them.
+
+The draws are fixtures like any other: Hypothesis runs derandomized and only in its generation phase, so the examples
+depend on the strategies, NumPy and the Hypothesis version alone. `requirements.txt` pins that version; a different
+one draws different examples and `--check` reports the fixtures as out of date. To widen the search, raise
+`PROPERTY_SEED_EXAMPLES` and regenerate.
+
+## Units in the last place
+
+Most expected results are compared exactly. Where NumPy and NumJVM legitimately round differently (decision D6),
+a case carries `"ulp": n` in its parameters and every element may differ from NumPy's by at most `n` units in the last
+place of its dtype:
+
+| Cases                                                       | Tolerance | Why                                                     |
+|-------------------------------------------------------------|----------:|---------------------------------------------------------|
+| `power`, `exp`, `log`, `sin`, `cos`, `tanh` (real and complex), complex `sqrt` | 4 | `java.lang.Math` against NumPy's SIMD code or glibc |
+| complex `divide`, `absolute`, `sign`                        |         2 | libm `hypot`; Smith's formula contracted to FMAs by some compilers |
+
+The distance is measured on the dtype's own grid: values are mapped to a monotonic integer line (sign and magnitude
+of the bit pattern, so `-0.0` and `0.0` coincide), and two NaNs are at distance 0. Complex values are compared part by
+part. `OracleTest.assertWithinUlps` (Java), `ulp_distance` and `--check` (Python) and `verify_results.py` all use the
+same rule, so a fixture regenerated on another CPU passes `--check` as long as it stays within the tolerance.
+
+## Fixture size budget
 
 Array-valued ufunc results with identical contents share one `expected_*.npy` file, so the four layouts of a matrix
 row cost one file. The generator fails if inputs, expected files and the manifest together exceed `FIXTURE_BUDGET`

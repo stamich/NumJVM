@@ -52,12 +52,15 @@ final class Ops {
                     .on("Math.max(x, y)", INT, LONG)
                     .on("Long.compareUnsigned(x, y) >= 0 ? x : y", ULONG)
                     .on("ScalarMath.maximum(x, y)", FLOAT, DOUBLE)
+                    // NumPy's half loop keeps x when x == y: maximum(0.0, -0.0) is 0.0
+                    .onDType("ScalarMath.maximumHalf(x, y)", "FLOAT16")
                     .build(),
             OpSpec.binary("minimum", "the smaller of x and y; NaN propagates")
                     .on("x & y", BOOL)
                     .on("Math.min(x, y)", INT, LONG)
                     .on("Long.compareUnsigned(x, y) <= 0 ? x : y", ULONG)
                     .on("ScalarMath.minimum(x, y)", FLOAT, DOUBLE)
+                    .onDType("ScalarMath.minimumHalf(x, y)", "FLOAT16")
                     .build(),
             OpSpec.binary("fmax", "the larger of x and y; a NaN operand is ignored")
                     .on("x | y", BOOL)

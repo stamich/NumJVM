@@ -222,13 +222,13 @@ class OracleTest {
 
     /**
      * The operand a matrix case sees (generate_cases.layout_view): C and F inputs as stored,
-     * T the transpose, S every other column; for B the caller broadcasts the 1-D row of a
+     * T the transpose, S every other element of the last axis; for B the caller broadcasts the 1-D row of a
      * unary ufunc to 3x4 (binary ufuncs broadcast it themselves).
      */
     private static NDArray layout(String layout, NDArray a) {
         return switch (layout) {
             case "T" -> a.transpose();
-            case "S" -> a.slice(new Slice.Range(null, null, 1), Slice.step(2));
+            case "S" -> a.slice(Slice.ellipsis(), Slice.step(2));
             default -> a;
         };
     }

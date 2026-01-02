@@ -267,6 +267,30 @@ public final class ScalarMath {
     }
 
     /**
+     * NumPy's {@code maximum} for float16 ({@code npy_half_ge}): NaN propagates; equal operands
+     * give {@code a}, unlike the float32 and float64 loops.
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return the larger operand
+     */
+    public static float maximumHalf(float a, float b) {
+        return a != a || a >= b ? a : b;
+    }
+
+    /**
+     * NumPy's {@code minimum} for float16 ({@code npy_half_le}): NaN propagates; equal operands
+     * give {@code a}.
+     *
+     * @param a first operand
+     * @param b second operand
+     * @return the smaller operand
+     */
+    public static float minimumHalf(float a, float b) {
+        return a != a || a <= b ? a : b;
+    }
+
+    /**
      * {@link #minimum(double, double)} for {@code float}.
      *
      * @param a first operand

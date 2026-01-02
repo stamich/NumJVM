@@ -103,7 +103,7 @@ def layout_view(layout, a):
     if layout == "T":
         return a.T
     if layout == "S":
-        return a[:, ::2]
+        return a[..., ::2]
     if layout == "B" and a.ndim == 1:
         return np.broadcast_to(a, (3, 4))
     return a
@@ -179,6 +179,15 @@ def inputs():
         arr[f"lay_a_S_{dt}"] = np.stack([a, filler], axis=2).reshape(3, 8)
         arr[f"lay_b_S_{dt}"] = np.stack([b, filler], axis=2).reshape(3, 8)
         arr[f"lay_row_{dt}"] = b[1]
+    # Hypothesis-drawn operands (T6.2)
+    examples = property_examples()
+    PROPERTY_CACHE.clear()
+    PROPERTY_CACHE.update(examples)
+    for k, (_, a, b, _) in enumerate(examples["ufunc"]):
+        arr[f"prop_u{k}_a"] = a
+        arr[f"prop_u{k}_b"] = b
+    for k, (_, a, _, _, _) in enumerate(examples["reduction"]):
+        arr[f"prop_r{k}"] = a
     arr["halves_float64"] = np.array([-2.5, -1.5, -0.5, -0.0, 0.5, 1.5, 2.5, 3.5, 1e300, -0.49999999999999994])
     for dt in ["float16", "float32", "float64"]:
         arr[f"round_in_{dt}"] = np.array([1.005, 2.675, 0.125, -0.125, 1234.5, -1250.0, 1.5e-5, 99.95,
@@ -301,6 +310,69 @@ def slice_expr(spec):
         return int(spec)
     parts = [int(p) if p else None for p in spec.split(":")]
     return slice(*parts)
+
+
+PROPERTY_CACHE = {}
+PROPERTY_SEED_EXAMPLES = {"ufunc": 160, "reduction": 120}
+PROPERTY_UFUNCS = ["add", "subtract", "multiply", "maximum", "minimum", "fmax", "fmin", "equal", "not_equal", "less",
+                   "greater_equal", "logical_and", "logical_xor", "floor_divide", "remainder", "bitwise_and",
+                   "bitwise_xor", "divide"]
+PROPERTY_REDUCTIONS = ["sum", "prod", "max", "min", "mean", "any", "all"]
+PROPERTY_DTYPES = NUMPY_REAL + COMPLEX
+
+
+def property_examples():
+    """Operands drawn by Hypothesis (T6.2): random dtypes, broadcast-compatible shapes of up to
+    three axes, strided views and arbitrary values (NaN, infinities, subnormals, extremes).
+
+    Hypothesis runs derandomized, generation phase only, so the examples depend only on the
+    pinned Hypothesis version (requirements.txt), the strategies below and NumPy; --check
+    reproduces them byte for byte.
+    """
+    from hypothesis import HealthCheck, Phase, given, settings
+    from hypothesis import strategies as st
+    from hypothesis.extra import numpy as hnp
+
+    def values(dtype, shape):
+        return hnp.arrays(np.dtype(dtype), shape)
+
+    out = {"ufunc": [], "reduction": []}
+    common = dict(derandomize=True, database=None, phases=[Phase.generate], deadline=None,
+                  suppress_health_check=list(HealthCheck))
+
+    @settings(max_examples=PROPERTY_SEED_EXAMPLES["ufunc"], **common)
+    @given(st.data())
+    def ufuncs(data):
+        name = data.draw(st.sampled_from(PROPERTY_UFUNCS))
+        da = data.draw(st.sampled_from(PROPERTY_DTYPES))
+        db = data.draw(st.sampled_from(PROPERTY_DTYPES))
+        shapes = data.draw(hnp.mutually_broadcastable_shapes(num_shapes=2, min_dims=1, max_dims=3, max_side=4))
+        strided = data.draw(st.booleans())
+        if strided:
+            # store twice the last axis and let NumJVM take every other element
+            stored = [s[:-1] + (2 * s[-1],) for s in shapes.input_shapes]
+        else:
+            stored = list(shapes.input_shapes)
+        a = data.draw(values(da, stored[0]))
+        b = data.draw(values(db, stored[1]))
+        out["ufunc"].append((name, a, b, strided))
+
+    @settings(max_examples=PROPERTY_SEED_EXAMPLES["reduction"], **common)
+    @given(st.data())
+    def reductions(data):
+        name = data.draw(st.sampled_from(PROPERTY_REDUCTIONS))
+        dt = data.draw(st.sampled_from([d for d in PROPERTY_DTYPES if not (d in COMPLEX and name in ("max", "min"))]))
+        shape = data.draw(hnp.array_shapes(min_dims=1, max_dims=3, min_side=1, max_side=6))
+        a = data.draw(values(dt, shape))
+        axis = data.draw(st.none() | st.lists(st.integers(0, len(shape) - 1), unique=True, min_size=1)
+                         .map(sorted))
+        keepdims = data.draw(st.booleans())
+        transpose = data.draw(st.booleans())
+        out["reduction"].append((name, a, axis, keepdims, transpose))
+
+    ufuncs()
+    reductions()
+    return out
 
 
 def cases(arr):
@@ -774,6 +846,26 @@ def cases(arr):
                 tag = NUMPY if dt == "bool" or dt in ("uint64",) else ARRAY_API
                 add(cid, tag, "ufunc", ins, params,
                     lambda *xs, name=name, layout=layout: ufunc(name, *[layout_view(layout, x) for x in xs]))
+
+    # --- Hypothesis-driven property cases (T6.2) --------------------------------------------------
+    for k, (name, a, b, strided) in enumerate(PROPERTY_CACHE["ufunc"]):
+        layout = "S" if strided else "C"
+        tag = promotion_tag(a.dtype.name, b.dtype.name)
+        if "c" in (a.dtype.kind, b.dtype.kind) and (name, "c") in NOT_IN_NUMJVM:
+            add(f"prop_ufunc_{k}_{name}_{a.dtype.name}_{b.dtype.name}", NUMJVM, "ufunc",
+                [f"prop_u{k}_a", f"prop_u{k}_b"], {"ufunc": name, "layout": layout}, None)
+            continue
+        add(f"prop_ufunc_{k}_{name}_{a.dtype.name}_{b.dtype.name}", tag, "ufunc", [f"prop_u{k}_a", f"prop_u{k}_b"],
+            {"ufunc": name, "layout": layout} | ({"ulp": 2} if name == "divide" and a.dtype.kind + b.dtype.kind
+                                                  in ("cc", "cf", "fc", "ci", "ic", "cu", "uc", "cb", "bc")
+                                                  else {}),
+            lambda x, y, name=name, layout=layout: ufunc(name, layout_view(layout, x), layout_view(layout, y)))
+    for k, (name, a, axis, keepdims, transpose) in enumerate(PROPERTY_CACHE["reduction"]):
+        axes = None if axis is None else [a.ndim - 1 - d for d in axis] if transpose else axis
+        add(f"prop_{name}_{k}_{a.dtype.name}", ARRAY_API, "reduction", [f"prop_r{k}"],
+            {"reduction": name, "axis": axes, "keepdims": keepdims, "view": "transpose" if transpose else "none"},
+            lambda x, name=name, axes=axes, keepdims=keepdims, transpose=transpose: np.asarray(reduction(
+                name, x.T if transpose else x, axis=None if axes is None else tuple(axes), keepdims=keepdims)))
     return c
 
 
