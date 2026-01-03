@@ -1,6 +1,7 @@
 package org.numjvm.bench;
 
 import org.numjvm.NJ;
+import org.numjvm.dtype.DType;
 import org.numjvm.ndarray.NDArray;
 import org.numjvm.ndarray.Order;
 import org.numjvm.ndarray.Slice;
@@ -51,6 +52,26 @@ public final class Layouts {
 
     static long cols(long n) {
         return n / rows(n);
+    }
+
+    /**
+     * An array of {@code dtype} in {@code layout} holding {@code 0.5 + 4i/n}: values in
+     * {@code [0.5, 4.5)} that every function benchmarked is defined on (integers get 0 to 4).
+     */
+    static NDArray make(long n, Layout layout, DType dtype) {
+        long r = rows(n);
+        long c = cols(n);
+        return switch (layout) {
+            case C -> values(n, dtype).reshapeView(r, c);
+            case F -> values(n, dtype).reshapeView(r, c).copy(Order.F);
+            case TRANSPOSED -> values(n, dtype).reshapeView(c, r).transpose();
+            case STRIDED -> values(2 * n, dtype).reshapeView(r, 2 * c).slice(Slice.all(), Slice.step(2));
+            case BROADCASTED -> values(c, dtype).broadcastTo(r, c);
+        };
+    }
+
+    private static NDArray values(long n, DType dtype) {
+        return NJ.add(NJ.multiply(NJ.arange(0.0, n, 1.0), 4.0 / n), 0.5).astype(dtype);
     }
 
     static NDArray make(long n, Layout layout) {

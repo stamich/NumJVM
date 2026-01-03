@@ -17,9 +17,10 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 /**
- * Sums over every layout (T4.5): all elements, and along each of the two axes of a
- * {@code rows x cols} float64 array. The M1 exit criterion asks for every layout within 2x of
- * C-contiguous.
+ * Reductions over every layout (T4.5): sums of all elements and along each of the two axes
+ * of a {@code rows x cols} float64 array, max, mean and a product along axis 0. The M1 exit
+ * criterion asks for every layout within 2x of C-contiguous. The NumPy counterparts are in
+ * {@code numpy/bench_numpy.py --suite m1} under the same names.
  */
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -60,5 +61,15 @@ public class ReductionBenchmark {
     @Benchmark
     public NDArray maxAll() {
         return NJ.max(a);
+    }
+
+    @Benchmark
+    public NDArray meanAll() {
+        return NJ.mean(a);
+    }
+
+    @Benchmark
+    public NDArray prodAxis0() {
+        return NJ.prod(a, 0);
     }
 }
