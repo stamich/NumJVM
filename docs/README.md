@@ -9,6 +9,7 @@
 | [Broadcasting](design/broadcasting.md)           | Rules, broadcast views, use in kernels                          |
 | [ADRs](adr/README.md)                            | Allocation model, element access API, iterator shape            |
 | [M0 benchmarks](benchmarks/M0.md)                | JMH results, NumPy comparison, reproducibility                  |
+| [M1 benchmarks](benchmarks/M1.md)                | Ufuncs and reductions by layout and dtype, against NumPy        |
 | [NumPy oracle](../numjvm-tests-oracle/README.md) | Differential tests against NumPy                                |
 | [Code quality](quality/README.md)                | SonarCloud scope, CI analysis, quality gate                     |
 | [M0 summary and retrospective](milestones/M0.md) | Exit criteria, plan vs actual, lessons, M1 inputs               |
