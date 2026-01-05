@@ -6,7 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.numjvm.NJ;
 import org.numjvm.dtype.DType;
-import org.numjvm.kernels.ValidationKernels;
+import org.numjvm.internal.SharedSecrets;
+import org.numjvm.internal.loops.Pairwise;
 import org.numjvm.ndarray.NDArray;
 
 class SumProdTest {
@@ -18,8 +19,8 @@ class SumProdTest {
         double exact = n * 0.1;
         double s = NJ.sum(tenths).getDouble();
         assertTrue(Math.abs(s - exact) / exact < 1e-15, () -> "relative error of " + s);
-        // the M0 validation kernel used the same algorithm
-        assertEquals(ValidationKernels.sumFloat64(tenths), s);
+        // one pairwise sum over the whole run, as NumPy's
+        assertEquals(Pairwise.float64(SharedSecrets.arrayAccess().buffer(tenths).segment(), 0, 8, n), s);
         NDArray f = NJ.full(DType.FLOAT32, 0.1, 1 << 20);
         double fs = f.sum().getDouble();
         assertTrue(Math.abs(fs - (1 << 20) * (double) 0.1f) / fs < 1e-6, () -> "float32 sum " + fs);

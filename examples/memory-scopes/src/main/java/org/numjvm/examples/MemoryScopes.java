@@ -6,7 +6,6 @@ import java.util.concurrent.ExecutionException;
 import org.numjvm.NJ;
 import org.numjvm.dtype.DType;
 import org.numjvm.exception.MemoryException;
-import org.numjvm.kernels.ValidationKernels;
 import org.numjvm.memory.MemoryStats;
 import org.numjvm.memory.NJScope;
 import org.numjvm.ndarray.NDArray;
@@ -28,8 +27,8 @@ public final class MemoryScopes {
         for (int step = 0; step < 100; step++) {
             try (NJScope scope = NJ.scope()) {
                 NDArray a = scope.full(DType.FLOAT64, step, 512, 512);     // 2 MiB, native
-                NDArray b = ValidationKernels.add(a, a.transpose(), scope);
-                total += ValidationKernels.sumFloat64(b);
+                NDArray b = NJ.add(a, a.transpose());                       // allocated in the scope
+                total += NJ.sum(b).getDouble();
             }
         }
         System.out.println("total over 100 scoped steps: " + total);

@@ -5,12 +5,11 @@ import java.nio.file.Path;
 import org.numjvm.NJ;
 import org.numjvm.dtype.DType;
 import org.numjvm.io.Npy;
-import org.numjvm.kernels.ValidationKernels;
 import org.numjvm.ndarray.NDArray;
 import org.numjvm.ndarray.Slice;
 
 /**
- * The tour from the M0 specification: create, view, broadcast, save and load.
+ * A tour of NumJVM: create, view, broadcast, compute, reduce, save and load.
  */
 public final class BasicArrays {
 
@@ -41,8 +40,18 @@ public final class BasicArrays {
         NDArray broadcasted = vector.broadcastTo(2, 3);
         print("vector.broadcastTo(2, 3)", broadcasted);
         System.out.println("strides " + broadcasted.strides() + ", writeable: " + broadcasted.isWriteable());
-        print("matrix + vector", ValidationKernels.add(matrix, vector));
-        System.out.println("sum(matrix) = " + ValidationKernels.sumFloat64(matrix));
+        print("matrix + vector", matrix.add(vector));
+
+        // Element-wise ufuncs and reductions; integers promote as in NumPy
+        print("NJ.sqrt(matrix)", NJ.sqrt(matrix));
+        print("matrix * 2 (int64 stays int64)", NJ.arange(0, 6, 1).reshape(2, 3).multiply(2L));
+        print("matrix > 3", NJ.greater(matrix, 3.0));
+        System.out.println("sum(matrix) = " + NJ.sum(matrix).getDouble() + ", mean = " + NJ.mean(matrix).getDouble());
+        print("sum along axis 0", NJ.sum(matrix, 0));
+        print("max along axis 1, keepdims", NJ.max(matrix, new int[]{1}, true));
+        print("int8 + float32 -> " + NJ.resultType(DType.INT8, DType.FLOAT32).typeName(),
+                NJ.add(NJ.arange(0, 3, 1).astype(DType.INT8), NJ.array(new float[]{0.5f, 0.25f, 0.125f})));
+        print("complex", NJ.exp(NJ.array(new org.numjvm.dtype.Complex[]{org.numjvm.dtype.Complex.of(0, Math.PI)})));
 
         // 6. Save and 7. load in NumPy's .npy format
         Path file = Path.of("matrix.npy");

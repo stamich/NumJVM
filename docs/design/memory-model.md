@@ -28,9 +28,9 @@ NDArray  view   view of view ...
 
 | Created by                                                                         | Size                     | Memory                                     | Released                            |
 |------------------------------------------------------------------------------------|--------------------------|--------------------------------------------|-------------------------------------|
-| `NJ.*` factories, `copy()`, `astype()`, `Npy.read(path)`, kernels                  | ≤ heap threshold (1 MiB) | Java heap, `long[]`-backed                 | by the GC                           |
+| `NJ.*` factories, `copy()`, `astype()`, `Npy.read(path)`, operations on automatic arrays | ≤ heap threshold (1 MiB) | Java heap, `long[]`-backed           | by the GC                           |
 | same                                                                               | > heap threshold         | native, automatic arena, 64-byte aligned   | by the GC (via the arena's cleaner) |
-| `scope.*` factories, `Npy.read(path, scope)`, `ValidationKernels.add(a, b, scope)` | any                      | native, the scope's arena, 64-byte aligned | when the scope closes               |
+| `scope.*` factories, `Npy.read(path, scope)`, operations whose first scoped operand lives in the scope | any | native, the scope's arena, 64-byte aligned | when the scope closes |
 | `Npy.map(path, scope)`                                                             | any                      | memory-mapped file, read-only              | when the scope closes               |
 
 Heap buffers are backed by `long[]` rather than `byte[]`: heap segments are only as aligned as their array elements, and

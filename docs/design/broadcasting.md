@@ -42,6 +42,6 @@ have a zero stride on an axis longer than 1.
 
 ## Use in kernels
 
-Operations broadcast their operands before iterating. `ValidationKernels.add` computes the common shape, broadcasts both
-operands' strides to it, and drives a three-operand
-`StridedIterator`; operands with stride 0 simply re-read the same element. Nothing is materialised.
+Operations broadcast their operands before iterating. A binary ufunc computes the common shape, broadcasts both
+operands' strides to it, and builds a three-operand `IterationPlan` (ADR-004); operands with stride 0 simply re-read the
+same element, and the inner loop has dedicated paths for a stride-0 first or second operand. Nothing is materialised.

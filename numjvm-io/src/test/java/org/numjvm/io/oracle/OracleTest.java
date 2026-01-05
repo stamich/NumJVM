@@ -27,7 +27,6 @@ import org.numjvm.dtype.TypePromotion;
 import org.numjvm.exception.NumJVMException;
 import org.numjvm.internal.SharedSecrets;
 import org.numjvm.io.Npy;
-import org.numjvm.kernels.ValidationKernels;
 import org.numjvm.ndarray.NDArray;
 import org.numjvm.ndarray.Order;
 import org.numjvm.ndarray.Shape;
@@ -161,11 +160,10 @@ class OracleTest {
                 yield src.copy("F".equals(p.get("order")) ? Order.F : Order.C);
             }
             case "astype" -> in.get(0).astype(DType.fromNumpyDescriptor((String) p.get("dtype")));
-            case "add" -> ValidationKernels.add(in.get(0), in.get(1));
-            case "add_transposed" -> ValidationKernels.add(in.get(0).transpose(), in.get(1).transpose());
-            case "sum" -> ValidationKernels.sumFloat64(
-                    "transpose".equals(p.get("view")) ? in.get(0).transpose() : in.get(0));
-            case "sum_generated" -> ValidationKernels.sumFloat64(hashUnit(((Number) p.get("n")).intValue()));
+            case "add" -> NJ.add(in.get(0), in.get(1));
+            case "add_transposed" -> NJ.add(in.get(0).transpose(), in.get(1).transpose());
+            case "sum" -> NJ.sum("transpose".equals(p.get("view")) ? in.get(0).transpose() : in.get(0)).getDouble();
+            case "sum_generated" -> NJ.sum(hashUnit(((Number) p.get("n")).intValue())).getDouble();
             case "repr" -> in.get(0);
             case "ufunc" -> ufunc(in, p);
             case "reduction" -> reduction(in, p);
