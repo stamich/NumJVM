@@ -44,7 +44,7 @@ public final class NJ {
     }
 
     /**
-     * Returns the NumJVM version, for example {@code 0.1.0-alpha}.
+     * Returns the NumJVM version, for example {@code 0.2.0-alpha}.
      *
      * @return the library version, or {@code "unknown"} when the build did not record it
      */
