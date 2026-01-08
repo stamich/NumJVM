@@ -1,0 +1,13 @@
+{
+  "measured_at": "2026-10-30T04:30:27.023294+00:00",
+  "machine": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "cpu": "",
+  "commit": "902117b6ace65bd19a1ba5ada7827168237e08a9",
+  "smoke": true,
+  "java": "Picked up JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080\njava version \"25.0.5\" 2026-10-20 LTS\nJava(TM) SE Runtime Environment (build 25.0.5+9-LTS-148)\nJava HotSpot(TM) 64-Bit Server VM (build 25.0.5+9-LTS-148, mixed mode, sharing)\n",
+  "thread_settings": {
+    "OPENBLAS_NUM_THREADS": null,
+    "OMP_NUM_THREADS": null
+  },
+  "simd_setting": "off"
+}
