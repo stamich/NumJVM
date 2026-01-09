@@ -10,3 +10,5 @@
 
 New ADRs use the next free number and the same headings: Context, Decision, Consequences. An ADR that is replaced is
 marked "Superseded by ADR-NNN" rather than deleted.
+
+- [ADR-006: optional CPU backends and arithmetic contracts](ADR-006-cpu-backends.md)
