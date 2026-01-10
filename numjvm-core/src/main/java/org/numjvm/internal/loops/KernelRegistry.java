@@ -201,7 +201,7 @@ public final class KernelRegistry {
         if (!(loop instanceof UnaryLoop u)) {
             throw noLoop(op, in);
         }
-        return u;
+        return org.numjvm.internal.backend.Accelerators.unary(op, in, u);
     }
 
     /**
@@ -218,7 +218,7 @@ public final class KernelRegistry {
         if (!(loop instanceof BinaryLoop b)) {
             throw noLoop(op, in1, in2);
         }
-        return b;
+        return in1 == in2 ? org.numjvm.internal.backend.Accelerators.binary(op, in1, b) : b;
     }
 
     private static DTypeException noLoop(String op, DType... inputs) {
