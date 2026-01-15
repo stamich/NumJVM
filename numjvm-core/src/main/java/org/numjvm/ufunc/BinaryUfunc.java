@@ -427,6 +427,23 @@ public final class BinaryUfunc extends Ufunc {
      * @return {@code out}
      */
     public NDArray reduce(NDArray x, int[] axes, boolean keepdims, NDArray out) {
+        boolean[] reduced = Reducer.reducedAxes(axes, x.ndim());
+        if (comparison) { throw new DTypeException("ufunc '" + name() + "' cannot reduce"); }
+        DType t = x.dtype();
+        if (widensSmallIntegers && (t.isBool() || t.isInteger() && t.size() < 8)) {
+            t = t.isUnsigned() ? DType.UINT64 : DType.INT64;
+        }
+        Resolution r = resolve(t, t, t);
+        if (r.in() != r.out()) { throw Reducer.notReducible(name()); }
+        Outputs.check(name(), out, Reducer.outputShape(x, reduced, keepdims), r.out());
+        if (out.dtype() == r.out() && out.isCContiguous() && !out.sharesMemoryWith(x)
+                && (x.dtype() == r.in() || widensSmallIntegers)) {
+            BinaryLoop loop = x.dtype() == r.in() ? r.loop()
+                    : org.numjvm.internal.loops.Widening.loop(x.dtype(), name().equals("multiply"));
+            Reducer.reduceAs(name(), loop, x, reduced, keepdims, identity, reorderable,
+                    Operands.allocator(out, x), r.out(), out);
+            return out;
+        }
         return Outputs.store(name(), reduce(x, axes, keepdims), out);
     }
 

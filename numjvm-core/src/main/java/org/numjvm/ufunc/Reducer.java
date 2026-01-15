@@ -68,6 +68,11 @@ final class Reducer {
     /** Reduces source values into a separately resolved accumulator dtype. */
     static NDArray reduceAs(String name, BinaryLoop loop, NDArray x, boolean[] reduced, boolean keepdims,
                             Long identity, boolean reorderable, MemoryAllocator allocator, DType target) {
+        return reduceAs(name, loop, x, reduced, keepdims, identity, reorderable, allocator, target, null);
+    }
+
+    static NDArray reduceAs(String name, BinaryLoop loop, NDArray x, boolean[] reduced, boolean keepdims,
+                            Long identity, boolean reorderable, MemoryAllocator allocator, DType target, NDArray direct) {
         int nd = x.ndim();
         long[] dims = x.shape().dimensions();
         int count = 0;
@@ -87,7 +92,19 @@ final class Reducer {
                     + "be specified");
         }
         DType t = target;
-        NDArray out = SharedSecrets.arrayAccess().allocate(allocator, t, Shape.of(keep), Order.C);
+        NDArray out;
+        if (direct == null) {
+            out = SharedSecrets.arrayAccess().allocate(allocator, t, Shape.of(keep), Order.C);
+        } else {
+            long[] expanded = new long[nd];
+            for (int d = 0, j = 0; d < nd; d++) {
+                if (keepdims) { expanded[d] = direct.strides().stride(d); }
+                else if (!reduced[d]) { expanded[d] = direct.strides().stride(j++); }
+            }
+            var access = SharedSecrets.arrayAccess();
+            out = access.create(access.buffer(direct), t, access.offset(direct), Shape.of(keep),
+                    org.numjvm.ndarray.Strides.of(expanded), true);
+        }
         if (out.size() > 0) {
             long[] outStrides = out.strides().values();
             for (int d = 0; d < nd; d++) {
@@ -128,6 +145,15 @@ final class Reducer {
             }
         }
         return out.reshapeView(dropped);
+    }
+
+    static Shape outputShape(NDArray x, boolean[] reduced, boolean keepdims) {
+        var dims = new java.util.ArrayList<Long>();
+        for (int d = 0; d < reduced.length; d++) {
+            if (!reduced[d]) { dims.add(x.dim(d)); }
+            else if (keepdims) { dims.add(1L); }
+        }
+        return Shape.of(dims.stream().mapToLong(Long::longValue).toArray());
     }
 
     static DTypeException notReducible(String name) {
