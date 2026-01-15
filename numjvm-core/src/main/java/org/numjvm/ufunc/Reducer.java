@@ -62,6 +62,12 @@ final class Reducer {
      */
     static NDArray reduce(String name, BinaryLoop loop, NDArray x, boolean[] reduced, boolean keepdims, Long identity,
                           boolean reorderable, MemoryAllocator allocator) {
+        return reduceAs(name, loop, x, reduced, keepdims, identity, reorderable, allocator, x.dtype());
+    }
+
+    /** Reduces source values into a separately resolved accumulator dtype. */
+    static NDArray reduceAs(String name, BinaryLoop loop, NDArray x, boolean[] reduced, boolean keepdims,
+                            Long identity, boolean reorderable, MemoryAllocator allocator, DType target) {
         int nd = x.ndim();
         long[] dims = x.shape().dimensions();
         int count = 0;
@@ -80,7 +86,7 @@ final class Reducer {
             throw new ValueException("reduction operation '" + name + "' is not reorderable, so at most one axis may "
                     + "be specified");
         }
-        DType t = x.dtype();
+        DType t = target;
         NDArray out = SharedSecrets.arrayAccess().allocate(allocator, t, Shape.of(keep), Order.C);
         if (out.size() > 0) {
             long[] outStrides = out.strides().values();
@@ -89,11 +95,11 @@ final class Reducer {
                     outStrides[d] = 0;
                 }
             }
-            UnaryLoop copy = KernelRegistry.unary("copy", t);
+            UnaryLoop copy = KernelRegistry.unary(x.dtype() == t ? "copy" : "cast:" + t.typeName(), x.dtype());
             if (identity != null) {
                 NDArray id = org.numjvm.NJ.zeros(t);
                 id.setLong(identity);
-                LoopExecutor.unary(copy, id, out);
+                LoopExecutor.unary(KernelRegistry.unary("copy", t), id, out);
                 LoopExecutor.reduce(loop, out, outStrides, x);
             } else {
                 if (emptyReduction) {

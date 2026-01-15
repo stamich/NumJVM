@@ -408,6 +408,10 @@ public final class BinaryUfunc extends Ufunc {
             throw Reducer.notReducible(name());
         }
         MemoryAllocator allocator = Operands.allocator(x);
+        if (widensSmallIntegers && x.dtype() != r.in()) {
+            return Reducer.reduceAs(name(), org.numjvm.internal.loops.Widening.loop(x.dtype(), name().equals("multiply")),
+                    x, reduced, keepdims, identity, reorderable, allocator, r.in());
+        }
         return Reducer.reduce(name(), r.loop(), Operands.cast(x, r.in(), allocator), reduced, keepdims, identity,
                 reorderable, allocator);
     }
