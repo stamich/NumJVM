@@ -219,7 +219,12 @@ public final class Reductions {
             }
         }
         org.numjvm.internal.memory.MemoryAllocator allocator = Operands.allocator(x);
-        NDArray sum = Ufuncs.ADD.reduce(Operands.cast(x, sumType, allocator), axes, keepdims);
+        // Non-contiguous cast materialization can change the logical reduction runs.
+        // Keep that reference path until its virtual traversal can be reproduced exactly.
+        NDArray sum = (t.isBool() || t.isInteger()) && (x.isCContiguous() || x.isFContiguous())
+                ? Reducer.reduceAs("add", org.numjvm.internal.loops.Widening.meanSum(t), x, reduced,
+                        keepdims, 0L, true, allocator, DType.FLOAT64)
+                : Ufuncs.ADD.reduce(Operands.cast(x, sumType, allocator), axes, keepdims);
         // NumPy divides by the count as an intp, which is not a weak scalar: float32 sums are
         // divided in float64 and complex64 sums in complex128, then converted back
         NDArray n = Operands.weakLong(DType.INT64, count);
