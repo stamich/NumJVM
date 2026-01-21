@@ -14,6 +14,8 @@ public final class VectorProvider implements LoopProvider {
         return GeneratedVectorKernels.unary(op, type, scalar);
     }
     @Override public BinaryLoop binary(String op, DType type, BinaryLoop scalar) {
-        return GeneratedVectorKernels.binary(op, type, scalar);
+        BinaryLoop vector = GeneratedVectorKernels.binary(op, type, scalar);
+        return op.equals("add") && (type == DType.FLOAT32 || type == DType.FLOAT64)
+                ? VectorPairwise.wrap(type, scalar, vector) : vector;
     }
 }
