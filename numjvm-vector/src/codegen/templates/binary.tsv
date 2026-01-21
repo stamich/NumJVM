@@ -1,1 +1,9 @@
 # DTYPE operation vector-expression
+FLOAT32 add x.add(y)
+FLOAT32 subtract x.sub(y)
+FLOAT32 multiply x.mul(y)
+FLOAT32 true_divide x.div(y)
+FLOAT64 add x.add(y)
+FLOAT64 subtract x.sub(y)
+FLOAT64 multiply x.mul(y)
+FLOAT64 true_divide x.div(y)
