@@ -1,0 +1,17 @@
+    private static BinaryLoop ${NAME}(BinaryLoop scalar) {
+        return (a, pa, sa, b, pb, sb, out, po, so, n) -> {
+            var species = ${VECTOR}.SPECIES_PREFERRED;
+            long bound = species.loopBound(n);
+            if (sa != ${BYTES} || sb != ${BYTES} || so != ${BYTES} || bound == 0) {
+                scalar.run(a, pa, sa, b, pb, sb, out, po, so, n); return;
+            }
+            for (long i = 0; i < bound; i += species.length()) {
+                var x = ${VECTOR}.fromMemorySegment(species, a, pa + i * ${BYTES}, ByteOrder.nativeOrder());
+                var y = ${VECTOR}.fromMemorySegment(species, b, pb + i * ${BYTES}, ByteOrder.nativeOrder());
+                var z = ${EXPRESSION};
+                z.intoMemorySegment(out, po + i * ${BYTES}, ByteOrder.nativeOrder());
+            }
+            scalar.run(a, pa + bound * sa, sa, b, pb + bound * sb, sb, out, po + bound * so, so, n - bound);
+            Accelerators.executed();
+        };
+    }
