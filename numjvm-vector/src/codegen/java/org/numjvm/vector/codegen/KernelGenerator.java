@@ -20,11 +20,14 @@ public final class KernelGenerator {
                 case "INT32" -> "IntVector"; case "INT64" -> "LongVector";
                 default -> throw new IllegalArgumentException(dtype);
             };
+            String layout = "java.lang.foreign.ValueLayout.JAVA_" + switch (dtype) {
+                case "FLOAT32" -> "FLOAT"; case "FLOAT64" -> "DOUBLE"; case "INT32" -> "INT"; default -> "LONG";
+            } + "_UNALIGNED";
             int bytes = dtype.endsWith("32") ? 4 : 8;
             String name = dtype.toLowerCase() + "_" + operation;
             String template = Files.readString(root.resolve("Binary.java.tmpl"));
             methods.append(template.replace("${NAME}", name).replace("${VECTOR}", vector)
-                    .replace("${BYTES}", "" + bytes).replace("${EXPRESSION}", expression));
+                    .replace("${LAYOUT}", layout).replace("${BYTES}", "" + bytes).replace("${EXPRESSION}", expression));
             cases.add("case \"" + dtype + ":" + operation + "\" -> " + name + "(scalar);\n");
         }
         String source = "package org.numjvm.vector;\nimport java.nio.ByteOrder;\nimport jdk.incubator.vector.*;\n"

@@ -2,12 +2,14 @@
         return (a, pa, sa, b, pb, sb, out, po, so, n) -> {
             var species = ${VECTOR}.SPECIES_PREFERRED;
             long bound = species.loopBound(n);
-            if (sa != ${BYTES} || sb != ${BYTES} || so != ${BYTES} || bound == 0) {
+            if ((sa != ${BYTES} && sa != 0) || (sb != ${BYTES} && sb != 0) || so != ${BYTES} || bound == 0) {
                 scalar.run(a, pa, sa, b, pb, sb, out, po, so, n); return;
             }
             for (long i = 0; i < bound; i += species.length()) {
-                var x = ${VECTOR}.fromMemorySegment(species, a, pa + i * ${BYTES}, ByteOrder.nativeOrder());
-                var y = ${VECTOR}.fromMemorySegment(species, b, pb + i * ${BYTES}, ByteOrder.nativeOrder());
+                var x = sa == 0 ? ${VECTOR}.broadcast(species, a.get(${LAYOUT}, pa))
+                        : ${VECTOR}.fromMemorySegment(species, a, pa + i * ${BYTES}, ByteOrder.nativeOrder());
+                var y = sb == 0 ? ${VECTOR}.broadcast(species, b.get(${LAYOUT}, pb))
+                        : ${VECTOR}.fromMemorySegment(species, b, pb + i * ${BYTES}, ByteOrder.nativeOrder());
                 var z = ${EXPRESSION};
                 z.intoMemorySegment(out, po + i * ${BYTES}, ByteOrder.nativeOrder());
             }
