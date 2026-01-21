@@ -25,7 +25,7 @@ public final class KernelGenerator {
             } + "_UNALIGNED";
             int bytes = dtype.endsWith("32") ? 4 : 8;
             String name = dtype.toLowerCase() + "_" + operation;
-            String template = Files.readString(root.resolve("Binary.java.tmpl"));
+            String template = Files.readString(root.resolve(java.util.Set.of("equal", "not_equal", "less", "less_equal", "greater", "greater_equal").contains(operation) ? "Comparison.java.tmpl" : "Binary.java.tmpl"));
             methods.append(template.replace("${NAME}", name).replace("${VECTOR}", vector)
                     .replace("${LAYOUT}", layout).replace("${BYTES}", "" + bytes).replace("${EXPRESSION}", expression));
             cases.add("case \"" + dtype + ":" + operation + "\" -> " + name + "(scalar);\n");
