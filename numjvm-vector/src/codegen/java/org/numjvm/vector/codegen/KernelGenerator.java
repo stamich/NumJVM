@@ -30,12 +30,28 @@ public final class KernelGenerator {
                     .replace("${LAYOUT}", layout).replace("${BYTES}", "" + bytes).replace("${EXPRESSION}", expression));
             cases.add("case \"" + dtype + ":" + operation + "\" -> " + name + "(scalar);\n");
         }
+        var unaryCases = new ArrayList<String>();
+        for (String dtype : new String[]{"FLOAT32", "FLOAT64"}) {
+            for (String op : new String[]{"negative", "absolute", "square", "sqrt"}) {
+                String expression = switch(op) {
+                    case "negative" -> "x.neg()"; case "absolute" -> "x.abs()";
+                    case "square" -> "x.mul(x)"; default -> "x.lanewise(VectorOperators.SQRT)";
+                };
+                String name = dtype.toLowerCase() + "_" + op;
+                methods.append(Files.readString(root.resolve("Unary.java.tmpl"))
+                    .replace("${NAME}", name).replace("${VECTOR}", dtype.equals("FLOAT32") ? "FloatVector" : "DoubleVector")
+                    .replace("${BYTES}", dtype.equals("FLOAT32") ? "4" : "8").replace("${EXPRESSION}", expression));
+                unaryCases.add("case \"" + dtype + ":" + op + "\" -> " + name + "(scalar);\n");
+            }
+        }
         String source = "package org.numjvm.vector;\nimport java.nio.ByteOrder;\nimport jdk.incubator.vector.*;\n"
                 + "import org.numjvm.dtype.DType;\nimport org.numjvm.internal.backend.Accelerators;\n"
-                + "import org.numjvm.internal.loops.BinaryLoop;\nfinal class GeneratedVectorKernels {\n"
+                + "import org.numjvm.internal.loops.BinaryLoop;\nimport org.numjvm.internal.loops.UnaryLoop;\nfinal class GeneratedVectorKernels {\n"
                 + "private GeneratedVectorKernels() {}\nstatic BinaryLoop binary(String op,DType type,BinaryLoop scalar) {\n"
                 + "return switch(type.name()+\":\"+op) {\n" + String.join("", cases)
-                + "default -> scalar; }; }\n" + methods + "}\n";
+                + "default -> scalar; }; }\n"
+                + "static UnaryLoop unary(String op,DType type,UnaryLoop scalar) { return switch(type.name()+\":\"+op) {\n"
+                + String.join("", unaryCases) + "default -> scalar; }; }\n" + methods + "}\n";
         Path out = Path.of(args[1]).resolve("org/numjvm/vector/GeneratedVectorKernels.java");
         Files.createDirectories(out.getParent()); Files.writeString(out, source);
     }
