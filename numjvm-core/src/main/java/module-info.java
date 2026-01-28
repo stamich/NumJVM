@@ -19,6 +19,6 @@ module org.numjvm.core {
     uses org.numjvm.internal.backend.LoopProvider;
     exports org.numjvm.internal.backend to org.numjvm.vector;
     exports org.numjvm.internal.loops to org.numjvm.vector;
-    exports org.numjvm.internal to org.numjvm.io;
-    exports org.numjvm.internal.memory to org.numjvm.io;
+    exports org.numjvm.internal to org.numjvm.io, org.numjvm.linalg;
+    exports org.numjvm.internal.memory to org.numjvm.io, org.numjvm.linalg;
 }
