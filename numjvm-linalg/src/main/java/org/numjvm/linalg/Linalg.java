@@ -17,7 +17,7 @@ public final class Linalg {
      * @return multiplication result
      */
     public static NDArray matmul(NDArray a, NDArray b) {
-        throw new UnsupportedOperationException("matrix executor is not integrated yet");
+        return execute(a, b, null);
     }
     /**
      * Multiplies into exact-shape, exact-dtype writable output. Alias hazards use
@@ -29,6 +29,20 @@ public final class Linalg {
      * @return out
      */
     public static NDArray matmul(NDArray a, NDArray b, NDArray out) {
-        throw new UnsupportedOperationException("matrix executor is not integrated yet");
+        return execute(a, b, java.util.Objects.requireNonNull(out, "out"));
+    }
+    private static NDArray execute(NDArray a, NDArray b, NDArray out) {
+        MatmulMemory.accessible(a); MatmulMemory.accessible(b);
+        var plan = MatmulPlan.of(a.shape(), b.shape());
+        var type = MatmulMemory.dtype(a, b);
+        if (out != null) { MatmulMemory.output(out, plan, type); }
+        if (out != null && (out.sharesMemoryWith(a) || out.sharesMemoryWith(b))) {
+            throw new IllegalArgumentException("alias copyback is not integrated yet");
+        }
+        NDArray result = out == null ? MatmulMemory.allocate(a, b, plan, type) : out;
+        if (plan.batch().rank() != 0) { throw new UnsupportedOperationException("batch executor is not integrated yet"); }
+        JavaMatmul.reference(MatrixView.input(a, true), MatrixView.input(b, false),
+                MatrixView.output(result, plan), plan.m(), plan.k(), plan.n());
+        return result;
     }
 }
