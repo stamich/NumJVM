@@ -41,7 +41,7 @@ public final class Linalg {
         }
         NDArray result = out == null ? MatmulMemory.allocate(a, b, plan, type) : out;
         if (plan.batch().rank() != 0) { throw new UnsupportedOperationException("batch executor is not integrated yet"); }
-        JavaMatmul.reference(MatrixView.input(a, true), MatrixView.input(b, false),
+        JavaMatmul.blocked(MatrixView.input(a, true), MatrixView.input(b, false),
                 MatrixView.output(result, plan), plan.m(), plan.k(), plan.n());
         return result;
     }

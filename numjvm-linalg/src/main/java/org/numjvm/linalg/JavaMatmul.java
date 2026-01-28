@@ -18,4 +18,42 @@ final class JavaMatmul {
             }
         }
     }
+    static void blocked(MatrixView a, MatrixView b, MatrixView out, long m, long k, long n) {
+        if (out.type() == DType.FLOAT32) { blockedFloat(a,b,out,m,k,n); }
+        else { blockedDouble(a,b,out,m,k,n); }
+    }
+    private static void blockedFloat(MatrixView a,MatrixView b,MatrixView out,long m,long k,long n) {
+        // Keep the contraction index monotonic; blocking changes locality, not arithmetic order.
+        final int block = 32;
+        float[] tile = new float[block * block];
+        for(long ib=0;ib<m;ib+=block) for(long jb=0;jb<n;jb+=block) {
+            int height=(int)Math.min(block,m-ib),width=(int)Math.min(block,n-jb);
+            java.util.Arrays.fill(tile,(float)0);
+            for(long kb=0;kb<k;kb+=block) {
+                long end=Math.min(k,kb+block);
+                for(int i=0;i<height;i++) for(long h=kb;h<end;h++) {
+                    float x=(float)a.get(ib+i,h);
+                    for(int j=0;j<width;j++) tile[i*block+j]+=x*(float)b.get(h,jb+j);
+                }
+            }
+            for(int i=0;i<height;i++) for(int j=0;j<width;j++) out.set(ib+i,jb+j,tile[i*block+j]);
+        }
+    }
+    private static void blockedDouble(MatrixView a,MatrixView b,MatrixView out,long m,long k,long n) {
+        // Keep the contraction index monotonic; blocking changes locality, not arithmetic order.
+        final int block = 32;
+        double[] tile = new double[block * block];
+        for(long ib=0;ib<m;ib+=block) for(long jb=0;jb<n;jb+=block) {
+            int height=(int)Math.min(block,m-ib),width=(int)Math.min(block,n-jb);
+            java.util.Arrays.fill(tile,(double)0);
+            for(long kb=0;kb<k;kb+=block) {
+                long end=Math.min(k,kb+block);
+                for(int i=0;i<height;i++) for(long h=kb;h<end;h++) {
+                    double x=a.get(ib+i,h);
+                    for(int j=0;j<width;j++) tile[i*block+j]+=x*b.get(h,jb+j);
+                }
+            }
+            for(int i=0;i<height;i++) for(int j=0;j<width;j++) out.set(ib+i,jb+j,tile[i*block+j]);
+        }
+    }
 }
