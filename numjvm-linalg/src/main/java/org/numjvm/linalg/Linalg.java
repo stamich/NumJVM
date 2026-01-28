@@ -36,13 +36,19 @@ public final class Linalg {
         var plan = MatmulPlan.of(a.shape(), b.shape());
         var type = MatmulMemory.dtype(a, b);
         if (out != null) { MatmulMemory.output(out, plan, type); }
-        if (out != null && (out.sharesMemoryWith(a) || out.sharesMemoryWith(b))) {
-            throw new IllegalArgumentException("alias copyback is not integrated yet");
-        }
-        NDArray result = out == null ? MatmulMemory.allocate(a, b, plan, type) : out;
+        boolean temporary = out != null && (!out.isCContiguous() || out.sharesMemoryWith(a) || out.sharesMemoryWith(b));
+        NDArray result = out == null || temporary ? MatmulMemory.allocate(a, b, plan, type) : out;
         if (plan.batch().rank() != 0) { throw new UnsupportedOperationException("batch executor is not integrated yet"); }
         JavaMatmul.blocked(MatrixView.input(a, true), MatrixView.input(b, false),
                 MatrixView.output(result, plan), plan.m(), plan.k(), plan.n());
+        if (temporary) {
+            var indices = new org.numjvm.iteration.IndexIterator(plan.output());
+            while (indices.hasNext()) {
+                long[] index = indices.next();
+                out.setDouble(index, result.getDouble(index));
+            }
+            return out;
+        }
         return result;
     }
 }
