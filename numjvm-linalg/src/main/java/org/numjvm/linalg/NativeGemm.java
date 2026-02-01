@@ -8,6 +8,9 @@ import java.lang.invoke.MethodHandle;
 import org.numjvm.dtype.DType;
 
 /** Checked LP64 row-major CBLAS bindings; every address is native and live for the call. */
+// Restricted FFM calls are intentional: ABI/configuration, native sizes and synchronous
+// segment lifetimes are checked before downcalls; consumers explicitly enable native access.
+@SuppressWarnings("restricted")
 final class NativeGemm {
     private NativeGemm() { }
     private static final MethodHandle SGEMM=bind("cblas_sgemm",ValueLayout.JAVA_FLOAT);

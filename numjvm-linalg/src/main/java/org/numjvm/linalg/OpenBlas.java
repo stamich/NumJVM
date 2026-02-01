@@ -11,6 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /** One process-lifetime Linux x86-64 LP64 CBLAS provider. */
+// Restricted FFM calls are intentional: ABI/configuration, native sizes and synchronous
+// segment lifetimes are checked before downcalls; consumers explicitly enable native access.
+@SuppressWarnings("restricted")
 final class OpenBlas {
     static final String MODE=mode();
     private static String unavailable="not configured";

@@ -10,7 +10,9 @@ class BlockedMatmulTest {
             var b=NJ.arange(0,41*39,1).astype(t).reshape(41,39);
             var expected=NJ.zeros(t,37,39);
             JavaMatmul.reference(MatrixView.input(a,true),MatrixView.input(b,false),MatrixView.output(expected,MatmulPlan.of(a.shape(),b.shape())),37,41,39);
-            var actual=Linalg.matmul(a,b);
+            // This verifies the blocked Java arithmetic order, independently of selected backend.
+            var actual=NJ.zeros(t,37,39);
+            JavaMatmul.blocked(MatrixView.input(a,true),MatrixView.input(b,false),MatrixView.output(actual,MatmulPlan.of(a.shape(),b.shape())),37,41,39);
             for(int i=0;i<37;i++)for(int j=0;j<39;j++)assertEquals(expected.getDouble(i,j),actual.getDouble(i,j));
         }
     }
