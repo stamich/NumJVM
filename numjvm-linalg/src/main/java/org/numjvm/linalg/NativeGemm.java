@@ -11,6 +11,7 @@ import org.numjvm.dtype.DType;
 final class NativeGemm {
     private NativeGemm() { }
     private static final MethodHandle SGEMM=bind("cblas_sgemm",ValueLayout.JAVA_FLOAT);
+    private static final MethodHandle DGEMM=bind("cblas_dgemm",ValueLayout.JAVA_DOUBLE);
     private static MethodHandle bind(String name,java.lang.foreign.MemoryLayout scalar) {
         return Linker.nativeLinker().downcallHandle(OpenBlas.INSTANCE.required(name),FunctionDescriptor.ofVoid(
                 ValueLayout.JAVA_INT,ValueLayout.JAVA_INT,ValueLayout.JAVA_INT,
@@ -35,5 +36,13 @@ final class NativeGemm {
         MemorySegment pa=pointer(a,m,k,DType.FLOAT32),pb=pointer(b,k,n,DType.FLOAT32),pc=pointer(out,m,n,DType.FLOAT32);
         try { SGEMM.invokeExact(101,111,111,m,n,k,1.0f,pa,Math.max(1,k),pb,Math.max(1,n),0.0f,pc,Math.max(1,n)); }
         catch(Throwable e) { throw new IllegalStateException("OpenBLAS sgemm failed; output may be partial",e); }
+    }
+    static void dgemm(MatrixView a,MatrixView b,MatrixView out,long rows,long contraction,long columns) {
+        int m=dimension(rows),k=dimension(contraction),n=dimension(columns);
+        if(m==0 || n==0)return;
+        if(k==0) { for(long i=0;i<rows;i++)for(long j=0;j<columns;j++)out.set(i,j,0);return; }
+        MemorySegment pa=pointer(a,m,k,DType.FLOAT64),pb=pointer(b,k,n,DType.FLOAT64),pc=pointer(out,m,n,DType.FLOAT64);
+        try { DGEMM.invokeExact(101,111,111,m,n,k,1.0,pa,Math.max(1,k),pb,Math.max(1,n),0.0,pc,Math.max(1,n)); }
+        catch(Throwable e) { throw new IllegalStateException("OpenBLAS dgemm failed; output may be partial",e); }
     }
 }
