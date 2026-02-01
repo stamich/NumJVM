@@ -31,14 +31,22 @@ public final class Linalg {
     public static NDArray matmul(NDArray a, NDArray b, NDArray out) {
         return execute(a, b, java.util.Objects.requireNonNull(out, "out"));
     }
+    /** @return available native provider/configuration or reason Java is used */
+    public static String nativeProvider() { return OpenBlas.availability(); }
+    /** @return last selection on the calling thread, separate from provider availability */
+    public static String lastBackend() { return BlasDispatch.last(); }
+    /** @return successfully returned native GEMM calls across the JVM */
+    public static long nativeCalls() { return BlasDispatch.calls(); }
+
     private static NDArray execute(NDArray a, NDArray b, NDArray out) {
         MatmulMemory.accessible(a); MatmulMemory.accessible(b);
         var plan = MatmulPlan.of(a.shape(), b.shape());
         var type = MatmulMemory.dtype(a, b);
         if (out != null) { MatmulMemory.output(out, plan, type); }
+        BlasDispatch.initialize();
         boolean temporary = out != null && (!out.isCContiguous() || out.sharesMemoryWith(a) || out.sharesMemoryWith(b));
         NDArray result = out == null || temporary ? MatmulMemory.allocate(a, b, plan, type) : out;
-        BatchExecutor.execute(a, b, result, plan, JavaMatmul::blocked);
+        BatchExecutor.execute(a, b, result, plan, BlasDispatch::run);
         if (temporary) {
             var indices = new org.numjvm.iteration.IndexIterator(plan.output());
             while (indices.hasNext()) {
