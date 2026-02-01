@@ -38,9 +38,7 @@ public final class Linalg {
         if (out != null) { MatmulMemory.output(out, plan, type); }
         boolean temporary = out != null && (!out.isCContiguous() || out.sharesMemoryWith(a) || out.sharesMemoryWith(b));
         NDArray result = out == null || temporary ? MatmulMemory.allocate(a, b, plan, type) : out;
-        if (plan.batch().rank() != 0) { throw new UnsupportedOperationException("batch executor is not integrated yet"); }
-        JavaMatmul.blocked(MatrixView.input(a, true), MatrixView.input(b, false),
-                MatrixView.output(result, plan), plan.m(), plan.k(), plan.n());
+        BatchExecutor.execute(a, b, result, plan, JavaMatmul::blocked);
         if (temporary) {
             var indices = new org.numjvm.iteration.IndexIterator(plan.output());
             while (indices.hasNext()) {
