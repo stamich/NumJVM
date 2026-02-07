@@ -135,7 +135,9 @@ configure(subprojects.filter { it.name in publishedModules }) {
         }
     }
     tasks.named("check") {
-        dependsOn(coverageVerification)
+        // Linalg's coverage gate combines Java and required-native test jobs. A
+        // Java-only build must remain possible without installing a BLAS library.
+        if (project.name != "numjvm-linalg") { dependsOn(coverageVerification) }
     }
 
     tasks.named<Jar>("jar") {
@@ -179,6 +181,18 @@ configure(subprojects.filter { it.name in publishedModules }) {
                 name = "staging"
                 url = uri(rootProject.layout.buildDirectory.dir("staging-repo"))
             }
+        }
+    }
+}
+
+// Optional providers are test runtime dependencies only: production core stays independent.
+configure(subprojects.filter { it.name in setOf("numjvm-core", "numjvm-io") }) {
+    if (providers.gradleProperty("simdEnabled").orElse("false").get().toBoolean()) {
+        dependencies.add("testRuntimeOnly", project(":numjvm-vector"))
+        tasks.withType<Test>().configureEach {
+            jvmArgs("--add-modules", "jdk.incubator.vector")
+            systemProperty("numjvm.test.simdInstalled", "true")
+            systemProperty("numjvm.simd", providers.gradleProperty("simdMode").orElse("auto").get())
         }
     }
 }

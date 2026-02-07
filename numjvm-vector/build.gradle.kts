@@ -6,7 +6,7 @@ tasks.withType<JavaCompile>().configureEach {
     // javac reports use of incubator modules even for a correctly configured module.
     options.compilerArgs.remove("-Werror")
 }
-tasks.withType<Test>().configureEach { jvmArgs("--add-modules", "jdk.incubator.vector") }
+tasks.withType<Test>().configureEach { jvmArgs("--add-modules", "jdk.incubator.vector"); systemProperty("numjvm.simd", "auto") }
 val codegen: SourceSet by sourceSets.creating
 val generateVectorKernels by tasks.registering(JavaExec::class) {
     classpath = codegen.runtimeClasspath

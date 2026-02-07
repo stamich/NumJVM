@@ -13,3 +13,18 @@ tasks.register<Test>("nativeTest") {
     systemProperty("numjvm.linalg", "openblas")
     shouldRunAfter(tasks.test)
 }
+
+// Native lines count toward coverage; they are not excluded to make Java-only coverage pass.
+tasks.named<JacocoReport>("jacocoTestReport") {
+    executionData(fileTree(layout.buildDirectory.dir("jacoco")) { include("*.exec") })
+    mustRunAfter(tasks.named("nativeTest"))
+}
+tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+    dependsOn(tasks.test, tasks.named("nativeTest"))
+    executionData(fileTree(layout.buildDirectory.dir("jacoco")) { include("*.exec") })
+}
+tasks.register("backendCheck") {
+    group = "verification"
+    description = "Validates Java and required OpenBLAS execution with combined 80% line coverage."
+    dependsOn(tasks.named("jacocoTestCoverageVerification"), tasks.named("jacocoTestReport"))
+}
