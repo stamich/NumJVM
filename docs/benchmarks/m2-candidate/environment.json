@@ -1,0 +1,27 @@
+{
+  "measured_at_utc": "2026-10-30T05:03:51.148824+00:00",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "jdk": "Oracle JDK 25.0.5",
+  "blas": "Debian OpenBLAS 0.3.29+ds-3 LP64 pthread",
+  "blas_threads": 1,
+  "machine_status": "shared cloud; no reserved reference hardware",
+  "matrix_protocol": {
+    "forks": 3,
+    "warmup_iterations": 3,
+    "warmup_seconds": 1,
+    "measurement_iterations": 5,
+    "measurement_seconds": 1
+  },
+  "scalar_protocol": "three forks; smoke only (one 100ms warmup and measurement)",
+  "native_accounting": {
+    "calls": 100,
+    "native_allocations": 100,
+    "retained_native_bytes": 0
+  },
+  "matrix_source_sha256": {
+    "numjvm-linalg/src/main/java/org/numjvm/linalg/NativeGemm.java": "4fe31cd1e163fb8d16114ff41eafc449392aa95ec01094fe42290bf9c4ee1641",
+    "numjvm-linalg/src/main/java/org/numjvm/linalg/JavaMatmul.java": "94285941ce7fd1d0b2b2d90db77c5a55622bb2daae3f6591d9eff89196992212",
+    "numjvm-linalg/src/main/java/org/numjvm/linalg/PackedMatrix.java": "dc14ad3bff898fb673129735e1bf2403d8e6ad001633855654be7d8e363332b6",
+    "numjvm-linalg/src/main/java/org/numjvm/linalg/MatrixView.java": "05fcde385a6383f29b404f9b937c146a3f100072a6820fdc6975e7f6f31a3cc3"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "numpy": "2.5.4",
+  "config": "{\n  \"Compilers\": {\n    \"c\": {\n      \"name\": \"gcc\",\n      \"linker\": \"ld.bfd\",\n      \"version\": \"14.2.1\",\n      \"commands\": \"cc\"\n    },\n    \"cython\": {\n      \"name\": \"cython\",\n      \"linker\": \"cython\",\n      \"version\": \"3.3.0\",\n      \"commands\": \"cython\"\n    },\n    \"c++\": {\n      \"name\": \"gcc\",\n      \"linker\": \"ld.bfd\",\n      \"version\": \"14.2.1\",\n      \"commands\": \"c++\"\n    }\n  },\n  \"Machine Information\": {\n    \"host\": {\n      \"cpu\": \"x86_64\",\n      \"family\": \"x86_64\",\n      \"endian\": \"little\",\n      \"system\": \"linux\"\n    },\n    \"build\": {\n      \"cpu\": \"x86_64\",\n      \"family\": \"x86_64\",\n      \"endian\": \"little\",\n      \"system\": \"linux\"\n    }\n  },\n  \"Build Dependencies\": {\n    \"blas\": {\n      \"name\": \"scipy-openblas\",\n      \"found\": true,\n      \"version\": \"0.3.34.106.0\",\n      \"detection method\": \"pkgconfig\",\n      \"include directory\": \"/opt/_internal/cpython-3.13.14/lib/python3.13/site-packages/scipy_openblas64/include\",\n      \"lib directory\": \"/opt/_internal/cpython-3.13.14/lib/python3.13/site-packages/scipy_openblas64/lib\",\n      \"openblas configuration\": \"OpenBLAS 0.3.34.106.0  USE64BITINT DYNAMIC_ARCH NO_AFFINITY SkylakeX MAX_THREADS=64\",\n      \"pc file directory\": \"/project/.openblas\"\n    },\n    \"lapack\": {\n      \"name\": \"scipy-openblas\",\n      \"found\": true,\n      \"version\": \"0.3.34.106.0\",\n      \"detection method\": \"pkgconfig\",\n      \"include directory\": \"/opt/_internal/cpython-3.13.14/lib/python3.13/site-packages/scipy_openblas64/include\",\n      \"lib directory\": \"/opt/_internal/cpython-3.13.14/lib/python3.13/site-packages/scipy_openblas64/lib\",\n      \"openblas configuration\": \"OpenBLAS 0.3.34.106.0  USE64BITINT DYNAMIC_ARCH NO_AFFINITY SkylakeX MAX_THREADS=64\",\n      \"pc file directory\": \"/project/.openblas\"\n    }\n  },\n  \"Python Information\": {\n    \"path\": \"/tmp/build-env-au6kdu2e/bin/python\",\n    \"version\": \"3.13\"\n  },\n  \"SIMD Extensions\": {\n    \"baseline\": [\n      \"X86_V2\"\n    ],\n    \"found\": [\n      \"X86_V3\",\n      \"X86_V4\",\n      \"AVX512_ICL\"\n    ],\n    \"not found\": [\n      \"AVX512_SPR\"\n    ]\n  }\n}\n",
+  "size": 65536,
+  "shape": "32x32x32",
+  "threads": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "samples_ns": {
+    "mixedAdd": [
+      46340.42678405932,
+      47968.20431654676,
+      48819.67935578331,
+      47999.25671785029,
+      49083.63493621197,
+      47383.13216485078,
+      47893.58237547893
+    ],
+    "mixedAddOut": [
+      69743.51777003484,
+      68829.03441156229,
+      70962.46666666666,
+      66731.35156771181,
+      69005.98896551724,
+      69194.73789764868,
+      67104.02079141515
+    ],
+    "wideningSum": [
+      23526.62361797224,
+      25398.45685279188,
+      24497.34876316434,
+      24890.811846689896,
+      23414.007726527747,
+      23951.402298850575,
+      22858.909714285714
+    ],
+    "wideningSumOut": [
+      23427.025064417896,
+      24120.31041968162,
+      22313.36256135654,
+      24001.11687065035,
+      23289.405216581275,
+      23455.541744840524,
+      23288.51490451793
+    ],
+    "integerMean": [
+      36708.710825688075,
+      36138.05708092485,
+      36346.38154069767,
+      36975.7917282127,
+      38219.20366832251,
+      36262.90971718637,
+      37033.59607552758
+    ],
+    "integerMeanOut": [
+      37679.599472494345,
+      38541.83699421965,
+      37812.351984877125,
+      40121.23947051745,
+      38857.9864024864,
+      37337.733482642776,
+      38665.44607653653
+    ],
+    "matmulAllocating": [
+      3114.449032981407,
+      2906.8056274162136,
+      3061.6787954830615,
+      3069.9995395100386,
+      3071.8118875748733,
+      3177.8832146942927,
+      2990.2707972011244
+    ],
+    "matmulPreallocated": [
+      2896.1947638217152,
+      2823.2145055193246,
+      2937.184480277264,
+      3036.7570300637717,
+      2833.3429947584646,
+      3102.8372893977476,
+      2946.498335248534
+    ]
+  }
+}

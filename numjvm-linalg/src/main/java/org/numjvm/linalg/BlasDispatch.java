@@ -16,7 +16,7 @@ final class BlasDispatch {
     }
     static void run(MatrixView a,MatrixView b,MatrixView out,long m,long k,long n) {
         boolean nativeCall=OpenBlas.INSTANCE!=null && lp64(m,k,n) && m>0 && k>0 && n>0
-                && (OpenBlas.MODE.equals("openblas") || (m>=32 && n>=32 && k>=32));
+                && (OpenBlas.MODE.equals("openblas") || autoEligible(a,b,out,m,k,n));
         if(!nativeCall) {
             LAST.set("java: "+(OpenBlas.INSTANCE==null?OpenBlas.availability():!lp64(m,k,n)?"outside LP64 limits":"small or empty contraction"));
             JavaMatmul.blocked(a,b,out,m,k,n);return;
@@ -28,6 +28,14 @@ final class BlasDispatch {
             CALLS.increment(); LAST.set("openblas");
             if(pc.storage!=null)for(long i=0;i<m;i++)for(long j=0;j<n;j++)out.set(i,j,pc.view.get(i,j));
         }
+    }
+    private static boolean autoEligible(MatrixView a,MatrixView b,MatrixView out,long m,long k,long n) {
+        // Three-fork samples show packing erases the benefit at 32^3. Keep that
+        // case in Java; already-native matrices avoid packing and cross over earlier.
+        boolean direct=Operand.compatible(a,k,out.type()) && Operand.compatible(b,n,out.type())
+                && Operand.compatible(out,n,out.type());
+        int minimum=direct?32:128;
+        return m>=minimum && k>=minimum && n>=minimum;
     }
     private static final class Operand implements AutoCloseable {
         final MatrixView view;

@@ -28,3 +28,12 @@ tasks.register("backendCheck") {
     description = "Validates Java and required OpenBLAS execution with combined 80% line coverage."
     dependsOn(tasks.named("jacocoTestCoverageVerification"), tasks.named("jacocoTestReport"))
 }
+tasks.register<Test>("autoTest") {
+    description = "Validates packing-aware automatic dispatch with the configured native provider."
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
+    systemProperty("numjvm.linalg", "auto")
+    shouldRunAfter(tasks.named("nativeTest"))
+}
+tasks.named<JacocoReport>("jacocoTestReport") { mustRunAfter(tasks.named("autoTest")) }
+tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") { dependsOn(tasks.named("autoTest")) }
