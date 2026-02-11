@@ -22,4 +22,13 @@ class IntegerMeanTest {
             for(long i=0;i<actual.size();i++) assertEquals(expected.getDouble(i),actual.getDouble(i));
         }
     }
+    @Test void virtualCastLayoutHandlesCancellationAcrossStridedAxes() {
+        var a=NJ.zeros(DType.INT64,33,257);
+        for(int i=0;i<33;i++)for(int j=0;j<257;j++)a.setLong(i,j,j%3==0?Long.MAX_VALUE:j%3==1?Long.MIN_VALUE:3);
+        a=a.transpose().slice(org.numjvm.ndarray.Slice.step(-2),org.numjvm.ndarray.Slice.all());
+        for(int axis:new int[]{0,1}) {
+            var expected=NJ.mean(a.astype(DType.FLOAT64),axis);var actual=NJ.mean(a,axis);
+            for(long i=0;i<actual.size();i++)assertEquals(Double.doubleToLongBits(expected.getDouble(i)),Double.doubleToLongBits(actual.getDouble(i)));
+        }
+    }
 }

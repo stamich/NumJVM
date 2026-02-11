@@ -13,7 +13,14 @@ import org.numjvm.ndarray.NDArray;
 public final class BufferedBinary {
     private BufferedBinary() { }
 
-    /** Executes a resolved operation without input-sized conversion allocations. */
+    /**
+     * Executes a resolved operation without input-sized conversion allocations.
+     * @param loop resolved binary loop
+     * @param inputType input dtype expected by the loop
+     * @param a first input
+     * @param b second input
+     * @param out validated, alias-safe output of the loop's output dtype
+     */
     public static void run(BinaryLoop loop, DType inputType, NDArray a, NDArray b, NDArray out) {
         if (a.dtype() == inputType && b.dtype() == inputType) {
             LoopExecutor.binary(loop, a, b, out);

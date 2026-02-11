@@ -39,3 +39,9 @@ and at most 16 MiB process-wide including nested/concurrent leases. Exhaustion
 raises MemoryException before acquiring a new lease; no caller blocks holding
 another lease. Arena bytes appear in NJ.memoryStats(). No pooling optimization
 is accepted without full measurements demonstrating a benefit.
+
+The final integration extends integer mean to non-contiguous layouts using virtual
+cast strides and source-address mapping. The virtual traversal retains the exact
+materialized-cast reduction tree while allocating no input-sized converted array.
+Direct reduction outputs now validate source/output lifecycle and thread access
+before writing an identity into user memory.

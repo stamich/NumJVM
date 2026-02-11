@@ -41,19 +41,27 @@ public final class Scratch implements AutoCloseable {
         }
     }
 
-    /** @return a new independent bounded lease; caller must close it */
+    /**
+     * Returns independent bounded lease; caller must close it.
+     * @param bytes requested bytes, from 1 through CHUNK_BYTES
+     * @return independent bounded lease; caller must close it
+     */
     public static Scratch lease(int bytes) {
         if (bytes < 1 || bytes > CHUNK_BYTES) { throw new IllegalArgumentException("invalid scratch size: " + bytes); }
         return new Scratch(bytes);
     }
 
-    /** @return the live memory; it must never escape into a returned array */
+    /** Returns the live memory; it must never escape into a returned array.
+     * @return the live memory; it must never escape into a returned array
+     */
     public MemorySegment memory() {
         if (closed) { throw new IllegalStateException("closed scratch lease"); }
         return memory;
     }
 
-    /** @return total active conversion scratch bytes, across callers */
+    /** Returns total active conversion scratch bytes, across callers.
+     * @return total active conversion scratch bytes, across callers
+     */
     public static long activeBytes() { return ACTIVE.get(); }
 
     /** Releases native bytes deterministically; closing twice is harmless. */

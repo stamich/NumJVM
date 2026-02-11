@@ -73,6 +73,12 @@ final class Reducer {
 
     static NDArray reduceAs(String name, BinaryLoop loop, NDArray x, boolean[] reduced, boolean keepdims,
                             Long identity, boolean reorderable, MemoryAllocator allocator, DType target, NDArray direct) {
+        return reduceAs(name, loop, x, reduced, keepdims, identity, reorderable, allocator, target, direct, null);
+    }
+
+    static NDArray reduceAs(String name, BinaryLoop loop, NDArray x, boolean[] reduced, boolean keepdims,
+                            Long identity, boolean reorderable, MemoryAllocator allocator, DType target,
+                            NDArray direct, long[] virtualStrides) {
         int nd = x.ndim();
         long[] dims = x.shape().dimensions();
         int count = 0;
@@ -117,7 +123,7 @@ final class Reducer {
                 NDArray id = org.numjvm.NJ.zeros(t);
                 id.setLong(identity);
                 LoopExecutor.unary(KernelRegistry.unary("copy", t), id, out);
-                LoopExecutor.reduce(loop, out, outStrides, x);
+                LoopExecutor.reduce(loop, out, outStrides, x, virtualStrides);
             } else {
                 if (emptyReduction) {
                     throw new ValueException("zero-size array to reduction operation " + name

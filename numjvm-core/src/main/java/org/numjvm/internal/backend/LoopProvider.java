@@ -6,12 +6,26 @@ import org.numjvm.internal.loops.UnaryLoop;
 
 /** Trusted internal CPU extension; never exposed as a public array memory accessor. */
 public interface LoopProvider {
-    /** @return stable diagnostic name */
+    /** Returns stable diagnostic name.
+     * @return stable diagnostic name
+     */
     String name();
 
-    /** @return accelerated wrapper, or the original loop when unsupported */
+    /**
+     * Wraps an already-resolved operation; unsupported runs keep the scalar path.
+     * @param operation registry operation name
+     * @param type resolved input dtype
+     * @param scalar original scalar implementation
+     * @return accelerated wrapper, or scalar when unsupported
+     */
     default UnaryLoop unary(String operation, DType type, UnaryLoop scalar) { return scalar; }
 
-    /** @return accelerated wrapper, or the original loop when unsupported */
+    /**
+     * Wraps an already-resolved operation; unsupported runs keep the scalar path.
+     * @param operation registry operation name
+     * @param type resolved input dtype
+     * @param scalar original scalar implementation
+     * @return accelerated wrapper, or scalar when unsupported
+     */
     default BinaryLoop binary(String operation, DType type, BinaryLoop scalar) { return scalar; }
 }

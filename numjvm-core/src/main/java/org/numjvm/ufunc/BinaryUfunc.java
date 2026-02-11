@@ -427,6 +427,7 @@ public final class BinaryUfunc extends Ufunc {
      * @return {@code out}
      */
     public NDArray reduce(NDArray x, int[] axes, boolean keepdims, NDArray out) {
+        Outputs.accessible(x, out);
         boolean[] reduced = Reducer.reducedAxes(axes, x.ndim());
         if (comparison) { throw new DTypeException("ufunc '" + name() + "' cannot reduce"); }
         DType t = x.dtype();

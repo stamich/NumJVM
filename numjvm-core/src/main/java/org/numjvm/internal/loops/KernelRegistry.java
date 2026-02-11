@@ -200,7 +200,12 @@ public final class KernelRegistry {
         return org.numjvm.internal.backend.Accelerators.unary(op, in, scalarUnary(op, in));
     }
 
-    /** @return original unary loop for internal parity checks */
+    /**
+     * Returns original unary loop for internal parity checks.
+     * @param op operation name
+     * @param in input dtype
+     * @return original unary loop for internal parity checks
+     */
     public static UnaryLoop scalarUnary(String op, DType in) {
         Object loop = table(op).loops.get(key(in));
         if (!(loop instanceof UnaryLoop u)) {
@@ -223,7 +228,13 @@ public final class KernelRegistry {
         return in1 == in2 ? org.numjvm.internal.backend.Accelerators.binary(op, in1, scalar) : scalar;
     }
 
-    /** @return original binary loop for internal parity checks */
+    /**
+     * Returns original binary loop for internal parity checks.
+     * @param op operation name
+     * @param in1 first input dtype
+     * @param in2 second input dtype
+     * @return original binary loop for internal parity checks
+     */
     public static BinaryLoop scalarBinary(String op, DType in1, DType in2) {
         Object loop = table(op).loops.get(key(in1, in2));
         if (!(loop instanceof BinaryLoop b)) {

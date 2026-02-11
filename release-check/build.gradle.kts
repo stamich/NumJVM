@@ -7,7 +7,7 @@ val numjvmVersion = providers.gradleProperty("numjvmVersion").orElse("0.2.0-alph
 dependencies {
     implementation(numjvmVersion.map { "io.github.stamich:numjvm-io:$it" })
     implementation(numjvmVersion.map { "io.github.stamich:numjvm-linalg:$it" })
-    if (providers.gradleProperty("withVector").isPresent) {
+    if (providers.gradleProperty("withVector").isPresent || providers.gradleProperty("unresolvedVector").isPresent) {
         runtimeOnly(numjvmVersion.map { "io.github.stamich:numjvm-vector:$it" })
     }
 }

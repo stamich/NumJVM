@@ -7,6 +7,7 @@ import org.numjvm.ndarray.NDArray;
  * vector promotion and leading-dimension broadcasting. Rank-zero inputs and
  * integer/complex dtypes are not supported. Use the optional linalg artifact.
  */
+@org.numjvm.Experimental
 public final class Linalg {
     private Linalg() { }
     /**
@@ -31,11 +32,17 @@ public final class Linalg {
     public static NDArray matmul(NDArray a, NDArray b, NDArray out) {
         return execute(a, b, java.util.Objects.requireNonNull(out, "out"));
     }
-    /** @return available native provider/configuration or reason Java is used */
+    /** Returns available native provider/configuration or reason Java is used.
+     * @return available native provider/configuration or reason Java is used
+     */
     public static String nativeProvider() { return OpenBlas.availability(); }
-    /** @return last selection on the calling thread, separate from provider availability */
+    /** Returns last selection on the calling thread, separate from provider availability.
+     * @return last selection on the calling thread, separate from provider availability
+     */
     public static String lastBackend() { return BlasDispatch.last(); }
-    /** @return successfully returned native GEMM calls across the JVM */
+    /** Returns successfully returned native GEMM calls across the JVM.
+     * @return successfully returned native GEMM calls across the JVM
+     */
     public static long nativeCalls() { return BlasDispatch.calls(); }
 
     private static NDArray execute(NDArray a, NDArray b, NDArray out) {
@@ -46,6 +53,7 @@ public final class Linalg {
         BlasDispatch.initialize();
         boolean temporary = out != null && (!out.isCContiguous() || out.sharesMemoryWith(a) || out.sharesMemoryWith(b));
         NDArray result = out == null || temporary ? MatmulMemory.allocate(a, b, plan, type) : out;
+        if (plan.output().size() == 0) { BlasDispatch.emptyBatch(); }
         BatchExecutor.execute(a, b, result, plan, BlasDispatch::run);
         if (temporary) {
             var indices = new org.numjvm.iteration.IndexIterator(plan.output());

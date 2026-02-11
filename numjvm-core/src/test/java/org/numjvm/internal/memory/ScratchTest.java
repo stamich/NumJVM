@@ -33,4 +33,17 @@ class ScratchTest {
         } finally { leases.forEach(Scratch::close); }
         assertEquals(0, Scratch.activeBytes());
     }
+    @Test void concurrentCallersReleaseIndependentLeases() {
+        var tasks = new java.util.ArrayList<java.util.concurrent.CompletableFuture<Void>>();
+        for (int worker = 0; worker < 8; worker++) {
+            tasks.add(java.util.concurrent.CompletableFuture.runAsync(() -> {
+                for (int i = 0; i < 100; i++) try (Scratch lease = Scratch.lease(128)) {
+                    lease.memory().set(ValueLayout.JAVA_LONG, 0, 42);
+                    assertEquals(42, lease.memory().get(ValueLayout.JAVA_LONG, 0));
+                }
+            }));
+        }
+        tasks.forEach(java.util.concurrent.CompletableFuture::join);
+        assertEquals(0, Scratch.activeBytes());
+    }
 }

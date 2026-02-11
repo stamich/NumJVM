@@ -219,11 +219,8 @@ public final class Reductions {
             }
         }
         org.numjvm.internal.memory.MemoryAllocator allocator = Operands.allocator(x);
-        // Non-contiguous cast materialization can change the logical reduction runs.
-        // Keep that reference path until its virtual traversal can be reproduced exactly.
-        NDArray sum = (t.isBool() || t.isInteger()) && (x.isCContiguous() || x.isFContiguous())
-                ? Reducer.reduceAs("add", org.numjvm.internal.loops.Widening.meanSum(t), x, reduced,
-                        keepdims, 0L, true, allocator, DType.FLOAT64)
+        NDArray sum = t.isBool() || t.isInteger()
+                ? IntegerMean.sum(x, reduced, keepdims, allocator, null)
                 : Ufuncs.ADD.reduce(Operands.cast(x, sumType, allocator), axes, keepdims);
         // NumPy divides by the count as an intp, which is not a weak scalar: float32 sums are
         // divided in float64 and complex64 sums in complex128, then converted back
@@ -374,16 +371,36 @@ public final class Reductions {
      * @return {@code out}
      */
     public static NDArray mean(NDArray x, int[] axes, boolean keepdims, NDArray out) {
+        Outputs.accessible(x, out);
         boolean[] reduced = Reducer.reducedAxes(axes, x.ndim());
         DType target = x.dtype().isBool() || x.dtype().isInteger() ? DType.FLOAT64 : x.dtype();
         Outputs.check("mean", out, Reducer.outputShape(x, reduced, keepdims), target);
-        if ((x.dtype().isBool() || x.dtype().isInteger()) && (x.isCContiguous() || x.isFContiguous())
+        if ((x.dtype().isBool() || x.dtype().isInteger())
                 && out.dtype() == DType.FLOAT64 && out.isCContiguous() && !out.sharesMemoryWith(x)) {
-            Reducer.reduceAs("add", org.numjvm.internal.loops.Widening.meanSum(x.dtype()), x, reduced,
-                    keepdims, 0L, true, Operands.allocator(out, x), DType.FLOAT64, out);
+            IntegerMean.sum(x, reduced, keepdims, Operands.allocator(out, x), out);
             long count = 1;
             for (int d = 0; d < reduced.length; d++) { if (reduced[d]) { count *= x.dim(d); } }
             Ufuncs.DIVIDE.apply(out, Operands.weakLong(DType.INT64, count), out);
+            return out;
+        }
+        if ((x.dtype() == DType.FLOAT32 || x.dtype() == DType.FLOAT64) && out.dtype() == x.dtype()
+                && out.isCContiguous() && !out.sharesMemoryWith(x)) {
+            Ufuncs.ADD.reduce(x, axes, keepdims, out);
+            long count = 1;
+            for (int d = 0; d < reduced.length; d++) { if (reduced[d]) { count *= x.dim(d); } }
+            final double divisor = count;
+            org.numjvm.internal.loops.UnaryLoop divide = (in, pi, si, result, po, so, n) -> {
+                for (long i = 0; i < n; i++) {
+                    if (x.dtype() == DType.FLOAT32) {
+                        float value = in.get(java.lang.foreign.ValueLayout.JAVA_FLOAT_UNALIGNED, pi + i * si);
+                        result.set(java.lang.foreign.ValueLayout.JAVA_FLOAT_UNALIGNED, po + i * so, (float) (value / divisor));
+                    } else {
+                        double value = in.get(java.lang.foreign.ValueLayout.JAVA_DOUBLE_UNALIGNED, pi + i * si);
+                        result.set(java.lang.foreign.ValueLayout.JAVA_DOUBLE_UNALIGNED, po + i * so, value / divisor);
+                    }
+                }
+            };
+            org.numjvm.internal.loops.LoopExecutor.unary(divide, out, out);
             return out;
         }
         return Outputs.store("mean", mean(x, axes, keepdims), out);

@@ -7,7 +7,13 @@ import org.numjvm.dtype.DType;
 /** Mixed input/accumulator kernels for modular 64-bit integer reductions. */
 public final class Widening {
     private Widening() { }
-    /** Reads a source integer as the corresponding 64-bit bit pattern. */
+    /**
+     * Returns corresponding 64-bit bit pattern.
+     * @param memory source storage
+     * @param offset source byte offset
+     * @param type source integer dtype
+     * @return corresponding 64-bit bit pattern
+     */
     public static long read(MemorySegment memory, long offset, DType type) {
         return switch (type) {
             case BOOL -> memory.get(ValueLayout.JAVA_BYTE, offset) == 0 ? 0 : 1;
@@ -21,7 +27,12 @@ public final class Widening {
             default -> throw new IllegalArgumentException("not integer: " + type);
         };
     }
-    /** @return a mixed loop with a 64-bit accumulator and source-typed second input */
+    /**
+     * Returns mixed loop with 64-bit accumulator and source-typed second input.
+     * @param input source dtype
+     * @param product true for multiplication, false for addition
+     * @return mixed loop with 64-bit accumulator and source-typed second input
+     */
     public static BinaryLoop loop(DType input, boolean product) {
         return (a, pa, sa, b, pb, sb, out, po, so, n) -> {
             if (sa == 0 && so == 0) {
@@ -46,7 +57,15 @@ public final class Widening {
         return type == DType.UINT64 ? org.numjvm.dtype.Unsigned.toDouble(value) : (double) value;
     }
 
-    /** @return source-to-double sum with exactly the scalar eight-accumulator tree */
+    /**
+     * Returns source-to-double sum with the scalar eight-accumulator tree.
+     * @param s source storage
+     * @param off first byte offset
+     * @param stride source byte stride
+     * @param n run length
+     * @param type integer source dtype
+     * @return source-to-double sum with the scalar eight-accumulator tree
+     */
     public static double convertedSum(MemorySegment s, long off, long stride, long n, DType type) {
         if (n < 8) {
             double res = 0.0;
@@ -87,7 +106,11 @@ public final class Widening {
         return convertedSum(s, off, stride, n2, type) + convertedSum(s, off + n2 * stride, stride, n - n2, type);
     }
 
-    /** @return a mixed integer-input, float64-accumulator addition loop */
+    /**
+     * Returns mixed integer-input, float64-accumulator addition loop.
+     * @param input integer source dtype
+     * @return mixed integer-input, float64-accumulator addition loop
+     */
     public static BinaryLoop meanSum(DType input) {
         return (a, pa, sa, b, pb, sb, out, po, so, n) -> {
             if (sa == 0 && so == 0) {

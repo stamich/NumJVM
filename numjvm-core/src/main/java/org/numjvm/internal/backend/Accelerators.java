@@ -37,21 +37,39 @@ public final class Accelerators {
     /** Records an actually executed vector run, not merely provider discovery. */
     public static void executed() { EXECUTIONS.increment(); }
 
-    /** @return actual accelerated run count */
+    /** Returns actual accelerated run count.
+     * @return actual accelerated run count
+     */
     public static long executions() { return EXECUTIONS.sum(); }
 
-    /** @return provider discovery outcome or fallback reason */
+    /** Returns provider discovery outcome or fallback reason.
+     * @return provider discovery outcome or fallback reason
+     */
     public static String reason() { return discovery; }
 
-    /** @return provider name, or scalar when no extension is installed */
+    /** Returns provider name, or scalar when no extension is installed.
+     * @return provider name, or scalar when no extension is installed
+     */
     public static String available() { return PROVIDER == null ? "scalar" : PROVIDER.name(); }
 
-    /** @return the selected unary implementation */
+    /**
+     * Returns selected unary implementation.
+     * @param op operation name
+     * @param type resolved input dtype
+     * @param scalar original loop
+     * @return selected unary implementation
+     */
     public static UnaryLoop unary(String op, DType type, UnaryLoop scalar) {
         return PROVIDER == null ? scalar : PROVIDER.unary(op, type, scalar);
     }
 
-    /** @return the selected binary implementation */
+    /**
+     * Returns selected binary implementation.
+     * @param op operation name
+     * @param type resolved input dtype
+     * @param scalar original loop
+     * @return selected binary implementation
+     */
     public static BinaryLoop binary(String op, DType type, BinaryLoop scalar) {
         return PROVIDER == null ? scalar : PROVIDER.binary(op, type, scalar);
     }

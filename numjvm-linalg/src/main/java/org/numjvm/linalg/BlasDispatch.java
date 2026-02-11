@@ -11,6 +11,7 @@ final class BlasDispatch {
     static void initialize() { OpenBlas.availability(); }
     static long calls() { return CALLS.sum(); }
     static String last() { return LAST.get(); }
+    static void emptyBatch() { LAST.set("java: empty batch/output; no arithmetic executed"); }
     static boolean lp64(long m,long k,long n) {
         return m>=0 && k>=0 && n>=0 && m<=Integer.MAX_VALUE && k<=Integer.MAX_VALUE && n<=Integer.MAX_VALUE;
     }

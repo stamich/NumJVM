@@ -11,6 +11,11 @@ public final class NativeAccountingProbe {
         var before=NJ.memoryStats();
         for(int i=0;i<100;i++)Ufuncs.ADD.apply(a,b,out);
         var after=NJ.memoryStats();
+        // Keep trial inputs alive until both snapshots; Cleaner activity must not
+        // turn an input's release into an apparent negative scratch allocation.
+        java.lang.ref.Reference.reachabilityFence(a);
+        java.lang.ref.Reference.reachabilityFence(b);
+        java.lang.ref.Reference.reachabilityFence(out);
         long retained=after.liveNativeBytes()-before.liveNativeBytes();
         System.out.println("{\"calls\":100,\"nativeAllocations\":"+(after.nativeAllocations()-before.nativeAllocations())+",\"retainedNativeBytes\":"+retained+"}");
         if(retained!=0 || out.getDouble(0)!=2)throw new AssertionError("scratch retained memory or wrong output");

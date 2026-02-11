@@ -54,4 +54,15 @@ class MatmulOracleTest {
         var c=Linalg.matmul(a,b).transpose();var d=Linalg.matmul(b.transpose(),a.transpose());
         for(int i=0;i<2;i++)for(int j=0;j<3;j++)assertEquals(c.getDouble(i,j),d.getDouble(i,j));
     }
+    @Test void subnormalAndOverflowCasesHaveExplicitExpectations() {
+        for(DType type:new DType[]{DType.FLOAT32,DType.FLOAT64}) {
+            double tiny=type==DType.FLOAT32?Float.MIN_VALUE:Double.MIN_VALUE;
+            double large=type==DType.FLOAT32?Float.MAX_VALUE:Double.MAX_VALUE;
+            assertEquals(tiny,Linalg.matmul(NJ.array(new double[]{tiny}).astype(type),NJ.ones(type,1)).getDouble());
+            assertEquals(Double.POSITIVE_INFINITY,Linalg.matmul(NJ.array(new double[]{large}).astype(type),NJ.array(new double[]{2}).astype(type)).getDouble());
+        }
+        var broadcast=NJ.ones(1,3).broadcastTo(2,3);
+        var result=Linalg.matmul(broadcast,NJ.ones(3,2));
+        assertEquals(3,result.getDouble(1,1));
+    }
 }

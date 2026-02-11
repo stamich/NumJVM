@@ -109,12 +109,24 @@ public final class LoopExecutor {
      * @param in         the input, of {@code out}'s dtype
      */
     public static void reduce(BinaryLoop loop, NDArray out, long[] outStrides, NDArray in) {
+        reduce(loop, out, outStrides, in, null);
+    }
+
+    /**
+     * Reduces with an optional virtual cast layout; its loop maps virtual offsets to source reads.
+     * @param loop resolved mixed input/accumulator loop
+     * @param out initialized writable output
+     * @param outStrides output strides over the input shape
+     * @param in physical input storage and logical shape
+     * @param virtualStrides cast-layout strides, or null for physical strides
+     */
+    public static void reduce(BinaryLoop loop, NDArray out, long[] outStrides, NDArray in, long[] virtualStrides) {
         requireWriteable(out);
         SharedSecrets.ArrayAccess access = SharedSecrets.arrayAccess();
         long oo = access.offset(out);
         IterationPlan plan = IterationPlan.of(in.shape().dimensions(),
-                new long[][]{outStrides, in.strides().values(), outStrides},
-                new long[]{oo, access.offset(in), oo});
+                new long[][]{outStrides, virtualStrides == null ? in.strides().values() : virtualStrides, outStrides},
+                new long[]{oo, virtualStrides == null ? access.offset(in) : 0, oo});
         if (!plan.hasElements()) {
             return;
         }

@@ -31,4 +31,20 @@ class DirectReductionTest {
         assertThrows(org.numjvm.exception.ShapeException.class,()->Ufuncs.ADD.reduce(a,null,false,out));
         assertEquals(42,out.getDouble(0));
     }
+    @Test void lifecycleValidationDoesNotOverwriteOutputIdentity() {
+        var scope=NJ.scope();var a=scope.ones(DType.FLOAT64,3);scope.close();
+        var out=NJ.array(new double[]{42}).reshape();
+        assertThrows(org.numjvm.exception.MemoryException.class,()->Ufuncs.ADD.reduce(a,null,false,out));
+        assertEquals(42,out.getDouble());
+    }
+    @Test void floatingMeanOutputKeepsTheAllocatingReferenceBits() {
+        for(DType type:new DType[]{DType.FLOAT32,DType.FLOAT64}) {
+            var a=NJ.arange(0,257*3,1).astype(type).reshape(257,3).transpose();
+            for(int axis:new int[]{0,1}) {
+                var expected=NJ.mean(a,axis);var out=NJ.zeros(type,expected.shape().dimensions());
+                Reductions.mean(a,new int[]{axis},false,out);
+                for(long i=0;i<out.size();i++)assertEquals(Double.doubleToLongBits(expected.getDouble(i)),Double.doubleToLongBits(out.getDouble(i)));
+            }
+        }
+    }
 }
