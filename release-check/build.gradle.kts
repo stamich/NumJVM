@@ -6,6 +6,10 @@ val numjvmVersion = providers.gradleProperty("numjvmVersion").orElse("0.2.0-alph
 
 dependencies {
     implementation(numjvmVersion.map { "io.github.stamich:numjvm-io:$it" })
+    implementation(numjvmVersion.map { "io.github.stamich:numjvm-linalg:$it" })
+    if (providers.gradleProperty("withVector").isPresent) {
+        runtimeOnly(numjvmVersion.map { "io.github.stamich:numjvm-vector:$it" })
+    }
 }
 
 java {
@@ -16,4 +20,10 @@ java {
 
 application {
     mainClass = "smoke.ReleaseCheck"
+}
+
+if (providers.gradleProperty("withVector").isPresent) {
+    tasks.named<JavaExec>("run") {
+        jvmArgs("--add-modules", "jdk.incubator.vector", "-Dnumjvm.simd=required", "-DexpectVector=true")
+    }
 }

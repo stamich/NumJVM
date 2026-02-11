@@ -30,6 +30,16 @@ public final class ReleaseCheck {
         if (!NJ.arrayEquals(sum, back) || back.getDouble(1, 2) != 9.0) {
             throw new AssertionError("round trip failed: " + back);
         }
+        NDArray product = org.numjvm.linalg.Linalg.matmul(a, a.transpose());
+        if (product.getDouble(0, 1) != 32.0) { throw new AssertionError("matmul failed"); }
+        if (Boolean.getBoolean("expectVector")) {
+            long before = org.numjvm.BackendInfo.vectorRuns();
+            NDArray vectorInput = NJ.ones(257);
+            NJ.add(vectorInput, vectorInput);
+            if (org.numjvm.BackendInfo.vectorRuns() <= before) { throw new AssertionError("vector provider did not execute"); }
+        } else if (!org.numjvm.BackendInfo.simdProvider().equals("scalar")) {
+            throw new AssertionError("optional vector provider unexpectedly required");
+        }
         System.out.println("NumJVM " + NJ.version() + " artifacts OK");
         System.out.println(back);
     }
