@@ -14,11 +14,10 @@
 Numerical computing for the Java Virtual Machine: N-dimensional arrays with NumPy semantics, built on the Java 25
 Foreign Function & Memory API. No Python, NumPy or native libraries are needed at run time.
 
-> **Status: 0.2.0-alpha (milestone M1).** On top of M0's array model, memory management,
-> views, broadcasting and `.npy` I/O, NumJVM now has an elementwise engine: 41 ufuncs over
-> every dtype, NumPy 2 type promotion, axis reductions, `out=` and in-place operations, and
-> complex arithmetic. Everything is tested against NumPy. The API may still change (see
-> [`ROADMAP.md`](ROADMAP.md)).
+> **Status: 0.3.0-alpha review candidate (M2).** Optional SIMD and portable real
+> matrix multiplication extend the existing array and elementwise API. Release
+> performance and remote quality evidence remain open; see [M2 status](docs/milestones/M2-status.md).
+> The API remains experimental.
 
 ## Quick start
 
@@ -70,7 +69,7 @@ Runnable versions: [`examples/basic-arrays`](examples/basic-arrays) and
 ./gradlew :examples:memory-scopes:run
 ```
 
-## What 0.2 provides
+## Array and elementwise API
 
 | Area           | Contents                                                                                                         |
 |----------------|------------------------------------------------------------------------------------------------------------------|
@@ -94,6 +93,8 @@ Runnable versions: [`examples/basic-arrays`](examples/basic-arrays) and
 |-----------------------|---------------------------------|---------------------------------------------------------|
 | `numjvm-core`         | `io.github.stamich:numjvm-core` | dtypes, memory, NDArray, views, ufuncs, reductions      |
 | `numjvm-io`           | `io.github.stamich:numjvm-io`   | NumPy `.npy` I/O                                        |
+| `numjvm-vector` | `io.github.stamich:numjvm-vector` | optional SIMD kernels |
+| `numjvm-linalg` | `io.github.stamich:numjvm-linalg` | Java matmul, optional OpenBLAS |
 | `numjvm-bench`        | not published                   | JMH benchmarks                                          |
 | `numjvm-tests-oracle` | not published                   | NumPy differential-test fixtures                        |
 

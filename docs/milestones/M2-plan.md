@@ -1,10 +1,11 @@
 # NumJVM 0.3.0-alpha — M2 implementation proposal
 
-**Accelerated CPU execution and portable matrix multiplication**  
-Proposal date: 29 October 2026  
-Status: proposed implementation plan; estimates and API names are provisional  
-Repository: [stamich/NumJVM](https://github.com/stamich/NumJVM)  
-Analysis baseline: [`2aeff90a1d68f405ed6b635c7de929015ba54af9`](https://github.com/stamich/NumJVM/commit/2aeff90a1d68f405ed6b635c7de929015ba54af9)
+**Accelerated CPU execution and portable matrix multiplication**
+
+- Proposal date: 29 October 2026
+- Status: proposed implementation plan; estimates and API names are provisional
+- Repository: [stamich/NumJVM](https://github.com/stamich/NumJVM)
+- Analysis baseline: [`2aeff90a1d68f405ed6b635c7de929015ba54af9`](https://github.com/stamich/NumJVM/commit/2aeff90a1d68f405ed6b635c7de929015ba54af9)
 
 ## 1. Release objective
 

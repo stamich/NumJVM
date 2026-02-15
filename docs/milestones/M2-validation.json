@@ -1,0 +1,66 @@
+{
+  "validated_at": "2026-10-30T05:17:55.761006+00:00",
+  "version": "0.3.0-alpha",
+  "tests": {
+    "numjvm-core/test": {
+      "tests": 1260,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "numjvm-io/test": {
+      "tests": 5063,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "numjvm-vector/test": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "numjvm-linalg/test": {
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 5
+    },
+    "numjvm-linalg/nativeTest": {
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1
+    },
+    "numjvm-linalg/autoTest": {
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1
+    }
+  },
+  "line_coverage": {
+    "numjvm-core": {
+      "covered": 15207,
+      "total": 15450,
+      "percent": 98.43
+    },
+    "numjvm-io": {
+      "covered": 287,
+      "total": 304,
+      "percent": 94.41
+    },
+    "numjvm-vector": {
+      "covered": 1062,
+      "total": 1092,
+      "percent": 97.25
+    },
+    "numjvm-linalg": {
+      "covered": 215,
+      "total": 229,
+      "percent": 93.89
+    }
+  },
+  "external_gates": "reference performance campaign and remote CI/Sonar not verified",
+  "java_and_build_source_sha256": "02d25576ff0a5932ac8295c47f4d3d2f66911eaa714faeaf96f2f75fc3b88815"
+}
