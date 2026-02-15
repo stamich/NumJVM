@@ -68,3 +68,8 @@ Validate scalar improvements, optional SIMD and multiplication independently.
 Keep tests and consumer smoke checks near each feature, followed by release-wide
 verification. Thread pools, LAPACK and complex matmul are deferred and must be
 replanned before M3; they are not implied by completion of this milestone.
+
+The implementation details and supported acceleration matrix are recorded in
+[CPU execution](../design/cpu-backends.md). Automatic GEMM dispatch includes packing
+cost: current provisional minimum dimensions are 32 for native-compatible operands
+and output, 128 otherwise; see the retained three-fork experiment before tuning.
