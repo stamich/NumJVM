@@ -49,8 +49,16 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
+      # numjvm-linalg's native lines (OpenBLAS calls, packing) only run with a BLAS library
+      # installed; without it they count as uncovered and the new-code gate fails.
+      - name: Install OpenBLAS
+        run: sudo apt-get update && sudo apt-get install -y libopenblas0-pthread
+
       - name: Build, test and coverage
-        run: ./gradlew build --stacktrace
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: ./gradlew build :numjvm-linalg:backendCheck --stacktrace
 
       - name: Analyse
         if: env.SONAR_TOKEN != ''
