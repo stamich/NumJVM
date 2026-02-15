@@ -19,5 +19,7 @@ include(
     "numjvm-io",
     "numjvm-bench",
     "examples:basic-arrays",
+    "examples:accelerated-arrays",
+    "examples:matmul",
     "examples:memory-scopes",
 )

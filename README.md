@@ -97,6 +97,33 @@ Runnable versions: [`examples/basic-arrays`](examples/basic-arrays) and
 | `numjvm-bench`        | not published                   | JMH benchmarks                                          |
 | `numjvm-tests-oracle` | not published                   | NumPy differential-test fixtures                        |
 
+## Optional CPU acceleration and matmul
+
+M2 adds optional `numjvm-vector` and `numjvm-linalg` artifacts. Core remains usable
+without Vector API resolution or a native library. Matrix multiplication is real
+float32/64, with vector promotion, broadcast batches, arbitrary input strides and
+an exact-shape/dtype `out` variant:
+
+```java
+import org.numjvm.linalg.Linalg;
+
+NDArray a = NJ.array(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+NDArray gram = Linalg.matmul(a, a.transpose()); // [[14, 32], [32, 77]]
+```
+
+```sh
+./gradlew :examples:accelerated-arrays:run
+./gradlew :examples:accelerated-arrays:run -PwithoutVector
+./gradlew :examples:matmul:run
+```
+
+The optional SIMD provider accelerates selected contiguous and broadcast operations,
+with scalar fallback elsewhere. Java matmul needs no native dependencies; optional
+OpenBLAS supports Linux x86-64 LP64 CBLAS. See the [setup and backend guide](docs/development-cpu.md)
+for flags, forced modes, ownership, diagnostics, native validation and consumer examples.
+The [M2 status](docs/milestones/M2-status.md) distinguishes implemented behavior from
+outstanding release performance evidence.
+
 ## Building
 
 Requires JDK 25. The Gradle wrapper downloads Gradle, and the build can provision a JDK 25 toolchain if none is
