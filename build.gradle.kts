@@ -112,7 +112,7 @@ configure(subprojects.filter { it.name in sonarSkipped }) {
 // staged in build/staging-repo (./gradlew publish) and can be installed locally with
 // ./gradlew publishToMavenLocal; release-check/ consumes them like a user project would.
 
-val publishedModules = setOf("numjvm-core", "numjvm-io", "numjvm-vector", "numjvm-linalg")
+val publishedModules = setOf("numjvm-core", "numjvm-io", "numjvm-vector", "numjvm-linalg", "numjvm-jit")
 
 configure(subprojects.filter { it.name in publishedModules }) {
     apply(plugin = "maven-publish")

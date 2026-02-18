@@ -14,6 +14,7 @@ dependencyResolutionManagement {
 
 include(
     "numjvm-core",
+    "numjvm-jit",
     "numjvm-linalg",
     "numjvm-vector",
     "numjvm-io",
