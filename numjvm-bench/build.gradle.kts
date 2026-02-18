@@ -13,6 +13,7 @@ val jmh: SourceSet by sourceSets.creating
 
 dependencies {
     "jmhImplementation"(project(":numjvm-core"))
+    "jmhImplementation"(project(":numjvm-jit"))
     "jmhImplementation"(project(":numjvm-io"))
     "jmhImplementation"(project(":numjvm-linalg"))
     if (providers.gradleProperty("simdBench").isPresent) { "jmhRuntimeOnly"(project(":numjvm-vector")) }
