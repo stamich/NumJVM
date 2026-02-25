@@ -12,12 +12,21 @@ import org.numjvm.ndarray.Shape;
 import org.numjvm.ndarray.Order;
 import org.numjvm.iteration.IterationPlan;
 import org.numjvm.shape.Broadcasting;
+import org.numjvm.internal.loops.KernelRegistry;
+import org.numjvm.internal.loops.LoopExecutor;
 import org.numjvm.ufunc.BinaryUfunc;
 import org.numjvm.ufunc.UnaryUfunc;
 
 /** Semantic queries shared with the optional expression compiler. */
 public final class ExpressionSemantics {
     private ExpressionSemantics() { }
+
+    /** Copies values into a validated destination, preserving existing cast semantics. */
+    public static NDArray copyInto(NDArray source, NDArray destination) {
+        String name = source.dtype() == destination.dtype() ? "copy" : "cast:" + destination.dtype().typeName();
+        LoopExecutor.unary(KernelRegistry.unary(name, source.dtype()), source, destination);
+        return destination;
+    }
 
     /** Resolves a unary result using the same ufunc as eager execution. */
     public static DType unaryResult(UnaryUfunc operation, DType input) {

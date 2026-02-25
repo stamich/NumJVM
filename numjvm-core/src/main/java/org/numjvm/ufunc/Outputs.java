@@ -72,12 +72,7 @@ final class Outputs {
      * Copies {@code src} into {@code out}, converting the dtype if needed.
      */
     static NDArray copyInto(NDArray src, NDArray out) {
-        if (src.dtype() == out.dtype()) {
-            LoopExecutor.unary(KernelRegistry.unary("copy", src.dtype()), src, out);
-        } else {
-            LoopExecutor.unary(KernelRegistry.unary("cast:" + out.dtype().typeName(), src.dtype()), src, out);
-        }
-        return out;
+        return ExpressionSemantics.copyInto(src, out);
     }
 
     /**

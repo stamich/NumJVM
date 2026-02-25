@@ -12,6 +12,7 @@ import org.numjvm.iteration.IterationPlan;
 import org.numjvm.ndarray.NDArray;
 import org.numjvm.ndarray.Order;
 import org.numjvm.ndarray.Shape;
+import org.numjvm.shape.Broadcasting;
 
 /** Validated, invocation-local metadata. Never stored in the compiled cache. */
 final class InvocationPlan {
@@ -36,6 +37,25 @@ final class InvocationPlan {
 
     Shape shape() { return layout.shape(); }
     DType dtype() { return dtype; }
+
+    /** A non-identical overlapping leaf needs a full result before copyback. */
+    boolean needsTemporary(NDArray output) {
+        var access = SharedSecrets.arrayAccess();
+        for (NDArray input : inputs) {
+            if (!input.sharesMemoryWith(output)) continue;
+            if (input.dtype() != output.dtype()
+                    || access.buffer(input).segment() != access.buffer(output).segment()
+                    || access.offset(input) != access.offset(output)
+                    || !Arrays.equals(Broadcasting.broadcastStrides(input.shape(), input.strides(), shape()).values(),
+                                      output.strides().values())) return true;
+        }
+        return false;
+    }
+
+    NDArray copyBack(NDArray temporary, NDArray output) {
+        checkOutput(output);
+        return ExpressionSemantics.copyInto(temporary, output);
+    }
 
     void checkOutput(NDArray output) {
         ExpressionSemantics.accessible(output);
