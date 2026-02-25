@@ -27,8 +27,18 @@ public final class Jit {
                 inputs.closed = true;
             }
             if (result == null || result.owner != inputs) throw new IllegalArgumentException("foreign or null expression");
-            // A single input node can only use one input slot until operations are introduced.
-            if (arity != 1 || result.slot != 0) throw new IllegalArgumentException("unused input slot");
+            boolean[] used = new boolean[arity];
+            var pending = new java.util.ArrayDeque<Expr>();
+            var seen = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Expr, Boolean>());
+            pending.push(result);
+            while (!pending.isEmpty()) {
+                Expr node = pending.pop();
+                if (!seen.add(node)) continue;
+                if (node.op == Expr.Op.INPUT) used[node.slot] = true;
+                if (node.left != null) pending.push(node.left);
+                if (node.right != null) pending.push(node.right);
+            }
+            for (boolean slotUsed : used) if (!slotUsed) throw new IllegalArgumentException("unused input slot");
             return new Expression(arity, result);
         }
 
@@ -39,13 +49,22 @@ public final class Jit {
     public static final class Inputs {
         private final int arity;
         private boolean closed;
+        private int nodes;
         private Inputs(int arity) { this.arity = arity; }
 
+        void checkOpen() { if (closed) throw new IllegalStateException("trace has ended"); }
+        Expr node(Expr.Op op, int slot, long bits, Expr left, Expr right) {
+            checkOpen();
+            if (++nodes > 128) throw new IllegalArgumentException("expression exceeds node limit");
+            return new Expr(this, op, slot, bits, left, right);
+        }
+        /** Creates a weak double constant. */
+        public Expr constant(double value) { return node(Expr.Op.CONSTANT, -1, Double.doubleToRawLongBits(value), null, null); }
         /** Returns an input slot. */
         public Expr input(int slot) {
-            if (closed) throw new IllegalStateException("trace has ended");
+            checkOpen();
             if (slot < 0 || slot >= arity) throw new IllegalArgumentException("invalid input slot: " + slot);
-            return new Expr(this, slot);
+            return node(Expr.Op.INPUT, slot, 0, null, null);
         }
     }
 }
