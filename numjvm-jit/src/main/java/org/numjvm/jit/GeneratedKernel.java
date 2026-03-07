@@ -4,4 +4,5 @@ package org.numjvm.jit;
 interface GeneratedKernel {
     int version();
     double evaluate(double[] inputs);
+    void run(java.lang.foreign.MemorySegment[] segments, long[] offsets, long[] strides, long size);
 }

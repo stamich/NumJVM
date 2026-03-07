@@ -32,7 +32,11 @@ final class KernelLoader {
                         code -> code.iconst_1().ireturn())
                 .withMethodBody("evaluate", MethodTypeDesc.of(ConstantDescs.CD_double,
                                 ConstantDescs.CD_double.arrayType()), ClassFile.ACC_PUBLIC,
-                        code -> emit(code, nodes, types)));
+                        code -> emit(code, nodes, types))
+                .withMethodBody("run", MethodTypeDesc.of(ConstantDescs.CD_void,
+                                ClassDesc.of("java.lang.foreign.MemorySegment").arrayType(),
+                                ConstantDescs.CD_long.arrayType(), ConstantDescs.CD_long.arrayType(), ConstantDescs.CD_long),
+                        ClassFile.ACC_PUBLIC, code -> emitRun(code, marker, inputTypes, types.resolve(expression.root()))));
         if (bytes.length > MAX_CLASS_BYTES) throw new IllegalArgumentException("generated class too large");
         try {
             var lookup = MethodHandles.lookup().defineHiddenClass(bytes, true);
@@ -42,6 +46,32 @@ final class KernelLoader {
         } catch (Throwable e) {
             throw new IllegalStateException("failed to define generated kernel", e);
         }
+    }
+
+    private static void emitRun(CodeBuilder code, ClassDesc kernel, DType[] inputs, DType result) {
+        ClassDesc memory = ClassDesc.of("java.lang.foreign.MemorySegment");
+        ClassDesc access = ClassDesc.of("org.numjvm.jit.GeneratedAccess");
+        var read = MethodTypeDesc.of(ConstantDescs.CD_double, memory, ConstantDescs.CD_long);
+        var write = MethodTypeDesc.of(ConstantDescs.CD_void, memory, ConstantDescs.CD_long, ConstantDescs.CD_double);
+        var loop = code.newLabel();
+        var done = code.newLabel();
+        code.loadConstant(inputs.length).newarray(java.lang.classfile.TypeKind.DOUBLE).astore(8);
+        code.lconst_0().lstore(6).labelBinding(loop).lload(6).lload(4).lcmp().ifge(done);
+        for (int i = 0; i < inputs.length; i++) {
+            code.aload(8).loadConstant(i).aload(1).loadConstant(i).aaload();
+            offset(code, i);
+            code.invokestatic(access, inputs[i] == DType.FLOAT32 ? "readFloat" : "readDouble", read).dastore();
+        }
+        code.aload(1).loadConstant(inputs.length).aaload();
+        offset(code, inputs.length);
+        code.aload(0).aload(8).invokeinterface(kernel, "evaluate",
+                MethodTypeDesc.of(ConstantDescs.CD_double, ConstantDescs.CD_double.arrayType()));
+        code.invokestatic(access, result == DType.FLOAT32 ? "writeFloat" : "writeDouble", write);
+        code.lload(6).lconst_1().ladd().lstore(6).goto_(loop).labelBinding(done).return_();
+    }
+
+    private static void offset(CodeBuilder code, int slot) {
+        code.aload(2).loadConstant(slot).laload().lload(6).aload(3).loadConstant(slot).laload().lmul().ladd();
     }
 
     private static void emit(CodeBuilder code, List<Expr> nodes, TypeResolver types) {
