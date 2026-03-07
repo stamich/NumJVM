@@ -47,9 +47,9 @@ public final class Expression {
     }
 
     private void execute(NDArray[] inputs, NDArray output) {
-        boolean eligible = GeneratedExecutor.eligible(inputs, output);
+        boolean eligible = KernelLoader.supports(this) && GeneratedExecutor.eligible(inputs, output);
         if (context.mode() == Jit.Mode.REQUIRED && !eligible)
-            throw new IllegalArgumentException("generated execution does not support this layout");
+            throw new IllegalArgumentException("generated execution does not support this layout or graph size");
         if (output.shape().size() == 0) return;
         if (context.mode() != Jit.Mode.BLOCK && eligible) {
             var types = new org.numjvm.dtype.DType[inputs.length];

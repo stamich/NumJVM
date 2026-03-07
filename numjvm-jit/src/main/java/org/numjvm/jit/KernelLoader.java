@@ -14,12 +14,13 @@ import org.numjvm.dtype.DType;
 /** Emits a hidden expression class in the same module as its kernel interface. */
 final class KernelLoader {
     private static final int MAX_CLASS_BYTES = 65536;
+    private static final int MAX_GENERATED_NODES = 64;
     private KernelLoader() { }
 
     static GeneratedKernel create(Expression expression, DType[] inputTypes) {
         var types = new TypeResolver(inputTypes);
         List<Expr> nodes = new GraphPlan(expression.root()).nodes();
-        if (nodes.size() > 128) throw new IllegalArgumentException("expression exceeds code generation limit");
+        if (nodes.size() > MAX_GENERATED_NODES) throw new IllegalArgumentException("expression exceeds code generation limit");
         ClassDesc name = ClassDesc.of("org.numjvm.jit.GeneratedExpression");
         ClassDesc marker = ClassDesc.of("org.numjvm.jit.GeneratedKernel");
         byte[] bytes = ClassFile.of().build(name, builder -> builder
@@ -46,6 +47,10 @@ final class KernelLoader {
         } catch (Throwable e) {
             throw new IllegalStateException("failed to define generated kernel", e);
         }
+    }
+
+    static boolean supports(Expression expression) {
+        return new GraphPlan(expression.root()).nodes().size() <= MAX_GENERATED_NODES;
     }
 
     private static void emitRun(CodeBuilder code, ClassDesc kernel, DType[] inputs, DType result) {

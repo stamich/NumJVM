@@ -8,6 +8,24 @@ import org.numjvm.ndarray.Slice;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ExpressionEvaluationTest {
+    @Test void largeGraphsUseBlocksOrFailBeforeWritingWhenRequired() {
+        for (Jit.Mode mode : new Jit.Mode[]{Jit.Mode.AUTO, Jit.Mode.REQUIRED}) {
+            try (var context = Jit.context(mode)) {
+                var graph = context.trace(1, i -> {
+                    Expr expression = i.input(0);
+                    for (int n = 0; n < 70; n++) expression = expression.negative();
+                    return expression;
+                });
+                NDArray output = NJ.ones(DType.FLOAT64, 5);
+                if (mode == Jit.Mode.REQUIRED) {
+                    assertThrows(IllegalArgumentException.class, () -> graph.evalInto(output, output));
+                } else {
+                    graph.evalInto(output, output);
+                }
+                assertEquals(1.0, output.getDouble(0));
+            }
+        }
+    }
     @Test void runsAllModesAndProtectsShiftedOutput() {
         for (Jit.Mode mode : Jit.Mode.values()) {
             try (var context = Jit.context(mode)) {
