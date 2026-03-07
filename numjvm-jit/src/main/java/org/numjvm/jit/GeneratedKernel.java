@@ -1,6 +1,7 @@
 package org.numjvm.jit;
 
-/** Internal marker implemented by hidden generated kernel classes. */
+/** Internal interface implemented by hidden generated expression classes. */
 interface GeneratedKernel {
     int version();
+    double evaluate(double[] inputs);
 }
