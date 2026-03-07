@@ -8,16 +8,25 @@ public final class Jit {
     private Jit() { }
 
     /** Creates a context for expression plans. */
-    public static Context context() { return new Context(); }
+    public static Context context() { return new Context(Mode.AUTO); }
+
+    /** Execution strategy for expression plans. */
+    public enum Mode { AUTO, BLOCK, REQUIRED }
+
+    /** Creates a context using the requested execution strategy. */
+    public static Context context(Mode mode) { return new Context(Objects.requireNonNull(mode, "mode")); }
 
     /** Owns expression tracing and its runtime resources. */
     public static final class Context implements AutoCloseable {
         private boolean closed;
-        private Context() { }
+        private final Mode mode;
+        private Context(Mode mode) { this.mode = mode; }
+        void checkOpen() { if (closed) throw new IllegalStateException("context is closed"); }
+        Mode mode() { return mode; }
 
         /** Runs the builder once and validates its symbolic output. */
         public Expression trace(int arity, Function<Inputs, Expr> builder) {
-            if (closed) throw new IllegalStateException("context is closed");
+            checkOpen();
             if (arity < 1 || arity > 16) throw new IllegalArgumentException("arity must be between 1 and 16");
             Inputs inputs = new Inputs(arity);
             Expr result;
@@ -39,7 +48,7 @@ public final class Jit {
                 if (node.right != null) pending.push(node.right);
             }
             for (boolean slotUsed : used) if (!slotUsed) throw new IllegalArgumentException("unused input slot");
-            return new Expression(arity, result);
+            return new Expression(this, arity, result);
         }
 
         @Override public void close() { closed = true; }

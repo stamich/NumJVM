@@ -66,12 +66,16 @@ final class InvocationPlan {
     }
 
     NDArray allocate() {
+        return allocateWith(ExpressionSemantics.allocator(inputs));
+    }
+
+    NDArray allocateWith(org.numjvm.internal.memory.MemoryAllocator allocator) {
         long[] dims = shape().dimensions();
         int[] order = IterationPlan.memoryOrder(dims, new long[][]{layout.strides().values()});
         long[] permuted = new long[dims.length];
         int[] inverse = new int[dims.length];
         for (int i = 0; i < order.length; i++) { permuted[i] = dims[order[i]]; inverse[order[i]] = i; }
-        return SharedSecrets.arrayAccess().allocate(ExpressionSemantics.allocator(inputs), dtype,
+        return SharedSecrets.arrayAccess().allocate(allocator, dtype,
                 Shape.of(permuted), Order.C).permuteDims(inverse);
     }
 
