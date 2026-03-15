@@ -54,7 +54,7 @@ public final class Expression {
         if (context.mode() != Jit.Mode.BLOCK && eligible) {
             var types = new org.numjvm.dtype.DType[inputs.length];
             for (int i = 0; i < inputs.length; i++) types[i] = inputs[i].dtype();
-            GeneratedExecutor.run(KernelLoader.create(this, types), inputs, output);
+            GeneratedExecutor.run(context.kernel(this, types), inputs, output);
         } else {
             BlockExecutor.run(this, inputs, output);
         }

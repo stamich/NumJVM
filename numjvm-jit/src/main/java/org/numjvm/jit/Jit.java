@@ -27,10 +27,25 @@ public final class Jit {
         private volatile boolean closed;
         private final Mode mode;
         private final int cacheEntries;
+        private final java.util.LinkedHashMap<KernelKey, GeneratedKernel> kernels = new java.util.LinkedHashMap<>(16, .75f, true);
+        private long compilations;
         private Context(Mode mode, int cacheEntries) { this.mode = mode; this.cacheEntries = cacheEntries; }
         void checkOpen() { if (closed) throw new IllegalStateException("context is closed"); }
         Mode mode() { return mode; }
         int cacheEntries() { return cacheEntries; }
+        synchronized long compilations() { return compilations; }
+
+        synchronized GeneratedKernel kernel(Expression expression, org.numjvm.dtype.DType[] types) {
+            checkOpen();
+            KernelKey key = KernelKey.of(expression, types);
+            GeneratedKernel existing = kernels.get(key);
+            if (existing != null) return existing;
+            GeneratedKernel compiled = KernelLoader.create(expression, types);
+            compilations++;
+            kernels.put(key, compiled);
+            if (kernels.size() > cacheEntries) kernels.remove(kernels.keySet().iterator().next());
+            return compiled;
+        }
 
         /** Runs the builder once and validates its symbolic output. */
         public Expression trace(int arity, Function<Inputs, Expr> builder) {
@@ -59,7 +74,7 @@ public final class Jit {
             return new Expression(this, arity, result);
         }
 
-        @Override public void close() { closed = true; }
+        @Override public synchronized void close() { closed = true; kernels.clear(); }
     }
 
     /** Symbolic inputs available while a trace callback runs. */
