@@ -8,21 +8,29 @@ public final class Jit {
     private Jit() { }
 
     /** Creates a context for expression plans. */
-    public static Context context() { return new Context(Mode.AUTO); }
+    public static Context context() { return new Context(Mode.AUTO, 64); }
 
     /** Execution strategy for expression plans. */
     public enum Mode { AUTO, BLOCK, REQUIRED }
 
     /** Creates a context using the requested execution strategy. */
-    public static Context context(Mode mode) { return new Context(Objects.requireNonNull(mode, "mode")); }
+    public static Context context(Mode mode) { return new Context(Objects.requireNonNull(mode, "mode"), 64); }
+
+    /** Creates a context with a bounded kernel cache. */
+    public static Context context(Mode mode, int cacheEntries) {
+        if (cacheEntries < 1 || cacheEntries > 4096) throw new IllegalArgumentException("cache entries must be 1 to 4096");
+        return new Context(Objects.requireNonNull(mode, "mode"), cacheEntries);
+    }
 
     /** Owns expression tracing and its runtime resources. */
     public static final class Context implements AutoCloseable {
-        private boolean closed;
+        private volatile boolean closed;
         private final Mode mode;
-        private Context(Mode mode) { this.mode = mode; }
+        private final int cacheEntries;
+        private Context(Mode mode, int cacheEntries) { this.mode = mode; this.cacheEntries = cacheEntries; }
         void checkOpen() { if (closed) throw new IllegalStateException("context is closed"); }
         Mode mode() { return mode; }
+        int cacheEntries() { return cacheEntries; }
 
         /** Runs the builder once and validates its symbolic output. */
         public Expression trace(int arity, Function<Inputs, Expr> builder) {

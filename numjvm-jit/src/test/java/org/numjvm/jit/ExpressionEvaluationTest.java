@@ -8,6 +8,14 @@ import org.numjvm.ndarray.Slice;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ExpressionEvaluationTest {
+    @Test void closedContextRejectsPlansAndEvaluation() {
+        var context = Jit.context(Jit.Mode.BLOCK, 2);
+        var graph = context.trace(1, i -> i.input(0).square());
+        context.close();
+        assertThrows(IllegalStateException.class, () -> graph.eval(NJ.ones(DType.FLOAT64, 2)));
+        assertThrows(IllegalStateException.class, () -> context.trace(1, i -> i.input(0)));
+        assertThrows(IllegalArgumentException.class, () -> Jit.context(Jit.Mode.AUTO, 0));
+    }
     @Test void largeGraphsUseBlocksOrFailBeforeWritingWhenRequired() {
         for (Jit.Mode mode : new Jit.Mode[]{Jit.Mode.AUTO, Jit.Mode.REQUIRED}) {
             try (var context = Jit.context(mode)) {
