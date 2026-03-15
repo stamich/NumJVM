@@ -29,6 +29,10 @@ public final class Jit {
         private final int cacheEntries;
         private final java.util.LinkedHashMap<KernelKey, GeneratedKernel> kernels = new java.util.LinkedHashMap<>(16, .75f, true);
         private long compilations;
+        private long hits;
+        private long evictions;
+        private final java.util.concurrent.atomic.LongAdder generatedRuns = new java.util.concurrent.atomic.LongAdder();
+        private final java.util.concurrent.atomic.LongAdder blockRuns = new java.util.concurrent.atomic.LongAdder();
         private Context(Mode mode, int cacheEntries) { this.mode = mode; this.cacheEntries = cacheEntries; }
         void checkOpen() { if (closed) throw new IllegalStateException("context is closed"); }
         Mode mode() { return mode; }
@@ -39,12 +43,20 @@ public final class Jit {
             checkOpen();
             KernelKey key = KernelKey.of(expression, types);
             GeneratedKernel existing = kernels.get(key);
-            if (existing != null) return existing;
+            if (existing != null) { hits++; return existing; }
             GeneratedKernel compiled = KernelLoader.create(expression, types);
             compilations++;
             kernels.put(key, compiled);
-            if (kernels.size() > cacheEntries) kernels.remove(kernels.keySet().iterator().next());
+            if (kernels.size() > cacheEntries) { kernels.remove(kernels.keySet().iterator().next()); evictions++; }
             return compiled;
+        }
+
+        void generatedRun() { generatedRuns.increment(); }
+        void blockRun() { blockRuns.increment(); }
+
+        /** Returns cumulative context diagnostics. */
+        public synchronized Statistics statistics() {
+            return new Statistics(compilations, hits, evictions, kernels.size(), generatedRuns.sum(), blockRuns.sum());
         }
 
         /** Runs the builder once and validates its symbolic output. */
@@ -76,6 +88,10 @@ public final class Jit {
 
         @Override public synchronized void close() { closed = true; kernels.clear(); }
     }
+
+    /** A snapshot of context activity. */
+    public record Statistics(long compilations, long cacheHits, long evictions, int cachedKernels,
+                             long generatedRuns, long blockRuns) { }
 
     /** Symbolic inputs available while a trace callback runs. */
     public static final class Inputs {

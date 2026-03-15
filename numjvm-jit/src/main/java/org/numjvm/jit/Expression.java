@@ -51,12 +51,17 @@ public final class Expression {
         if (context.mode() == Jit.Mode.REQUIRED && !eligible)
             throw new IllegalArgumentException("generated execution does not support this layout or graph size");
         if (output.shape().size() == 0) return;
-        if (context.mode() != Jit.Mode.BLOCK && eligible) {
+        // Provisional size threshold; reference-machine benchmarks must tune this policy.
+        boolean generate = context.mode() == Jit.Mode.REQUIRED
+                || (context.mode() == Jit.Mode.AUTO && output.shape().size() >= 1024);
+        if (generate && eligible) {
             var types = new org.numjvm.dtype.DType[inputs.length];
             for (int i = 0; i < inputs.length; i++) types[i] = inputs[i].dtype();
             GeneratedExecutor.run(context.kernel(this, types), inputs, output);
+            context.generatedRun();
         } else {
             BlockExecutor.run(this, inputs, output);
+            context.blockRun();
         }
     }
 }

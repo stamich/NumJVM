@@ -16,6 +16,11 @@ class KernelCacheTest {
             b.eval(NJ.ones(DType.FLOAT64, 3));
             a.eval(NJ.ones(DType.FLOAT64, 3));
             assertEquals(3, context.compilations());
+            var statistics = context.statistics();
+            assertEquals(1, statistics.cacheHits());
+            assertEquals(2, statistics.evictions());
+            assertEquals(4, statistics.generatedRuns());
+            assertEquals(0, statistics.blockRuns());
         }
     }
 }
