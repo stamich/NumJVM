@@ -25,11 +25,19 @@ final class ScratchBlocks implements AutoCloseable {
 
     static void gather(MemorySegment source, long offset, long stride, MemorySegment target, int itemSize, int count) {
         if (itemSize <= 0 || count < 0) throw new IllegalArgumentException("invalid copy dimensions");
+        if (stride == itemSize) {
+            MemorySegment.copy(source, offset, target, 0, (long) count * itemSize);
+            return;
+        }
         for (int i = 0; i < count; i++) MemorySegment.copy(source, offset + i * stride, target, (long) i * itemSize, itemSize);
     }
 
     static void scatter(MemorySegment source, MemorySegment target, long offset, long stride, int itemSize, int count) {
         if (itemSize <= 0 || count < 0) throw new IllegalArgumentException("invalid copy dimensions");
+        if (stride == itemSize) {
+            MemorySegment.copy(source, 0, target, offset, (long) count * itemSize);
+            return;
+        }
         for (int i = 0; i < count; i++) MemorySegment.copy(source, (long) i * itemSize, target, offset + i * stride, itemSize);
     }
 
