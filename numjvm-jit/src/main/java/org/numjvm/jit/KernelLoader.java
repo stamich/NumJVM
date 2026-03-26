@@ -33,11 +33,11 @@ final class KernelLoader {
                         code -> code.iconst_1().ireturn())
                 .withMethodBody("evaluate", MethodTypeDesc.of(ConstantDescs.CD_double,
                                 ConstantDescs.CD_double.arrayType()), ClassFile.ACC_PUBLIC,
-                        code -> emit(code, nodes, types))
+                        code -> { emit(code, nodes, types, false); code.dreturn(); })
                 .withMethodBody("run", MethodTypeDesc.of(ConstantDescs.CD_void,
                                 ClassDesc.of("java.lang.foreign.MemorySegment").arrayType(),
                                 ConstantDescs.CD_long.arrayType(), ConstantDescs.CD_long.arrayType(), ConstantDescs.CD_long),
-                        ClassFile.ACC_PUBLIC, code -> emitRun(code, marker, inputTypes, types.resolve(expression.root()))));
+                        ClassFile.ACC_PUBLIC, code -> emitRun(code, inputTypes, types, nodes, types.resolve(expression.root()))));
         if (bytes.length > MAX_CLASS_BYTES) throw new IllegalArgumentException("generated class too large");
         try {
             var lookup = MethodHandles.lookup().defineHiddenClass(bytes, true);
@@ -53,24 +53,16 @@ final class KernelLoader {
         return new GraphPlan(expression.root()).nodes().size() <= MAX_GENERATED_NODES;
     }
 
-    private static void emitRun(CodeBuilder code, ClassDesc kernel, DType[] inputs, DType result) {
+    private static void emitRun(CodeBuilder code, DType[] inputs, TypeResolver types, List<Expr> nodes, DType result) {
         ClassDesc memory = ClassDesc.of("java.lang.foreign.MemorySegment");
         ClassDesc access = ClassDesc.of("org.numjvm.jit.GeneratedAccess");
-        var read = MethodTypeDesc.of(ConstantDescs.CD_double, memory, ConstantDescs.CD_long);
         var write = MethodTypeDesc.of(ConstantDescs.CD_void, memory, ConstantDescs.CD_long, ConstantDescs.CD_double);
         var loop = code.newLabel();
         var done = code.newLabel();
-        code.loadConstant(inputs.length).newarray(java.lang.classfile.TypeKind.DOUBLE).astore(8);
         code.lconst_0().lstore(6).labelBinding(loop).lload(6).lload(4).lcmp().ifge(done);
-        for (int i = 0; i < inputs.length; i++) {
-            code.aload(8).loadConstant(i).aload(1).loadConstant(i).aaload();
-            offset(code, i);
-            code.invokestatic(access, inputs[i] == DType.FLOAT32 ? "readFloat" : "readDouble", read).dastore();
-        }
         code.aload(1).loadConstant(inputs.length).aaload();
         offset(code, inputs.length);
-        code.aload(0).aload(8).invokeinterface(kernel, "evaluate",
-                MethodTypeDesc.of(ConstantDescs.CD_double, ConstantDescs.CD_double.arrayType()));
+        emit(code, nodes, types, true);
         code.invokestatic(access, result == DType.FLOAT32 ? "writeFloat" : "writeDouble", write);
         code.lload(6).lconst_1().ladd().lstore(6).goto_(loop).labelBinding(done).return_();
     }
@@ -79,14 +71,23 @@ final class KernelLoader {
         code.aload(2).loadConstant(slot).laload().lload(6).aload(3).loadConstant(slot).laload().lmul().ladd();
     }
 
-    private static void emit(CodeBuilder code, List<Expr> nodes, TypeResolver types) {
+    private static void emit(CodeBuilder code, List<Expr> nodes, TypeResolver types, boolean run) {
         var locals = new IdentityHashMap<Expr, Integer>();
-        int next = 2;
+        int next = run ? 8 : 2;
         for (Expr node : nodes) {
             DType type = types.resolve(node);
             boolean single = type == DType.FLOAT32;
             switch (node.op) {
-                case INPUT -> code.aload(1).loadConstant(node.slot).daload();
+                case INPUT -> {
+                    if (run) {
+                        code.aload(1).loadConstant(node.slot).aaload();
+                        offset(code, node.slot);
+                        code.invokestatic(ClassDesc.of("org.numjvm.jit.GeneratedAccess"),
+                                single ? "readFloat" : "readDouble",
+                                MethodTypeDesc.of(ConstantDescs.CD_double,
+                                        ClassDesc.of("java.lang.foreign.MemorySegment"), ConstantDescs.CD_long));
+                    } else code.aload(1).loadConstant(node.slot).daload();
+                }
                 case CONSTANT -> code.loadConstant(node.bits).invokestatic(ClassDesc.of("java.lang.Double"),
                         "longBitsToDouble", MethodTypeDesc.of(ConstantDescs.CD_double, ConstantDescs.CD_long));
                 case ADD, SUBTRACT, MULTIPLY, DIVIDE -> {
@@ -121,6 +122,6 @@ final class KernelLoader {
             locals.put(node, next);
             next += 2;
         }
-        code.dload(locals.get(nodes.getLast())).dreturn();
+        code.dload(locals.get(nodes.getLast()));
     }
 }
