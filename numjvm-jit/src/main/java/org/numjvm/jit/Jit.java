@@ -35,19 +35,21 @@ public final class Jit {
         private final java.util.concurrent.atomic.LongAdder blockRuns = new java.util.concurrent.atomic.LongAdder();
         private Context(Mode mode, int cacheEntries) { this.mode = mode; this.cacheEntries = cacheEntries; }
         void checkOpen() { if (closed) throw new IllegalStateException("context is closed"); }
+        synchronized void admit() { checkOpen(); }
         Mode mode() { return mode; }
         int cacheEntries() { return cacheEntries; }
         synchronized long compilations() { return compilations; }
 
         synchronized GeneratedKernel kernel(Expression expression, org.numjvm.dtype.DType[] types) {
-            checkOpen();
             KernelKey key = KernelKey.of(expression, types);
             GeneratedKernel existing = kernels.get(key);
             if (existing != null) { hits++; return existing; }
             GeneratedKernel compiled = KernelLoader.create(expression, types);
             compilations++;
-            kernels.put(key, compiled);
-            if (kernels.size() > cacheEntries) { kernels.remove(kernels.keySet().iterator().next()); evictions++; }
+            if (!closed) {
+                kernels.put(key, compiled);
+                if (kernels.size() > cacheEntries) { kernels.remove(kernels.keySet().iterator().next()); evictions++; }
+            }
             return compiled;
         }
 

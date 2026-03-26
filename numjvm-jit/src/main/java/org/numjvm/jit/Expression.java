@@ -22,7 +22,7 @@ public final class Expression {
 
     /** Evaluates the expression into a new array. */
     public NDArray eval(NDArray... inputs) {
-        context.checkOpen();
+        context.admit();
         var plan = new InvocationPlan(this, inputs);
         var output = plan.allocate();
         execute(inputs, output);
@@ -31,7 +31,7 @@ public final class Expression {
 
     /** Evaluates the expression into an existing array. */
     public NDArray evalInto(NDArray output, NDArray... inputs) {
-        context.checkOpen();
+        context.admit();
         var plan = new InvocationPlan(this, inputs);
         plan.checkOutput(output);
         if (!plan.needsTemporary(output)) {
