@@ -1,10 +1,12 @@
 package org.numjvm.jit;
 
 import org.numjvm.NJ;
+import org.numjvm.Experimental;
 import org.numjvm.internal.SharedSecrets;
 import org.numjvm.ndarray.NDArray;
 
 /** An immutable symbolic expression. */
+@Experimental
 public final class Expression {
     private final Jit.Context context;
     private final int arity;
@@ -16,11 +18,16 @@ public final class Expression {
         this.root = root;
     }
 
-    /** Returns the number of input slots. */
+    /** Returns the number of input slots.
+     * @return input count
+     */
     public int arity() { return arity; }
     Expr root() { return root; }
 
-    /** Evaluates the expression into a new array. */
+    /** Evaluates the expression into a new array.
+     * @param inputs invocation inputs
+     * @return result array
+     */
     public NDArray eval(NDArray... inputs) {
         context.admit();
         var plan = new InvocationPlan(this, inputs);
@@ -29,7 +36,11 @@ public final class Expression {
         return output;
     }
 
-    /** Evaluates the expression into an existing array. */
+    /** Evaluates the expression into an existing array.
+     * @param output destination
+     * @param inputs invocation inputs
+     * @return output
+     */
     public NDArray evalInto(NDArray output, NDArray... inputs) {
         context.admit();
         var plan = new InvocationPlan(this, inputs);

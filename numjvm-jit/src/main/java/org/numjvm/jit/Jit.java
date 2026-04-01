@@ -2,21 +2,39 @@ package org.numjvm.jit;
 
 import java.util.Objects;
 import java.util.function.Function;
+import org.numjvm.Experimental;
 
 /** Entry point for explicit symbolic expression tracing. */
+@Experimental
 public final class Jit {
     private Jit() { }
 
-    /** Creates a context for expression plans. */
+    /** Creates a context for expression plans.
+     * @return a new context
+     */
     public static Context context() { return new Context(Mode.AUTO, 64); }
 
     /** Execution strategy for expression plans. */
-    public enum Mode { AUTO, BLOCK, REQUIRED }
+    public enum Mode {
+        /** Choose between generated and block execution. */
+        AUTO,
+        /** Execute through bounded blocks. */
+        BLOCK,
+        /** Require generated execution for nonempty results. */
+        REQUIRED
+    }
 
-    /** Creates a context using the requested execution strategy. */
+    /** Creates a context using the requested execution strategy.
+     * @param mode execution mode
+     * @return a new context
+     */
     public static Context context(Mode mode) { return new Context(Objects.requireNonNull(mode, "mode"), 64); }
 
-    /** Creates a context with a bounded kernel cache. */
+    /** Creates a context with a bounded kernel cache.
+     * @param mode execution mode
+     * @param cacheEntries maximum entries
+     * @return a new context
+     */
     public static Context context(Mode mode, int cacheEntries) {
         if (cacheEntries < 1 || cacheEntries > 4096) throw new IllegalArgumentException("cache entries must be 1 to 4096");
         return new Context(Objects.requireNonNull(mode, "mode"), cacheEntries);
@@ -56,12 +74,18 @@ public final class Jit {
         void generatedRun() { generatedRuns.increment(); }
         void blockRun() { blockRuns.increment(); }
 
-        /** Returns cumulative context diagnostics. */
+        /** Returns cumulative context diagnostics.
+     * @return a statistics snapshot
+     */
         public synchronized Statistics statistics() {
             return new Statistics(compilations, hits, evictions, kernels.size(), generatedRuns.sum(), blockRuns.sum());
         }
 
-        /** Runs the builder once and validates its symbolic output. */
+        /** Runs the builder once and validates its symbolic output.
+     * @param arity number of inputs
+     * @param builder symbolic builder
+     * @return the plan
+     */
         public Expression trace(int arity, Function<Inputs, Expr> builder) {
             checkOpen();
             if (arity < 1 || arity > 16) throw new IllegalArgumentException("arity must be between 1 and 16");
@@ -91,7 +115,14 @@ public final class Jit {
         @Override public synchronized void close() { closed = true; kernels.clear(); }
     }
 
-    /** A snapshot of context activity. */
+    /** A snapshot of context activity.
+     * @param compilations generated kernels compiled
+     * @param cacheHits successful cache lookups
+     * @param evictions cache entries removed for capacity
+     * @param cachedKernels currently retained entries
+     * @param generatedRuns calls that executed generated code
+     * @param blockRuns calls that executed block kernels
+     */
     public record Statistics(long compilations, long cacheHits, long evictions, int cachedKernels,
                              long generatedRuns, long blockRuns) { }
 
@@ -108,9 +139,15 @@ public final class Jit {
             if (++nodes > 128) throw new IllegalArgumentException("expression exceeds node limit");
             return new Expr(this, op, slot, bits, left, right);
         }
-        /** Creates a weak double constant. */
+        /** Creates a weak double constant.
+     * @param value scalar value
+     * @return a constant node
+     */
         public Expr constant(double value) { return node(Expr.Op.CONSTANT, -1, Double.doubleToRawLongBits(value), null, null); }
-        /** Returns an input slot. */
+        /** Returns an input slot.
+     * @param slot zero-based index
+     * @return an input node
+     */
         public Expr input(int slot) {
             checkOpen();
             if (slot < 0 || slot >= arity) throw new IllegalArgumentException("invalid input slot: " + slot);

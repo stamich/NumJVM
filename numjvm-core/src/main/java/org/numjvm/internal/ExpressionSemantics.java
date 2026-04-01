@@ -21,30 +21,50 @@ import org.numjvm.ufunc.UnaryUfunc;
 public final class ExpressionSemantics {
     private ExpressionSemantics() { }
 
-    /** Copies values into a validated destination, preserving existing cast semantics. */
+    /** Copies values into a validated destination, preserving existing cast semantics.
+     * @param source input array
+     * @param destination destination array
+     * @return destination array
+     */
     public static NDArray copyInto(NDArray source, NDArray destination) {
         String name = source.dtype() == destination.dtype() ? "copy" : "cast:" + destination.dtype().typeName();
         LoopExecutor.unary(KernelRegistry.unary(name, source.dtype()), source, destination);
         return destination;
     }
 
-    /** Resolves a unary result using the same ufunc as eager execution. */
+    /** Resolves a unary result using the same ufunc as eager execution.
+     * @param operation unary operation
+     * @param input input dtype
+     * @return result dtype
+     */
     public static DType unaryResult(UnaryUfunc operation, DType input) {
         return operation.resultType(input);
     }
 
-    /** Resolves an array/array result using eager promotion and loop selection. */
+    /** Resolves an array/array result using eager promotion and loop selection.
+     * @param operation binary operation
+     * @param left left dtype
+     * @param right right dtype
+     * @return result dtype
+     */
     public static DType binaryResult(BinaryUfunc operation, DType left, DType right) {
         return operation.resultType(left, right);
     }
 
-    /** Resolves a weak-double operand as eager scalar overloads do. */
+    /** Resolves a weak-double operand as eager scalar overloads do.
+     * @param operation binary operation
+     * @param array array dtype
+     * @return result dtype
+     */
     public static DType weakDoubleResult(BinaryUfunc operation, DType array) {
         DType common = TypePromotion.resultTypeWithDouble(array);
         return operation.resultType(common, common);
     }
 
-    /** Uses the first live scoped operand, as eager ufuncs do. */
+    /** Uses the first live scoped operand, as eager ufuncs do.
+     * @param operands input arrays
+     * @return selected allocator
+     */
     public static MemoryAllocator allocator(NDArray... operands) {
         for (NDArray operand : operands) {
             if (operand.memoryOwner() instanceof NJScope scope && scope.isAlive()) {
@@ -54,7 +74,9 @@ public final class ExpressionSemantics {
         return HybridAllocator.defaultInstance();
     }
 
-    /** Checks accessibility before an executor reads or writes any elements. */
+    /** Checks accessibility before an executor reads or writes any elements.
+     * @param arrays arrays to validate
+     */
     public static void accessible(NDArray... arrays) {
         for (NDArray array : arrays) {
             var segment = SharedSecrets.arrayAccess().buffer(Objects.requireNonNull(array, "array")).segment();
@@ -67,7 +89,13 @@ public final class ExpressionSemantics {
         }
     }
 
-    /** Allocates in eager ufunc order for the broadcast inputs. */
+    /** Allocates in eager ufunc order for the broadcast inputs.
+     * @param allocator selected allocator
+     * @param dtype result dtype
+     * @param shape result shape
+     * @param inputs broadcast-compatible input arrays
+     * @return allocated result
+     */
     public static NDArray allocate(MemoryAllocator allocator, DType dtype, Shape shape, NDArray... inputs) {
         long[] dims = shape.dimensions();
         long[][] strides = new long[inputs.length][];

@@ -1,8 +1,10 @@
 package org.numjvm.jit;
 
 import java.util.Objects;
+import org.numjvm.Experimental;
 
 /** An immutable symbolic expression node belonging to one trace. */
+@Experimental
 public final class Expr {
     enum Op { INPUT, CONSTANT, ADD, SUBTRACT, MULTIPLY, DIVIDE, NEGATIVE, ABSOLUTE, SQUARE, SQRT }
     final Jit.Inputs owner;
@@ -26,16 +28,60 @@ public final class Expr {
         return owner.node(operation, -1, 0, this, other);
     }
     private Expr constant(double value) { return owner.constant(value); }
-    /** Adds two expressions. */ public Expr add(Expr other) { return binary(Op.ADD, other); }
-    /** Adds a weak double. */ public Expr add(double value) { return add(constant(value)); }
-    /** Subtracts two expressions. */ public Expr subtract(Expr other) { return binary(Op.SUBTRACT, other); }
-    /** Subtracts a weak double. */ public Expr subtract(double value) { return subtract(constant(value)); }
-    /** Multiplies two expressions. */ public Expr multiply(Expr other) { return binary(Op.MULTIPLY, other); }
-    /** Multiplies by a weak double. */ public Expr multiply(double value) { return multiply(constant(value)); }
-    /** Divides by an expression. */ public Expr divide(Expr other) { return binary(Op.DIVIDE, other); }
-    /** Divides by a weak double. */ public Expr divide(double value) { return divide(constant(value)); }
-    /** Negates the expression. */ public Expr negative() { return unary(Op.NEGATIVE); }
-    /** Takes the absolute value. */ public Expr absolute() { return unary(Op.ABSOLUTE); }
-    /** Squares the expression. */ public Expr square() { return unary(Op.SQUARE); }
-    /** Takes the square root. */ public Expr sqrt() { return unary(Op.SQRT); }
+    /** Adds two expressions.
+     * @param other right operand
+     * @return the new expression
+     */
+    public Expr add(Expr other) { return binary(Op.ADD, other); }
+    /** Adds a weak double.
+     * @param value weak scalar
+     * @return the new expression
+     */
+    public Expr add(double value) { return add(constant(value)); }
+    /** Subtracts two expressions.
+     * @param other right operand
+     * @return the new expression
+     */
+    public Expr subtract(Expr other) { return binary(Op.SUBTRACT, other); }
+    /** Subtracts a weak double.
+     * @param value weak scalar
+     * @return the new expression
+     */
+    public Expr subtract(double value) { return subtract(constant(value)); }
+    /** Multiplies two expressions.
+     * @param other right operand
+     * @return the new expression
+     */
+    public Expr multiply(Expr other) { return binary(Op.MULTIPLY, other); }
+    /** Multiplies by a weak double.
+     * @param value weak scalar
+     * @return the new expression
+     */
+    public Expr multiply(double value) { return multiply(constant(value)); }
+    /** Divides by an expression.
+     * @param other right operand
+     * @return the new expression
+     */
+    public Expr divide(Expr other) { return binary(Op.DIVIDE, other); }
+    /** Divides by a weak double.
+     * @param value weak scalar
+     * @return the new expression
+     */
+    public Expr divide(double value) { return divide(constant(value)); }
+    /** Negates the expression.
+     * @return the new expression
+     */
+    public Expr negative() { return unary(Op.NEGATIVE); }
+    /** Takes the absolute value.
+     * @return the new expression
+     */
+    public Expr absolute() { return unary(Op.ABSOLUTE); }
+    /** Squares the expression.
+     * @return the new expression
+     */
+    public Expr square() { return unary(Op.SQUARE); }
+    /** Takes the square root.
+     * @return the new expression
+     */
+    public Expr sqrt() { return unary(Op.SQRT); }
 }
