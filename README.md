@@ -125,6 +125,15 @@ for flags, forced modes, ownership, diagnostics, native validation and consumer 
 The [M2 status](docs/milestones/M2-status.md) distinguishes implemented behavior from
 outstanding release performance evidence.
 
+## Experimental expression fusion
+
+The optional `numjvm-jit` module traces explicit float32/float64 arithmetic
+expressions for block or generated execution. The alpha supports add, subtract,
+multiply, divide, negative, absolute, square, and square root; comparisons,
+conditional selection, other transcendental functions, reductions, and matmul
+inside expressions are not yet supported. See the [expression guide](docs/design/expression-execution.md)
+and run `./gradlew :examples:fused-expressions:run`.
+
 ## Building
 
 Requires JDK 25. The Gradle wrapper downloads Gradle, and the build can provision a JDK 25 toolchain if none is

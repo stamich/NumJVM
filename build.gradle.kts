@@ -98,7 +98,7 @@ sonar {
     }
 }
 
-val sonarSkipped = setOf("numjvm-bench", "examples", "basic-arrays", "memory-scopes", "accelerated-arrays", "matmul")
+val sonarSkipped = setOf("numjvm-bench", "examples", "basic-arrays", "memory-scopes", "accelerated-arrays", "matmul", "fused-expressions")
 
 configure(subprojects.filter { it.name in sonarSkipped }) {
     extensions.configure<org.sonarqube.gradle.SonarExtension> {

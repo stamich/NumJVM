@@ -12,3 +12,4 @@ New ADRs use the next free number and the same headings: Context, Decision, Cons
 marked "Superseded by ADR-NNN" rather than deleted.
 
 - [ADR-006: optional CPU backends and arithmetic contracts](ADR-006-cpu-backends.md)
+- [ADR-007: explicit expression execution](ADR-007-expression-execution.md) (proposed)
