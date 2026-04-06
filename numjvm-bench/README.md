@@ -58,3 +58,18 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python3 numjvm-bench/numpy/bench_m2.py
 measure native scratch. Short smoke runs verify instrumentation and dispatch, not
 performance targets. Compare matrix packing-inclusive and already-native layouts
 separately. Automatic native inputs avoid retaining every allocating result in a trial-long scope.
+
+Expression lifecycle and native accounting are measured separately from the warm
+throughput benchmark:
+
+```sh
+./gradlew :numjvm-bench:jmh -PjmhArgs='ExpressionLifecycleBenchmark -f 3 -wi 3 -i 5 -prof gc'
+./gradlew :numjvm-bench:expressionCompileProbe
+./gradlew :numjvm-bench:expressionMemoryProbe
+```
+
+The first-execution benchmark includes compilation and invocation. The diagnostic
+compile probe records their components in a separate single process; use JMH forks
+for reproducible timing. Native counters include tracked scratch and scoped array
+storage; peak is process-wide and cannot be interpreted as per-operation peak.
+Heap allocation is reported by the JMH GC profiler, not by native counters.

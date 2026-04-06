@@ -47,6 +47,7 @@ public final class Jit {
         private final int cacheEntries;
         private final java.util.LinkedHashMap<KernelKey, GeneratedKernel> kernels = new java.util.LinkedHashMap<>(16, .75f, true);
         private long compilations;
+        private long compilationNanos;
         private long hits;
         private long evictions;
         private final java.util.concurrent.atomic.LongAdder generatedRuns = new java.util.concurrent.atomic.LongAdder();
@@ -62,7 +63,9 @@ public final class Jit {
             KernelKey key = KernelKey.of(expression, types);
             GeneratedKernel existing = kernels.get(key);
             if (existing != null) { hits++; return existing; }
+            long started = System.nanoTime();
             GeneratedKernel compiled = KernelLoader.create(expression, types);
+            compilationNanos += System.nanoTime() - started;
             compilations++;
             if (!closed) {
                 kernels.put(key, compiled);
@@ -73,6 +76,11 @@ public final class Jit {
 
         void generatedRun() { generatedRuns.increment(); }
         void blockRun() { blockRuns.increment(); }
+
+        /** Returns time spent compiling successfully generated kernels in this context.
+         * @return accumulated compilation time in nanoseconds
+         */
+        public synchronized long compilationNanos() { return compilationNanos; }
 
         /** Returns cumulative context diagnostics.
      * @return a statistics snapshot
