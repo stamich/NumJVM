@@ -47,3 +47,13 @@ tasks.register<JavaExec>("providerProbe") {
     mainClass = "org.numjvm.bench.ProviderProbe"
     if (providers.gradleProperty("simdBench").isPresent) { jvmArgs("--add-modules", "jdk.incubator.vector") }
 }
+
+tasks.register<JavaExec>("expressionMemoryProbe") {
+    classpath = jmh.runtimeClasspath
+    mainClass = "org.numjvm.bench.ExpressionMemoryProbe"
+}
+
+tasks.register<JavaExec>("expressionCompileProbe") {
+    classpath = jmh.runtimeClasspath
+    mainClass = "org.numjvm.bench.ExpressionCompileProbe"
+}
