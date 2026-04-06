@@ -41,3 +41,9 @@ tasks.register<JavaExec>("nativeAccounting") {
     classpath = jmh.runtimeClasspath
     mainClass = "org.numjvm.bench.NativeAccountingProbe"
 }
+
+tasks.register<JavaExec>("providerProbe") {
+    classpath = jmh.runtimeClasspath
+    mainClass = "org.numjvm.bench.ProviderProbe"
+    if (providers.gradleProperty("simdBench").isPresent) { jvmArgs("--add-modules", "jdk.incubator.vector") }
+}
