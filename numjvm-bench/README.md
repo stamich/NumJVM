@@ -73,3 +73,12 @@ compile probe records their components in a separate single process; use JMH for
 for reproducible timing. Native counters include tracked scratch and scoped array
 storage; peak is process-wide and cannot be interpreted as per-operation peak.
 Heap allocation is reported by the JMH GC profiler, not by native counters.
+
+`ExpressionMatrixBenchmark` adds float32, float64 and mixed-type ADD/CHAIN cases,
+C/F/strided/broadcast layouts, and allocating/out variants. `ExpressionInPlaceBenchmark`
+measures identical-view writes and resets the input outside the timed method. For
+example, select a small subset using JMH's `-p` options. REQUIRED/generated kernels
+reject layouts they do not support; select eligible contiguous cases for those
+methods rather than treating an unsupported case as a successful fallback. Scalar
+and SIMD-enabled runs must use the same workload parameters and record provider
+execution using `providerProbe`.
