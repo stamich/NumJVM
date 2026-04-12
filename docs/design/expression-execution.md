@@ -45,3 +45,9 @@ The default is 65,536 bytes. This cap excludes a full independent result used
 to protect hazardous output overlap. The existing process-wide scratch limit also
 applies. `ExpressionScratchBenchmark` compares several caps; the default has not
 yet been tuned on the designated reference machine.
+
+`Jit.Mode.EAGER` explicitly executes whole-array ufuncs and can allocate full-sized
+intermediates. Its default conservative intermediate budget is 16 MiB. Configure
+both budgets with `Jit.context(mode, cacheEntries, scratchBytes, eagerBytes)`.
+The eager budget excludes the result, alias-protection result and the existing
+bounded ufunc conversion scratch; a graph over budget is rejected before writes.

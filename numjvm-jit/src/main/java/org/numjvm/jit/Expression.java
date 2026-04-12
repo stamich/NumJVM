@@ -76,6 +76,11 @@ public final class Expression {
     }
 
     private void execute(NDArray[] inputs, NDArray output) {
+        if (context.mode() == Jit.Mode.EAGER) {
+            if (!EagerExecutor.tryRun(this, inputs, output, context.eagerBytes()))
+                throw new IllegalStateException("expression exceeds eager temporary byte budget");
+            return;
+        }
         boolean eligible = KernelLoader.supports(this) && GeneratedExecutor.eligible(inputs, output);
         if (context.mode() == Jit.Mode.REQUIRED && !eligible)
             throw new IllegalArgumentException("generated execution does not support this layout or graph size");

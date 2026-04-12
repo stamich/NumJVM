@@ -25,8 +25,8 @@ public class ExpressionMatrixBenchmark {
 
     private NDArray a, b, c, d, out, temp1, temp2;
     private NDArray[] args;
-    private Jit.Context auto, block, generated;
-    private Expression autoPlan, blockPlan, generatedPlan;
+    private Jit.Context auto, block, generated, scheduled;
+    private Expression autoPlan, blockPlan, generatedPlan, scheduledPlan;
 
     @Setup public void setup() {
         DType leftType = types.equals("FLOAT32") ? DType.FLOAT32 : DType.FLOAT64;
@@ -42,11 +42,13 @@ public class ExpressionMatrixBenchmark {
         temp1 = NJ.zeros(resultType, Layouts.rows(size), Layouts.cols(size));
         temp2 = NJ.zeros(resultType, Layouts.rows(size), Layouts.cols(size));
         auto = Jit.context(Jit.Mode.AUTO); block = Jit.context(Jit.Mode.BLOCK); generated = Jit.context(Jit.Mode.REQUIRED);
-        autoPlan = trace(auto); blockPlan = trace(block); generatedPlan = trace(generated);
+        scheduled = Jit.context(Jit.Mode.EAGER, 64, 65536, 64L * 1024 * 1024);
+        autoPlan = trace(auto); blockPlan = trace(block); generatedPlan = trace(generated); scheduledPlan = trace(scheduled);
         NDArray expected = eagerAllocating();
         check(expected, eagerOut());
         check(expected, blockOut());
         check(expected, autoOut());
+        check(expected, scheduledOut());
         if (layout == Layouts.Layout.C || layout == Layouts.Layout.F) check(expected, generatedOut());
         checkSpecialValues(leftType, rightType);
     }
@@ -93,7 +95,8 @@ public class ExpressionMatrixBenchmark {
     @Benchmark public NDArray autoOut() { return autoPlan.evalInto(out, args); }
     @Benchmark public NDArray blockAllocating() { return blockPlan.eval(args); }
     @Benchmark public NDArray blockOut() { return blockPlan.evalInto(out, args); }
+    @Benchmark public NDArray scheduledOut() { return scheduledPlan.evalInto(out, args); }
     @Benchmark public NDArray generatedAllocating() { return generatedPlan.eval(args); }
     @Benchmark public NDArray generatedOut() { return generatedPlan.evalInto(out, args); }
-    @TearDown public void close() { auto.close(); block.close(); generated.close(); }
+    @TearDown public void close() { auto.close(); block.close(); generated.close(); scheduled.close(); }
 }
