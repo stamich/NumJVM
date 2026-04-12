@@ -12,7 +12,7 @@ public final class Jit {
     /** Creates a context for expression plans.
      * @return a new context
      */
-    public static Context context() { return new Context(Mode.AUTO, 64); }
+    public static Context context() { return new Context(Mode.AUTO, 64, 65536); }
 
     /** Execution strategy for expression plans. */
     public enum Mode {
@@ -28,7 +28,7 @@ public final class Jit {
      * @param mode execution mode
      * @return a new context
      */
-    public static Context context(Mode mode) { return new Context(Objects.requireNonNull(mode, "mode"), 64); }
+    public static Context context(Mode mode) { return new Context(Objects.requireNonNull(mode, "mode"), 64, 65536); }
 
     /** Creates a context with a bounded kernel cache.
      * @param mode execution mode
@@ -36,8 +36,19 @@ public final class Jit {
      * @return a new context
      */
     public static Context context(Mode mode, int cacheEntries) {
+        return context(mode, cacheEntries, 65536);
+    }
+
+    /** Creates a context with a per-invocation block scratch byte cap.
+     * @param mode execution mode
+     * @param cacheEntries maximum generated kernel entries
+     * @param scratchBytes maximum block scratch bytes, from 2048 through 65536
+     * @return a new context
+     */
+    public static Context context(Mode mode, int cacheEntries, int scratchBytes) {
         if (cacheEntries < 1 || cacheEntries > 4096) throw new IllegalArgumentException("cache entries must be 1 to 4096");
-        return new Context(Objects.requireNonNull(mode, "mode"), cacheEntries);
+        if (scratchBytes < 2048 || scratchBytes > 65536) throw new IllegalArgumentException("scratch bytes must be 2048 to 65536");
+        return new Context(Objects.requireNonNull(mode, "mode"), cacheEntries, scratchBytes);
     }
 
     /** Owns expression tracing and its runtime resources. */
@@ -45,6 +56,7 @@ public final class Jit {
         private volatile boolean closed;
         private final Mode mode;
         private final int cacheEntries;
+        private final int scratchBytes;
         private final java.util.LinkedHashMap<KernelKey, GeneratedKernel> kernels = new java.util.LinkedHashMap<>(16, .75f, true);
         private long compilations;
         private long compilationNanos;
@@ -52,11 +64,14 @@ public final class Jit {
         private long evictions;
         private final java.util.concurrent.atomic.LongAdder generatedRuns = new java.util.concurrent.atomic.LongAdder();
         private final java.util.concurrent.atomic.LongAdder blockRuns = new java.util.concurrent.atomic.LongAdder();
-        private Context(Mode mode, int cacheEntries) { this.mode = mode; this.cacheEntries = cacheEntries; }
+        private Context(Mode mode, int cacheEntries, int scratchBytes) {
+            this.mode = mode; this.cacheEntries = cacheEntries; this.scratchBytes = scratchBytes;
+        }
         void checkOpen() { if (closed) throw new IllegalStateException("context is closed"); }
         synchronized void admit() { checkOpen(); }
         Mode mode() { return mode; }
         int cacheEntries() { return cacheEntries; }
+        int scratchBytes() { return scratchBytes; }
         synchronized long compilations() { return compilations; }
 
         synchronized GeneratedKernel kernel(Expression expression, org.numjvm.dtype.DType[] types) {
