@@ -11,11 +11,16 @@ public final class Expression {
     private final Jit.Context context;
     private final int arity;
     private final Expr root;
+    private final GraphPlan graph;
+    // Bounded by dtype signatures; values contain graph metadata, never input arrays.
+    private final java.util.LinkedHashMap<java.util.List<org.numjvm.dtype.DType>, BlockPlan> blocks =
+            new java.util.LinkedHashMap<>(8, .75f, true);
 
     Expression(Jit.Context context, int arity, Expr root) {
         this.context = context;
         this.arity = arity;
         this.root = root;
+        this.graph = new GraphPlan(root);
     }
 
     /** Returns the number of input slots.
@@ -23,6 +28,18 @@ public final class Expression {
      */
     public int arity() { return arity; }
     Expr root() { return root; }
+    GraphPlan graph() { return graph; }
+
+    synchronized BlockPlan blockPlan(org.numjvm.dtype.DType[] types) {
+        var key = java.util.List.of(types.clone());
+        BlockPlan plan = blocks.get(key);
+        if (plan == null) {
+            plan = new BlockPlan(graph, types);
+            blocks.put(key, plan);
+            if (blocks.size() > 8) blocks.remove(blocks.keySet().iterator().next());
+        }
+        return plan;
+    }
 
     /** Evaluates the expression into a new array.
      * @param inputs invocation inputs
