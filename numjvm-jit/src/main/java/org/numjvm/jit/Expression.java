@@ -79,23 +79,46 @@ public final class Expression {
         if (context.mode() == Jit.Mode.EAGER) {
             if (!EagerExecutor.tryRun(this, inputs, output, context.eagerBytes()))
                 throw new IllegalStateException("expression exceeds eager temporary byte budget");
+            context.eagerRun();
+            context.selected("eager", "explicit mode");
+            return;
+        }
+        if (context.mode() == Jit.Mode.BLOCK) {
+            if (output.shape().size() == 0) { context.selected("empty", "zero elements"); return; }
+            BlockExecutor.run(this, inputs, output);
+            context.blockRun();
+            context.selected("block", "explicit mode");
             return;
         }
         boolean eligible = KernelLoader.supports(this) && GeneratedExecutor.eligible(inputs, output);
         if (context.mode() == Jit.Mode.REQUIRED && !eligible)
             throw new IllegalArgumentException("generated execution does not support this layout or graph size");
-        if (output.shape().size() == 0) return;
-        // Provisional size threshold; reference-machine benchmarks must tune this policy.
+        long size = output.shape().size();
+        if (size == 0) { context.selected("empty", "zero elements"); return; }
+        var types = new org.numjvm.dtype.DType[inputs.length];
+        for (int i = 0; i < inputs.length; i++) types[i] = inputs[i].dtype();
+        boolean cached = eligible && context.cached(this, types);
+        boolean homogeneous = true;
+        for (int i = 1; i < types.length; i++) homogeneous &= types[i] == types[0];
+        boolean vectorProvider = !org.numjvm.BackendInfo.simdProvider().equals("scalar");
+        boolean small = size <= 512;
+        boolean eagerCandidate = small || (size <= 65536 && homogeneous && vectorProvider && graph.nodes().size() >= 3);
+        if (context.mode() == Jit.Mode.AUTO && eagerCandidate && EagerExecutor.tryRun(this, inputs, output, context.eagerBytes())) {
+            context.eagerRun();
+            context.selected("eager", small ? "small expression" : "SIMD eager candidate");
+            return;
+        }
+        // Provisional thresholds must be calibrated on the reference machine.
         boolean generate = context.mode() == Jit.Mode.REQUIRED
-                || (context.mode() == Jit.Mode.AUTO && output.shape().size() >= 1024);
+                || (context.mode() == Jit.Mode.AUTO && (cached || size >= 4096));
         if (generate && eligible) {
-            var types = new org.numjvm.dtype.DType[inputs.length];
-            for (int i = 0; i < inputs.length; i++) types[i] = inputs[i].dtype();
             GeneratedExecutor.run(context.kernel(this, types), inputs, output);
             context.generatedRun();
+            context.selected("generated", context.mode() == Jit.Mode.REQUIRED ? "explicit mode" : cached ? "cached kernel" : "large eligible run");
         } else {
             BlockExecutor.run(this, inputs, output);
             context.blockRun();
+            context.selected("block", !eligible ? "unsupported generated layout or graph" : "cold or budget-limited run");
         }
     }
 }
