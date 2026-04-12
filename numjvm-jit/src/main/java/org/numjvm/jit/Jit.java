@@ -79,6 +79,8 @@ public final class Jit {
         private long evictions;
         private final java.util.concurrent.atomic.LongAdder generatedRuns = new java.util.concurrent.atomic.LongAdder();
         private final java.util.concurrent.atomic.LongAdder blockRuns = new java.util.concurrent.atomic.LongAdder();
+        private final java.util.concurrent.atomic.LongAdder eagerRuns = new java.util.concurrent.atomic.LongAdder();
+        private final ThreadLocal<Decision> decision = ThreadLocal.withInitial(() -> new Decision("none", "no execution on this thread"));
         private Context(Mode mode, int cacheEntries, int scratchBytes, long eagerBytes) {
             this.mode = mode; this.cacheEntries = cacheEntries; this.scratchBytes = scratchBytes; this.eagerBytes = eagerBytes;
         }
@@ -107,6 +109,24 @@ public final class Jit {
 
         void generatedRun() { generatedRuns.increment(); }
         void blockRun() { blockRuns.increment(); }
+        void eagerRun() { eagerRuns.increment(); }
+        synchronized boolean cached(Expression expression, org.numjvm.dtype.DType[] types) {
+            return kernels.containsKey(KernelKey.of(expression, types));
+        }
+        void selected(String strategy, String reason) { decision.set(new Decision(strategy, reason)); }
+
+        /** Returns the latest selection on the current thread.
+         * @return execution strategy and reason
+         */
+        public Decision lastDecision() { return decision.get(); }
+
+        /** Drops current-thread diagnostic state, useful for pooled threads. */
+        public void clearThreadDecision() { decision.remove(); }
+
+        /** Returns the number of completed whole-array eager executions.
+         * @return completed eager runs
+         */
+        public long eagerRuns() { return eagerRuns.sum(); }
 
         /** Returns time spent compiling successfully generated kernels in this context.
          * @return accumulated compilation time in nanoseconds
@@ -164,6 +184,12 @@ public final class Jit {
      */
     public record Statistics(long compilations, long cacheHits, long evictions, int cachedKernels,
                              long generatedRuns, long blockRuns) { }
+
+    /** Current-thread execution selection.
+     * @param strategy selected strategy
+     * @param reason selection or fallback reason
+     */
+    public record Decision(String strategy, String reason) { }
 
     /** Symbolic inputs available while a trace callback runs. */
     public static final class Inputs {

@@ -30,9 +30,13 @@ computed through a temporary. Output shape and dtype must match exactly.
 
 Block mode uses bounded scratch and existing ufunc kernels. Required mode demands
 an eligible generated run and rejects unsupported layouts or large graphs before
-writing. Automatic mode currently uses a provisional size threshold; it is not a
-performance guarantee. Context statistics distinguish block and generated runs,
-compilations, cache hits and evictions. The cache holds no invocation arrays.
+writing. Automatic mode considers size, graph complexity, dtype, provider,
+generated eligibility, cached kernels and the eager temporary budget. Its
+thresholds are provisional; they are not a performance guarantee. Context
+statistics distinguish block and generated runs, compilations, cache hits and
+evictions; `eagerRuns()` counts whole-array runs. `lastDecision()` reports the
+current thread's latest selection and reason, and `clearThreadDecision()` removes
+it. The cache holds no invocation arrays.
 
 Run the example with `./gradlew :examples:fused-expressions:run`. Performance
 validation and unresolved gates are described in [the benchmark protocol](../benchmarks/M3-protocol.md).
