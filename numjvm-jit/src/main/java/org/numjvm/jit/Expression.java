@@ -29,6 +29,7 @@ public final class Expression {
     public int arity() { return arity; }
     Expr root() { return root; }
     GraphPlan graph() { return graph; }
+    int scratchBytes() { return context.scratchBytes(); }
 
     synchronized BlockPlan blockPlan(org.numjvm.dtype.DType[] types) {
         var key = java.util.List.of(types.clone());

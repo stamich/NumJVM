@@ -12,3 +12,7 @@ campaign, a controlled causal claim, or proof of the 0.5.0 performance gates.
 The implementation passes contiguous input runs directly to kernels and writes
 eligible root operations directly to output, while keeping gathers/scatters for
 other layouts and independent output storage for hazardous overlap.
+
+`ExpressionScratchBenchmark` was smoke-tested at 4,096, 16,384 and 65,536 byte
+caps with one short fork. That cold, shared-host run does not establish a best
+cap; keep the default provisional until a reference-machine comparison.

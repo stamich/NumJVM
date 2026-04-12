@@ -36,3 +36,12 @@ compilations, cache hits and evictions. The cache holds no invocation arrays.
 
 Run the example with `./gradlew :examples:fused-expressions:run`. Performance
 validation and unresolved gates are described in [the benchmark protocol](../benchmarks/M3-protocol.md).
+
+## Block scratch configuration
+
+An experimental context may set the operation-local block scratch byte cap with
+`Jit.context(mode, cacheEntries, scratchBytes)`, from 2,048 to 65,536 bytes.
+The default is 65,536 bytes. This cap excludes a full independent result used
+to protect hazardous output overlap. The existing process-wide scratch limit also
+applies. `ExpressionScratchBenchmark` compares several caps; the default has not
+yet been tuned on the designated reference machine.

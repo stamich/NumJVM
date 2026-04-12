@@ -25,4 +25,12 @@ class ConcurrencyTest {
             failure.get();
         }
     }
+    @Test void blockLeasesRemainIndependentAcrossThreads() throws Exception {
+        try (var context = Jit.context(Jit.Mode.BLOCK, 8, 2048); var pool = Executors.newFixedThreadPool(4)) {
+            var graph = context.trace(1, i -> i.input(0).add(2).square());
+            var tasks = new java.util.ArrayList<java.util.concurrent.Future<Double>>();
+            for (int i = 0; i < 8; i++) tasks.add(pool.submit(() -> graph.eval(NJ.ones(DType.FLOAT64, 10000)).getDouble(9999)));
+            for (var task : tasks) assertEquals(9.0, task.get());
+        }
+    }
 }

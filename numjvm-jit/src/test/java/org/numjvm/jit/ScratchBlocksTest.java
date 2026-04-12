@@ -22,4 +22,19 @@ class ScratchBlocksTest {
         }
         assertEquals(before, Scratch.activeBytes());
     }
+    @Test void capsEachNestedLeaseAndCleansUpAfterFailure() {
+        long before = Scratch.activeBytes();
+        try (var outer = new ScratchBlocks(4, 8192, 2048)) {
+            assertTrue(Scratch.activeBytes() - before <= 2048);
+            assertThrows(IllegalStateException.class, () -> {
+                try (var inner = new ScratchBlocks(4, 8192, 2048)) {
+                    assertTrue(Scratch.activeBytes() - before <= 4096);
+                    throw new IllegalStateException("test cleanup");
+                }
+            });
+            assertTrue(Scratch.activeBytes() - before <= 2048);
+        }
+        assertEquals(before, Scratch.activeBytes());
+        assertThrows(IllegalArgumentException.class, () -> Jit.context(Jit.Mode.BLOCK, 64, 2047));
+    }
 }

@@ -20,7 +20,7 @@ final class BlockExecutor {
         MemorySegment target = access.buffer(output).segment();
         MemorySegment[] memory = new MemorySegment[plan.scratchSlots];
         long[] offsets = new long[plan.scratchSlots], strides = new long[plan.scratchSlots];
-        try (var scratch = new ScratchBlocks(plan.scratchSlots + 2, 8192)) {
+        try (var scratch = new ScratchBlocks(plan.scratchSlots + 2, 8192, expression.scratchBytes())) {
             do {
                 for (long position = 0; position < traversal.innerSize();) {
                     int count = (int) Math.min(scratch.blockSize(), traversal.innerSize() - position);
