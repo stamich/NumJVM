@@ -128,6 +128,11 @@ public final class Jit {
          */
         public long eagerRuns() { return eagerRuns.sum(); }
 
+        /** Returns the discovered optional fused-vector provider name.
+         * @return provider name or unavailable
+         */
+        public String fusedVectorProvider() { return FusedProviders.name(); }
+
         /** Returns time spent compiling successfully generated kernels in this context.
          * @return accumulated compilation time in nanoseconds
          */
