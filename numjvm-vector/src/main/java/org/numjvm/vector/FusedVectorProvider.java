@@ -9,5 +9,8 @@ public final class FusedVectorProvider implements FusedProvider {
     /** Verifies that the incubating Vector API is resolved. */
     public FusedVectorProvider() { jdk.incubator.vector.DoubleVector.SPECIES_PREFERRED.length(); }
     @Override public String name() { return "jdk-vector"; }
-    @Override public FusedKernel compile(FusedGraph graph) { return null; }
+    @Override public FusedKernel compile(FusedGraph graph) {
+        var expression = DoubleExpressionCompiler.compile(graph);
+        return expression == null ? null : new DoubleFusedKernel(expression);
+    }
 }

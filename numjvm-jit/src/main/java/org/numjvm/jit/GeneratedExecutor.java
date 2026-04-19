@@ -3,6 +3,7 @@ package org.numjvm.jit;
 import java.lang.foreign.MemorySegment;
 import org.numjvm.internal.SharedSecrets;
 import org.numjvm.ndarray.NDArray;
+import org.numjvm.internal.backend.FusedKernel;
 
 /** Invokes a generated scalar kernel over eligible runs. */
 final class GeneratedExecutor {
@@ -19,6 +20,18 @@ final class GeneratedExecutor {
     }
 
     static void run(GeneratedKernel kernel, NDArray[] inputs, NDArray output) {
+        runLoop(kernel::run, inputs, output);
+    }
+
+    static void run(FusedKernel kernel, NDArray[] inputs, NDArray output) {
+        runLoop(kernel::run, inputs, output);
+    }
+
+    @FunctionalInterface private interface Run {
+        void run(MemorySegment[] segments, long[] offsets, long[] strides, long size);
+    }
+
+    private static void runLoop(Run kernel, NDArray[] inputs, NDArray output) {
         var iterator = new Traversal(output.shape(), inputs, output).iterator();
         if (!iterator.hasElements()) return;
         MemorySegment[] segments = new MemorySegment[inputs.length + 1];
