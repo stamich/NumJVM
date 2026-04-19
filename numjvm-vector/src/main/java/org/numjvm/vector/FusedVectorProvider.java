@@ -10,6 +10,10 @@ public final class FusedVectorProvider implements FusedProvider {
     public FusedVectorProvider() { jdk.incubator.vector.DoubleVector.SPECIES_PREFERRED.length(); }
     @Override public String name() { return "jdk-vector"; }
     @Override public FusedKernel compile(FusedGraph graph) {
+        if (graph.inputTypes().stream().allMatch(t -> t == org.numjvm.dtype.DType.FLOAT32)) {
+            var expression = FloatExpressionCompiler.compile(graph);
+            return expression == null ? null : new FloatFusedKernel(expression);
+        }
         var expression = DoubleExpressionCompiler.compile(graph);
         return expression == null ? null : new DoubleFusedKernel(expression);
     }
