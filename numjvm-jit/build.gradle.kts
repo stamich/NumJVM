@@ -13,4 +13,5 @@ tasks.register<Test>("fusedProviderTest") {
     jvmArgs("--add-modules", "jdk.incubator.vector")
     systemProperty("numjvm.expectFusedProvider", "jdk-vector")
     include("**/FusedProviderTest.class")
+    include("**/FusedDoubleTest.class")
 }
