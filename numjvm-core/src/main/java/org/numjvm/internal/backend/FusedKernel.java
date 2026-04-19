@@ -12,4 +12,6 @@ public interface FusedKernel {
      * @param count number of elements
      */
     void run(MemorySegment[] segments, long[] offsets, long[] strides, long count);
+    /** @return logical elements per vector operation */
+    default int vectorLength() { return 1; }
 }

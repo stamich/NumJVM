@@ -5,11 +5,13 @@ import java.lang.foreign.ValueLayout;
 import java.nio.ByteOrder;
 import jdk.incubator.vector.DoubleVector;
 import org.numjvm.internal.backend.FusedKernel;
+import org.numjvm.internal.backend.Accelerators;
 
 /** Traverses contiguous runs and delegates each vector expression to generated code. */
 final class DoubleFusedKernel implements FusedKernel {
     private final DoubleExpression expression;
     DoubleFusedKernel(DoubleExpression expression) { this.expression = expression; }
+    @Override public int vectorLength() { return DoubleVector.SPECIES_PREFERRED.length(); }
 
     @Override public void run(MemorySegment[] segments, long[] offsets, long[] strides, long count) {
         var species = DoubleVector.SPECIES_PREFERRED;
@@ -29,5 +31,6 @@ final class DoubleFusedKernel implements FusedKernel {
             double value = expression.evaluate(values).lane(0);
             segments[values.length].set(ValueLayout.JAVA_DOUBLE_UNALIGNED, offsets[values.length] + i * strides[values.length], value);
         }
+        if (bound > 0) Accelerators.executed();
     }
 }

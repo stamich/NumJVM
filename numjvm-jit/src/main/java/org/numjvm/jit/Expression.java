@@ -103,9 +103,31 @@ public final class Expression {
         boolean vectorProvider = !org.numjvm.BackendInfo.simdProvider().equals("scalar");
         boolean small = size <= 512;
         boolean eagerCandidate = small || (size <= 65536 && homogeneous && vectorProvider && graph.nodes().size() >= 3);
-        if (context.mode() == Jit.Mode.AUTO && eagerCandidate && EagerExecutor.tryRun(this, inputs, output, context.eagerBytes())) {
+        if (context.mode() == Jit.Mode.AUTO && small && EagerExecutor.tryRun(this, inputs, output, context.eagerBytes())) {
             context.eagerRun();
-            context.selected("eager", small ? "small expression" : "SIMD eager candidate");
+            context.selected("eager", "small expression");
+            return;
+        }
+        String fusedFallback = null;
+        if (context.mode() == Jit.Mode.AUTO && eligible && vectorProvider && FusedProviders.provider() != null) {
+            boolean fusedCached = context.fusedCached(this, types);
+            if ((fusedCached && size >= 1024) || size >= 4096) {
+                var fused = context.fusedKernel(this, types);
+                if (fused == null) fusedFallback = context.fusedFailure();
+                else if (!GeneratedExecutor.hasVectorRun(inputs, output, fused.vectorLength()))
+                    fusedFallback = "runs shorter than vector length";
+                else {
+                    GeneratedExecutor.run(fused, inputs, output);
+                    context.fusedRun();
+                    context.selected("fused-vector", fusedCached ? "cached fused kernel" : "large eligible vector run");
+                    return;
+                }
+            }
+        }
+        if (context.mode() == Jit.Mode.AUTO && !small && eagerCandidate
+                && EagerExecutor.tryRun(this, inputs, output, context.eagerBytes())) {
+            context.eagerRun();
+            context.selected("eager", fusedFallback != null ? fusedFallback : !eligible ? "unsupported generated layout or graph" : "SIMD eager candidate");
             return;
         }
         // Provisional thresholds must be calibrated on the reference machine.
@@ -114,11 +136,13 @@ public final class Expression {
         if (generate && eligible) {
             GeneratedExecutor.run(context.kernel(this, types), inputs, output);
             context.generatedRun();
-            context.selected("generated", context.mode() == Jit.Mode.REQUIRED ? "explicit mode" : cached ? "cached kernel" : "large eligible run");
+            context.selected("generated", context.mode() == Jit.Mode.REQUIRED ? "explicit mode"
+                    : fusedFallback != null ? fusedFallback : cached ? "cached kernel" : "large eligible run");
         } else {
             BlockExecutor.run(this, inputs, output);
             context.blockRun();
-            context.selected("block", !eligible ? "unsupported generated layout or graph" : "cold or budget-limited run");
+            context.selected("block", !eligible ? "unsupported generated layout or graph"
+                    : fusedFallback != null ? fusedFallback : "cold or budget-limited run");
         }
     }
 }

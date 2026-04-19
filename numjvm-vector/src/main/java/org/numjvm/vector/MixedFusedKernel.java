@@ -8,6 +8,7 @@ import jdk.incubator.vector.DoubleVector;
 import jdk.incubator.vector.FloatVector;
 import org.numjvm.dtype.DType;
 import org.numjvm.internal.backend.FusedKernel;
+import org.numjvm.internal.backend.Accelerators;
 
 /** Equal-lane mixed-dtype traversal; scalar tails use the same generated graph. */
 final class MixedFusedKernel implements FusedKernel {
@@ -16,6 +17,7 @@ final class MixedFusedKernel implements FusedKernel {
     MixedFusedKernel(MixedExpression expression, List<DType> inputTypes) {
         this.expression = expression; this.inputTypes = List.copyOf(inputTypes);
     }
+    @Override public int vectorLength() { return MixedConversions.DOUBLE.length(); }
     @Override public void run(MemorySegment[] segments, long[] offsets, long[] strides, long count) {
         var doubles = MixedConversions.DOUBLE;
         var floats = MixedConversions.FLOAT;
@@ -43,5 +45,6 @@ final class MixedFusedKernel implements FusedKernel {
             }
             segments[values.length].set(ValueLayout.JAVA_DOUBLE_UNALIGNED, offsets[values.length] + i * strides[values.length], expression.evaluate(values).lane(0));
         }
+        if (bound > 0) Accelerators.executed();
     }
 }

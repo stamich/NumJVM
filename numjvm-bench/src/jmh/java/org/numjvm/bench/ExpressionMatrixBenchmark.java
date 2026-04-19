@@ -2,6 +2,7 @@ package org.numjvm.bench;
 
 import java.util.concurrent.TimeUnit;
 import org.numjvm.NJ;
+import org.numjvm.BackendInfo;
 import org.numjvm.dtype.DType;
 import org.numjvm.jit.Expression;
 import org.numjvm.jit.Jit;
@@ -47,7 +48,11 @@ public class ExpressionMatrixBenchmark {
         NDArray expected = eagerAllocating();
         check(expected, eagerOut());
         check(expected, blockOut());
+        long before = BackendInfo.vectorRuns();
         check(expected, autoOut());
+        System.out.println("NUMJVM_AUTO_DECISION=" + auto.lastDecision());
+        System.out.println("NUMJVM_PROVIDER=" + BackendInfo.simdProvider());
+        System.out.println("NUMJVM_AUTO_VECTOR_RUNS=" + (BackendInfo.vectorRuns() - before));
         check(expected, scheduledOut());
         if (layout == Layouts.Layout.C || layout == Layouts.Layout.F) check(expected, generatedOut());
         checkSpecialValues(leftType, rightType);

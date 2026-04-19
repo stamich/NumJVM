@@ -22,3 +22,11 @@ A further single-fork, three-warmup/three-measurement check of generated-out at
 Both reported approximately 295 µs/op; the changed run varied from 172 to 523
 µs/op. Raw [before](m3-1-exploratory/b02-before.json) and
 [after](m3-1-exploratory/b02-after.json) measurements do not establish a speedup.
+
+A SIMD-required single-fork check of the new matrix benchmark on the same shared
+worker used 65,536 float64 elements, C order and the CHAIN expression. The AUTO
+setup reported `fused-vector`, provider `jdk-vector` and one actual vector run.
+The three AUTO measurements were approximately 6,858, 11,031 and 1,169 µs/op;
+the eager-out measurements were approximately 1,673, 1,677 and 1,751 µs/op.
+[Raw data](m3-1-exploratory/c06-simd.json). The high variance and single fork
+prevent a performance conclusion; the selection thresholds remain provisional.

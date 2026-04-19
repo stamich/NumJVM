@@ -38,9 +38,13 @@ evictions; `eagerRuns()` counts whole-array runs. `lastDecision()` reports the
 current thread's latest selection and reason, and `clearThreadDecision()` removes
 it. The cache holds no invocation arrays.
 
-`fusedVectorProvider()` reports service discovery only; it does not prove that a
-particular graph is supported or that vector instructions executed. The provider
-is optional and the JIT remains usable without the incubating Vector API.
+`fusedVectorProvider()` reports service discovery only. `lastDecision()` reports
+`fused-vector` when AUTO selected a supported vector kernel with at least one
+full vector run; `fusedStatistics()` reports its bounded cache and execution
+counts. The provider is optional, honors `numjvm.simd=off`, and JIT remains
+usable without the incubating Vector API. Explicit REQUIRED continues to use its
+generated-scalar contract. AUTO thresholds are provisional and require reference
+measurements with the actual provider and vector species.
 
 Run the example with `./gradlew :examples:fused-expressions:run`. Performance
 validation and unresolved gates are described in [the benchmark protocol](../benchmarks/M3-protocol.md).
