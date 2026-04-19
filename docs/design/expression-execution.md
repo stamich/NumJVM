@@ -38,6 +38,10 @@ evictions; `eagerRuns()` counts whole-array runs. `lastDecision()` reports the
 current thread's latest selection and reason, and `clearThreadDecision()` removes
 it. The cache holds no invocation arrays.
 
+`fusedVectorProvider()` reports service discovery only; it does not prove that a
+particular graph is supported or that vector instructions executed. The provider
+is optional and the JIT remains usable without the incubating Vector API.
+
 Run the example with `./gradlew :examples:fused-expressions:run`. Performance
 validation and unresolved gates are described in [the benchmark protocol](../benchmarks/M3-protocol.md).
 
