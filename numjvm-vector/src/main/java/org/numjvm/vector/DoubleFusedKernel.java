@@ -17,7 +17,9 @@ final class DoubleFusedKernel implements FusedKernel {
         long bound = species.loopBound(count), i = 0;
         for (; i < bound; i += species.length()) {
             for (int slot = 0; slot < values.length; slot++)
-                values[slot] = DoubleVector.fromMemorySegment(species, segments[slot], offsets[slot] + i * strides[slot], ByteOrder.nativeOrder());
+                values[slot] = strides[slot] == 0
+                        ? DoubleVector.broadcast(species, segments[slot].get(ValueLayout.JAVA_DOUBLE_UNALIGNED, offsets[slot]))
+                        : DoubleVector.fromMemorySegment(species, segments[slot], offsets[slot] + i * strides[slot], ByteOrder.nativeOrder());
             expression.evaluate(values).intoMemorySegment(segments[values.length], offsets[values.length] + i * strides[values.length], ByteOrder.nativeOrder());
         }
         // Scalar loads/stores keep short tails within their memory segment bounds.

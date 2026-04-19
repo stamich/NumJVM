@@ -17,7 +17,9 @@ final class FloatFusedKernel implements FusedKernel {
         long bound = species.loopBound(count), i = 0;
         for (; i < bound; i += species.length()) {
             for (int slot = 0; slot < values.length; slot++)
-                values[slot] = FloatVector.fromMemorySegment(species, segments[slot], offsets[slot] + i * strides[slot], ByteOrder.nativeOrder());
+                values[slot] = strides[slot] == 0
+                        ? FloatVector.broadcast(species, segments[slot].get(ValueLayout.JAVA_FLOAT_UNALIGNED, offsets[slot]))
+                        : FloatVector.fromMemorySegment(species, segments[slot], offsets[slot] + i * strides[slot], ByteOrder.nativeOrder());
             expression.evaluate(values).intoMemorySegment(segments[values.length], offsets[values.length] + i * strides[values.length], ByteOrder.nativeOrder());
         }
         // Scalar loads/stores keep short tails within their memory segment bounds.

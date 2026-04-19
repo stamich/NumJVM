@@ -15,4 +15,5 @@ tasks.register<Test>("fusedProviderTest") {
     include("**/FusedProviderTest.class")
     include("**/FusedDoubleTest.class")
     include("**/FusedFloatTest.class")
+    include("**/FusedLayoutTest.class")
 }
