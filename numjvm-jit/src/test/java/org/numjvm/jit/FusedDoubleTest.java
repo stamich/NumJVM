@@ -74,7 +74,7 @@ class FusedDoubleTest {
             var scalar = graph.eval(inputs);
             for (int i = 0; i < 129; i++)
                 assertEquals(Double.doubleToRawLongBits(scalar.getDouble(i)), Double.doubleToRawLongBits(output.getDouble(i)));
-            assertNull(FusedProviders.compile(graph, new DType[]{DType.FLOAT32, DType.FLOAT64}));
+            assertNotNull(FusedProviders.compile(graph, new DType[]{DType.FLOAT32, DType.FLOAT64}));
         }
     }
 }

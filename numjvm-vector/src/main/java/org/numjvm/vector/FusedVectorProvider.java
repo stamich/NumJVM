@@ -15,6 +15,8 @@ public final class FusedVectorProvider implements FusedProvider {
             return expression == null ? null : new FloatFusedKernel(expression);
         }
         var expression = DoubleExpressionCompiler.compile(graph);
-        return expression == null ? null : new DoubleFusedKernel(expression);
+        if (expression != null) return new DoubleFusedKernel(expression);
+        var mixed = MixedExpressionCompiler.compile(graph);
+        return mixed == null ? null : new MixedFusedKernel(mixed, graph.inputTypes());
     }
 }
