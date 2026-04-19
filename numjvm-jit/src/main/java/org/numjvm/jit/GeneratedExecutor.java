@@ -19,6 +19,16 @@ final class GeneratedExecutor {
         return true;
     }
 
+    static boolean hasVectorRun(NDArray[] inputs, NDArray output, int lanes) {
+        var traversal = new Traversal(output.shape(), inputs, output);
+        var it = traversal.iterator();
+        if (!it.hasElements()) return false;
+        do {
+            if (it.innerSize() >= lanes) return true;
+        } while (it.next());
+        return false;
+    }
+
     static void run(GeneratedKernel kernel, NDArray[] inputs, NDArray output) {
         runLoop(kernel::run, inputs, output);
     }
