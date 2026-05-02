@@ -87,6 +87,12 @@ and `nativeCalls()` (process-wide) distinguish availability from execution. Nati
 execution failures propagate without a second attempt. Numerical calls never modify
 process-wide BLAS thread settings; callers configure those before launch.
 
+With the optional Vector API provider, homogeneous contiguous real vector dot and
+vecdot may use SIMD; unsupported types, layouts and small sizes retain Java
+execution. SIMD reductions combine lanes in a different order, so the documented
+contraction tolerance applies rather than bitwise cross-backend equality. The
+initial 128-element cutoff is provisional and requires reference benchmarking.
+
 ## Validation boundaries
 
 `build` validates Java portability. Optional-provider core/oracle runs use

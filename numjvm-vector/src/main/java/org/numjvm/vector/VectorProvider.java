@@ -2,6 +2,7 @@ package org.numjvm.vector;
 
 import org.numjvm.dtype.DType;
 import org.numjvm.internal.backend.LoopProvider;
+import org.numjvm.internal.backend.DotLoop;
 import org.numjvm.internal.loops.BinaryLoop;
 import org.numjvm.internal.loops.UnaryLoop;
 
@@ -14,6 +15,7 @@ public final class VectorProvider implements LoopProvider {
         jdk.incubator.vector.DoubleVector.SPECIES_PREFERRED.length();
     }
     @Override public String name() { return "jdk-vector"; }
+    @Override public DotLoop dot(DType type) { return VectorDot.kernel(type); }
     @Override public UnaryLoop unary(String op, DType type, UnaryLoop scalar) {
         return GeneratedVectorKernels.unary(op, type, scalar);
     }

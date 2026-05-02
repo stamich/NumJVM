@@ -1,6 +1,9 @@
 plugins { `java-library` }
 description = "Portable real matrix multiplication with optional LP64 OpenBLAS"
-dependencies { api(project(":numjvm-core")) }
+dependencies {
+    api(project(":numjvm-core"))
+    testRuntimeOnly(project(":numjvm-vector"))
+}
 tasks.withType<Test>().configureEach {
     jvmArgs("--enable-native-access=ALL-UNNAMED")
     systemProperty("numjvm.linalg", providers.gradleProperty("linalgBackend").orElse("java").get())
@@ -35,5 +38,17 @@ tasks.register<Test>("autoTest") {
     systemProperty("numjvm.linalg", "auto")
     shouldRunAfter(tasks.named("nativeTest"))
 }
+
+tasks.register<Test>("simdTest") {
+    description = "Checks real contractions with the Vector API required."
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
+    jvmArgs("--add-modules", "jdk.incubator.vector")
+    systemProperty("numjvm.simd", "required")
+    systemProperty("numjvm.linalg", "java")
+    include("**/VectorContractTest.class")
+}
+tasks.named<JacocoReport>("jacocoTestReport") { mustRunAfter(tasks.named("simdTest")) }
+tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") { dependsOn(tasks.named("simdTest")) }
 tasks.named<JacocoReport>("jacocoTestReport") { mustRunAfter(tasks.named("autoTest")) }
 tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") { dependsOn(tasks.named("autoTest")) }

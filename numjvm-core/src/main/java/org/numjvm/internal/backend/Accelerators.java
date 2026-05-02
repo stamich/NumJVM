@@ -42,6 +42,12 @@ public final class Accelerators {
      */
     public static long executions() { return EXECUTIONS.sum(); }
 
+    /** Returns an optional contiguous real contraction kernel.
+     * @param type resolved common operand type
+     * @return provider kernel, or null
+     */
+    public static DotLoop dot(DType type) { return PROVIDER == null ? null : PROVIDER.dot(type); }
+
     /** Returns provider discovery outcome or fallback reason.
      * @return provider discovery outcome or fallback reason
      */
