@@ -25,6 +25,28 @@ public final class Linalg {
         return result;
     }
     /**
+     * Contracts the last axis of real arrays, broadcasting the remaining axes.
+     * @param a left operand
+     * @param b right operand
+     * @return contraction result
+     */
+    public static NDArray vecdot(NDArray a, NDArray b) { return vecdot(a, b, -1); }
+
+    /**
+     * Contracts the selected axis of each real array.
+     * @param a left operand
+     * @param b right operand
+     * @param axis axis in each operand, including negative indices
+     * @return contraction result
+     */
+    public static NDArray vecdot(NDArray a, NDArray b, int axis) {
+        MatmulMemory.accessible(a); MatmulMemory.accessible(b);
+        var plan = ContractionPlan.vecdot(a.shape(), b.shape(), a.dtype(), b.dtype(), axis);
+        var result = ContractionExecutor.allocate(a, b, plan);
+        ContractionExecutor.vecdot(a, b, result, plan);
+        return result;
+    }
+    /**
      * Multiplies two arrays. Mixed float32/64 produces float64. Results belong to
      * the first live operand scope, otherwise to automatic memory.
      * @param a left operand

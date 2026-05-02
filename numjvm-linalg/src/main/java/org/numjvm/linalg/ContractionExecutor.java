@@ -49,4 +49,41 @@ final class ContractionExecutor {
             }
         }
     }
+
+    static void vecdot(NDArray a, NDArray b, NDArray out, ContractionPlan plan) {
+        long[] left = new long[a.shape().rank()], right = new long[b.shape().rank()];
+        long[] leftDims = a.shape().dimensions(), rightDims = b.shape().dimensions();
+        var indices = new IndexIterator(plan.output());
+        while (indices.hasNext()) {
+            long[] index = indices.next();
+            broadcastIndex(index, leftDims, plan.leftAxis(), left);
+            broadcastIndex(index, rightDims, plan.rightAxis(), right);
+            if (plan.dtype() == DType.FLOAT32) {
+                float sum = 0;
+                for (long k = 0; k < plan.length(); k++) {
+                    left[plan.leftAxis()] = k; right[plan.rightAxis()] = k;
+                    sum += (float) a.getDouble(left) * (float) b.getDouble(right);
+                }
+                out.setDouble(index, sum);
+            } else {
+                double sum = 0;
+                for (long k = 0; k < plan.length(); k++) {
+                    left[plan.leftAxis()] = k; right[plan.rightAxis()] = k;
+                    sum += a.getDouble(left) * b.getDouble(right);
+                }
+                out.setDouble(index, sum);
+            }
+        }
+    }
+
+    /** Align each input's non-contracted axes with the broadcast result from the right. */
+    private static void broadcastIndex(long[] output, long[] dims, int axis, long[] input) {
+        int p = output.length - (dims.length - 1);
+        for (int d = 0; d < dims.length; d++) {
+            if (d != axis) {
+                input[d] = dims[d] == 1 ? 0 : output[p];
+                p++;
+            }
+        }
+    }
 }
