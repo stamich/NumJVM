@@ -25,6 +25,19 @@ public final class Linalg {
         return result;
     }
     /**
+     * Computes dot into an exact-shape, exact-dtype writable output.
+     * Hazardous overlap is protected by a temporary result.
+     * @param a left operand
+     * @param b right operand
+     * @param out destination
+     * @return out
+     */
+    public static NDArray dot(NDArray a, NDArray b, NDArray out) {
+        MatmulMemory.accessible(a); MatmulMemory.accessible(b);
+        var plan = ContractionPlan.dot(a.shape(), b.shape(), a.dtype(), b.dtype());
+        return ContractionOutput.run(a, b, out, plan, false);
+    }
+    /**
      * Contracts the last axis of real arrays, broadcasting the remaining axes.
      * @param a left operand
      * @param b right operand
@@ -45,6 +58,29 @@ public final class Linalg {
         var result = ContractionExecutor.allocate(a, b, plan);
         ContractionExecutor.vecdot(a, b, result, plan);
         return result;
+    }
+    /**
+     * Contracts the last axis into a supplied destination.
+     * @param a left operand
+     * @param b right operand
+     * @param out destination
+     * @return out
+     */
+    public static NDArray vecdot(NDArray a, NDArray b, NDArray out) { return vecdot(a, b, -1, out); }
+
+    /**
+     * Contracts the selected axis into a supplied destination. Output errors are
+     * detected before writes; execution errors may leave direct output partial.
+     * @param a left operand
+     * @param b right operand
+     * @param axis axis in each operand
+     * @param out destination
+     * @return out
+     */
+    public static NDArray vecdot(NDArray a, NDArray b, int axis, NDArray out) {
+        MatmulMemory.accessible(a); MatmulMemory.accessible(b);
+        var plan = ContractionPlan.vecdot(a.shape(), b.shape(), a.dtype(), b.dtype(), axis);
+        return ContractionOutput.run(a, b, out, plan, true);
     }
     /**
      * Multiplies two arrays. Mixed float32/64 produces float64. Results belong to

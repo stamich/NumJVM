@@ -15,6 +15,11 @@ final class ContractionExecutor {
                 plan.dtype(), plan.output(), Order.C);
     }
 
+    static NDArray allocateTemporary(org.numjvm.memory.NJScope scope, ContractionPlan plan) {
+        return SharedSecrets.arrayAccess().allocate(SharedSecrets.scopeAccess().allocator(scope),
+                plan.dtype(), plan.output(), Order.C);
+    }
+
     static void dot(NDArray a, NDArray b, NDArray out, ContractionPlan plan) {
         long[] left = new long[a.shape().rank()];
         long[] right = new long[b.shape().rank()];
