@@ -14,6 +14,8 @@ final class BlasDispatch {
     /** Drops this thread's diagnostic so pooled threads do not keep it alive. */
     static void clearLast() { LAST.remove(); }
     static void emptyBatch() { LAST.set("java: empty batch/output; no arithmetic executed"); }
+    static void dotNative() { CALLS.increment(); LAST.set("openblas-dot"); }
+    static void dotJava() { LAST.set("java: unsupported DOT layout, type, size or provider"); }
     static boolean lp64(long m,long k,long n) {
         return m>=0 && k>=0 && n>=0 && m<=Integer.MAX_VALUE && k<=Integer.MAX_VALUE && n<=Integer.MAX_VALUE;
     }

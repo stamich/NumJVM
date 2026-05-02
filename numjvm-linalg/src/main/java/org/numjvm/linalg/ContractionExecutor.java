@@ -21,6 +21,8 @@ final class ContractionExecutor {
     }
 
     static void dot(NDArray a, NDArray b, NDArray out, ContractionPlan plan) {
+        if (NativeDot.tryRun(a, b, out, plan)) return;
+        BlasDispatch.dotJava();
         long[] left = new long[a.shape().rank()];
         long[] right = new long[b.shape().rank()];
         var indices = new IndexIterator(plan.output());
@@ -56,6 +58,8 @@ final class ContractionExecutor {
     }
 
     static void vecdot(NDArray a, NDArray b, NDArray out, ContractionPlan plan) {
+        if (NativeDot.tryRun(a, b, out, plan)) return;
+        BlasDispatch.dotJava();
         long[] left = new long[a.shape().rank()], right = new long[b.shape().rank()];
         long[] leftDims = a.shape().dimensions(), rightDims = b.shape().dimensions();
         var indices = new IndexIterator(plan.output());

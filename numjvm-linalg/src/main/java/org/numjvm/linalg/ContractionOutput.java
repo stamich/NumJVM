@@ -32,6 +32,7 @@ final class ContractionOutput {
 
     private static void execute(NDArray a, NDArray b, NDArray out, ContractionPlan plan, boolean vector) {
         if (vector) ContractionExecutor.vecdot(a, b, out, plan);
+        else if (a.ndim() == 2 && b.ndim() == 2) Linalg.matmul(a, b, out);
         else ContractionExecutor.dot(a, b, out, plan);
     }
 

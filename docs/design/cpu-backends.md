@@ -62,6 +62,14 @@ for float32 results. BLAS may reorder arithmetic or use FMA. Backend equality is
 numerical, not bitwise; [ADR-006](../adr/ADR-006-cpu-backends.md) specifies finite error
 bounds and separate exceptional-value expectations. No LAPACK APIs are advertised.
 
+For real dot and vecdot, homogeneous contiguous native vectors may use optional
+LP64 `cblas_sdot`/`cblas_ddot`. DOT symbols are resolved separately from GEMM;
+a missing optional DOT symbol does not make the matmul provider unavailable.
+Heap, mixed-type, nonunit or negative-stride inputs use the Java contraction
+path. AUTO's initial 1,024-element threshold is provisional. Compatible rank-two
+dot delegates to matmul and can reuse GEMM. Inspect `Linalg.lastBackend()` and
+`Linalg.nativeCalls()` to distinguish execution from provider availability.
+
 Only Linux x86-64 OpenBLAS LP64 CBLAS is supported natively. Explicit configuration
 uses `numjvm.openblas.path`; controlled discovery also checks documented system
 locations. Loading verifies `openblas_get_config`, rejects USE64BITINT, and resolves
