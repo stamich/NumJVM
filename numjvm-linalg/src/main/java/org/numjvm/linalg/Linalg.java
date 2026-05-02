@@ -3,13 +3,27 @@ package org.numjvm.linalg;
 import org.numjvm.ndarray.NDArray;
 
 /**
- * Experimental float32/float64 matrix multiplication, following NumPy matmul
- * vector promotion and leading-dimension broadcasting. Rank-zero inputs and
- * integer/complex dtypes are not supported. Use the optional linalg artifact.
+ * Experimental float32/float64 linear algebra in the optional linalg artifact.
+ * Matmul follows NumPy vector promotion and leading-dimension broadcasting;
+ * dot additionally supports scalars and higher-rank contraction.
  */
 @org.numjvm.Experimental
 public final class Linalg {
     private Linalg() { }
+    /**
+     * Computes NumPy-style dot for float32 and float64 arrays.
+     * Mixed types produce float64; the first scoped operand owns the result.
+     * @param a left operand
+     * @param b right operand
+     * @return contraction result
+     */
+    public static NDArray dot(NDArray a, NDArray b) {
+        MatmulMemory.accessible(a); MatmulMemory.accessible(b);
+        var plan = ContractionPlan.dot(a.shape(), b.shape(), a.dtype(), b.dtype());
+        var result = ContractionExecutor.allocate(a, b, plan);
+        ContractionExecutor.dot(a, b, result, plan);
+        return result;
+    }
     /**
      * Multiplies two arrays. Mixed float32/64 produces float64. Results belong to
      * the first live operand scope, otherwise to automatic memory.
