@@ -20,6 +20,7 @@ public final class Linalg {
     public static NDArray dot(NDArray a, NDArray b) {
         MatmulMemory.accessible(a); MatmulMemory.accessible(b);
         var plan = ContractionPlan.dot(a.shape(), b.shape(), a.dtype(), b.dtype());
+        if (a.ndim() == 2 && b.ndim() == 2) return matmul(a, b);
         var result = ContractionExecutor.allocate(a, b, plan);
         ContractionExecutor.dot(a, b, result, plan);
         return result;
