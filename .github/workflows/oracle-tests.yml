@@ -43,6 +43,8 @@ jobs:
         run: |
           python numjvm-tests-oracle/generate_cases.py --check
           python numjvm-tests-oracle/generate_matmul_cases.py --check
+          python numjvm-tests-oracle/generate_contraction_cases.py --check
+          python numjvm-tests-oracle/check_m3_1_contract.py
 
       - name: Java tests, including the NumPy oracle replay
         run: ./gradlew test --stacktrace

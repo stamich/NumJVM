@@ -48,6 +48,7 @@ jobs:
           bash scripts/check_consumers.sh
           ./gradlew publish --console=plain
           bash scripts/check_jit_consumers.sh
+          bash scripts/check_050_consumers.sh
 
       - name: Publish test results
         if: always()

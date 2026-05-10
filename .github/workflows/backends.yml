@@ -36,6 +36,8 @@ jobs:
           distribution: temurin
           java-version: 25
       - run: ./gradlew build -PsimdEnabled=true -PsimdMode=${{ matrix.mode }} --stacktrace
+      - if: matrix.mode == 'required'
+        run: ./gradlew :numjvm-jit:fusedProviderTest :numjvm-linalg:simdTest --stacktrace
   native:
     runs-on: ubuntu-24.04
     env:
@@ -49,6 +51,9 @@ jobs:
           java-version: 25
       - run: sudo apt-get update && sudo apt-get install -y libopenblas0-pthread
       - run: ./gradlew :numjvm-linalg:backendCheck --stacktrace
+      - run: ./gradlew publish --stacktrace && bash scripts/check_050_consumers.sh
+        env:
+          NUMJVM_OPENBLAS_PATH: /usr/lib/x86_64-linux-gnu/libopenblas.so.0
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()
         with:
