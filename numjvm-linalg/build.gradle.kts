@@ -47,6 +47,7 @@ tasks.register<Test>("simdTest") {
     systemProperty("numjvm.simd", "required")
     systemProperty("numjvm.linalg", "java")
     include("**/VectorContractTest.class")
+    include("**/ContractionOracleTest.class")
 }
 tasks.named<JacocoReport>("jacocoTestReport") { mustRunAfter(tasks.named("simdTest")) }
 tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") { dependsOn(tasks.named("simdTest")) }
