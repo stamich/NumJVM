@@ -20,4 +20,5 @@ tasks.register<Test>("fusedProviderTest") {
     include("**/FusedDispatchTest.class")
     include("**/FusedPropertyStressTest.class")
     include("**/GraphLayoutMatrixTest.class")
+    include("**/ResourceIntegrationTest.class")
 }
