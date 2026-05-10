@@ -96,3 +96,17 @@ row cost one file. The generator fails if inputs, expected files and the manifes
 
 To add a case, edit `cases()` in `generate_cases.py`, run it, and commit the fixtures. If the case uses a new operation,
 add it to `OracleTest.apply`.
+# 0.5.0 contraction fixtures
+
+`generate_contraction_cases.py` generates deterministic dot/vecdot fixtures with
+NumPy shape checks and `math.fsum` references. The fixture includes per-output
+sums of absolute products for scale-aware tolerances. Regenerate or verify with:
+
+```sh
+.venv/bin/python numjvm-tests-oracle/generate_contraction_cases.py
+.venv/bin/python numjvm-tests-oracle/generate_contraction_cases.py --check
+```
+
+The Java `ContractionOracleTest` replays the fixtures with Java, required SIMD,
+and required OpenBLAS configurations. Backend-specific execution tests remain
+necessary because a valid contraction may intentionally fall back to Java.
