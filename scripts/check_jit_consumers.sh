@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-version="${1:-0.4.0-alpha}"
+version="${1:-$(sed -n 's/^version=//p' gradle.properties)}"
 repo="$(pwd)/build/staging-repo/io/github/stamich"
 core="$repo/numjvm-core/$version/numjvm-core-$version.jar"
 jit="$repo/numjvm-jit/$version/numjvm-jit-$version.jar"
