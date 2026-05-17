@@ -46,6 +46,7 @@ jobs:
           python numjvm-tests-oracle/generate_contraction_cases.py --check
           python numjvm-tests-oracle/check_m3_1_contract.py
           python -m unittest discover -s numjvm-bench -p test_compare_expression.py
+          python -m unittest discover -s numjvm-bench -p test_run_050_reference.py
 
       - name: Java tests, including the NumPy oracle replay
         run: ./gradlew test --stacktrace
