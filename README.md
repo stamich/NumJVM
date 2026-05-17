@@ -14,9 +14,9 @@
 Numerical computing for the Java Virtual Machine: N-dimensional arrays with NumPy semantics, built on the Java 25
 Foreign Function & Memory API. No Python, NumPy or native libraries are needed at run time.
 
-> **Status: 0.4.0-alpha draft candidate (M3).** Experimental expression execution
-> extends the existing CPU and matrix APIs. M2 and M3 reference-performance gates
-> remain open; see [M3 status](docs/milestones/M3-status.md). The API remains experimental.
+> **Status: 0.5.0-alpha implementation candidate (M3.1).** Experimental expression
+> execution and real contractions extend the CPU APIs. Reference-performance gates
+> remain open; see [0.5.0 status](docs/milestones/M3-1-status.md). The API remains experimental.
 
 ## Quick start
 

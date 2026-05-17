@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 import numpy as np
 
-path = Path(__file__).parent / "fixtures" / "m3_1_contractions.json"
+path = Path(__file__).parent / "m3_1" / "contractions.json"
 for case in json.loads(path.read_text())["cases"]:
     a = np.asarray(case["a"], dtype=np.float64)
     b = np.asarray(case["b"], dtype=np.float64)

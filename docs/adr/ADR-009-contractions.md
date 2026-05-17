@@ -12,7 +12,7 @@ with the right final axis for a vector, or the right penultimate axis for higher
 rank. Vecdot normalizes its selected axis for each input, contracts equal-length
 axes and broadcasts the remaining dimensions. Zero-length contractions yield
 zeros. Validate shape and axis before writing. Reference fixtures live in
-`numjvm-tests-oracle/fixtures/m3_1_contractions.json` and can be checked with
+`numjvm-tests-oracle/m3_1/contractions.json` and can be checked with
 `numjvm-tests-oracle/check_m3_1_contract.py` before the APIs exist.
 
 Allocate results in the first operand's open scope when present, following the
