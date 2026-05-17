@@ -96,3 +96,7 @@ python3 -m unittest discover -s numjvm-bench -p test_compare_expression.py
 The tool reports missing or mismatched configuration without a speedup ratio.
 It does not treat heap GC metrics as native allocation measurements. Source
 revisions may differ, but each must be recorded and have a clean working tree.
+
+The reproducible Ryzen reference campaign is documented in
+[`M3-1-protocol.md`](../docs/benchmarks/M3-1-protocol.md). Its full matrix is
+deliberately separate from fast benchmark smoke runs.

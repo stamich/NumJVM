@@ -76,6 +76,8 @@ def main():
         return code
     code, log = command(["./gradlew", ":numjvm-bench:jmh", *simd_arg, "-PjmhArgs=" + jmh_args], env)
     (out / "jmh.log").write_text(log + "\n")
+    if code == 0 and ("<failure>" in log or not (out / "m3-expression.json").is_file()):
+        code = 1
     manifest["jmh_exit_code"] = code
     save()
     print(manifest_path)
