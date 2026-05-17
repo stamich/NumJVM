@@ -94,7 +94,7 @@ Runnable versions: [`examples/basic-arrays`](examples/basic-arrays) and
 | `numjvm-jit`          | `io.github.stamich:numjvm-jit`  | experimental expression execution |
 | `numjvm-io`           | `io.github.stamich:numjvm-io`   | NumPy `.npy` I/O                                        |
 | `numjvm-vector` | `io.github.stamich:numjvm-vector` | optional SIMD kernels |
-| `numjvm-linalg` | `io.github.stamich:numjvm-linalg` | Java matmul, optional OpenBLAS |
+| `numjvm-linalg` | `io.github.stamich:numjvm-linalg` | real matmul, dot and vecdot; optional SIMD/OpenBLAS |
 | `numjvm-bench`        | not published                   | JMH benchmarks                                          |
 | `numjvm-tests-oracle` | not published                   | NumPy differential-test fixtures                        |
 
@@ -125,6 +125,11 @@ for flags, forced modes, ownership, diagnostics, native validation and consumer 
 The [M2 status](docs/milestones/M2-status.md) distinguishes implemented behavior from
 outstanding release performance evidence.
 
+Experimental real float32/64 `Linalg.dot` and `Linalg.vecdot` add vector and
+higher-rank contractions, with exact-shape/dtype explicit outputs. See the
+[contraction guide](docs/design/contractions.md) and run
+`./gradlew :examples:contractions:run` (add `-PwithVector` for SIMD).
+
 ## Experimental expression fusion
 
 The optional `numjvm-jit` module traces explicit float32/float64 arithmetic
@@ -132,7 +137,9 @@ expressions for block or generated execution. The alpha supports add, subtract,
 multiply, divide, negative, absolute, square, and square root; comparisons,
 conditional selection, other transcendental functions, reductions, and matmul
 inside expressions are not yet supported. See the [expression guide](docs/design/expression-execution.md)
-and run `./gradlew :examples:fused-expressions:run`.
+and run `./gradlew :examples:fused-expressions:run`. AUTO may select optional
+fused SIMD when eligible; `lastDecision()` identifies the actual strategy.
+Performance targets remain unverified; see the [reference protocol](docs/benchmarks/M3-1-protocol.md).
 
 ## Building
 

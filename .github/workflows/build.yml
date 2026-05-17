@@ -41,7 +41,7 @@ jobs:
         run: python3 scripts/coverage_summary.py numjvm-core numjvm-io
 
       - name: Run examples
-        run: ./gradlew --quiet :examples:basic-arrays:run :examples:memory-scopes:run :examples:accelerated-arrays:run :examples:matmul:run
+        run: ./gradlew --quiet :examples:basic-arrays:run :examples:memory-scopes:run :examples:accelerated-arrays:run :examples:matmul:run :examples:contractions:run
 
       - name: Consume the published artifacts from a separate build
         run: |
