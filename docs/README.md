@@ -23,3 +23,6 @@
 - [M2 evidence and remaining gates](milestones/M2-status.md)
 
 - [Experimental expression execution](design/expression-execution.md)
+- [Real dot and vecdot](design/contractions.md)
+- [0.5.0 reference protocol](benchmarks/M3-1-protocol.md)
+- [0.5.0 status and open gates](milestones/M3-1-status.md)

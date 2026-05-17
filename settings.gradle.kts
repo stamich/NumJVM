@@ -22,6 +22,7 @@ include(
     "examples:basic-arrays",
     "examples:accelerated-arrays",
     "examples:matmul",
+    "examples:contractions",
     "examples:fused-expressions",
     "examples:memory-scopes",
 )
