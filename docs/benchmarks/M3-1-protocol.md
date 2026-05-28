@@ -43,3 +43,10 @@ allocating methods only against other allocating methods.
 The proposed 1.5× large fused-output target, 1.8× allocating regression guard,
 and small/medium AUTO budgets remain open pending valid measurements. If a gate
 fails, report it and retain the failure; do not silently lower the target.
+
+The 0.6.0 benchmark module adds `ContractionBenchmark` for float32/64 vector
+`dot` and `vecdot`, allocating and preallocated outputs. Preserve its JMH logs
+as well as JSON: setup reports the observed backend and SIMD provider. Run the
+existing `ExpressionLifecycleBenchmark` and `expressionCompileProbe` separately
+for trace, first-call, compilation and warm costs; compilation-probe results
+are single-process diagnostics, not a substitute for JMH distributions.
