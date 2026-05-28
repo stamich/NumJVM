@@ -81,3 +81,12 @@ compilation. The separate lifecycle JMH suite also ran.
 
 See the [protocol](M3-1-protocol.md) and the proposed
 [0.6.0 plan](../milestones/M4-0.6-plan.md).
+
+## 0.6.0 starting baseline
+
+The 0.6.0 work starts from the merged 0.5.0 implementation and oracle cache
+fix. The reference timings above were measured at `4aff717` on the user's
+machine, not at the later merge: source provenance is part of the measurement.
+The clean follow-up was a focused investigation, not a complete replacement for
+the earlier dirty full campaign. Keep those datasets distinct when comparing
+future work. No reference-machine measurements have yet been made for 0.6.0.
