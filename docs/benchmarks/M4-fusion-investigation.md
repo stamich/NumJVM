@@ -14,3 +14,19 @@ why HotSpot allocated them. Generate or otherwise specialize a whole traversal
 loop and measure both allocation and speed before concluding that a change
 fixes the cause. Confirm float64 and mixed independently. Small AUTO overhead
 occurs even when eager is selected and needs a separate investigation.
+
+`FusedAllocationBenchmark` provides a focused JMH regression matrix. Run with
+`-prof gc` and inspect `gc.alloc.rate.norm` as well as elapsed time, recording
+provider and `NUMJVM_AUTO_DECISION` from its setup. For example, pass
+`-PjmhArgs='FusedAllocationBenchmark -p size=1048576 -p layout=C -p types=FLOAT32 -p chain=ADD,CHAIN -prof gc'`
+to `:numjvm-bench:jmh` with `-PsimdBench` and the required vector JVM options.
+
+An exploratory shared-machine JDK 25 run (one fork, three one-second warmups
+and measurements, 1,048,576 float32 C-order elements) compared the old array
+based path with a generated whole-run loop. AUTO ADD allocation fell from about
+12.6 MB/op to 8.1 kB/op and CHAIN from 25.2 MB/op to 13.7 kB/op. These are
+separate runs on a shared machine, not reference-machine acceptance results.
+The generated loop keeps vector intermediates in locals, preserving a separate
+scalar-tail path; mixed graphs still use the original vector-array path until
+independently improved and measured. Repeat the full matrix on the reference
+machine before closing performance gates.
