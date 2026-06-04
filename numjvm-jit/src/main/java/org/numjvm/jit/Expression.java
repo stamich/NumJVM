@@ -107,6 +107,13 @@ public final class Expression {
         boolean homogeneous = true;
         for (int i = 1; i < types.length; i++) homogeneous &= types[i] == types[0];
         boolean vectorProvider = !org.numjvm.BackendInfo.simdProvider().equals("scalar");
+        // There is no intermediate traffic to save for one direct ufunc.
+        if (context.mode() == Jit.Mode.AUTO && vectorProvider && EagerExecutor.isDirect(this)
+                && EagerExecutor.tryRun(this, inputs, output, context.eagerBytes())) {
+            context.eagerRun();
+            context.selected("eager", "single ufunc");
+            return;
+        }
         boolean eagerCandidate = small || (size <= 65536 && homogeneous && vectorProvider && graph.nodes().size() >= 3);
         String fusedFallback = null;
         if (context.mode() == Jit.Mode.AUTO && eligible && vectorProvider && FusedProviders.provider() != null) {

@@ -40,3 +40,12 @@ no temporary arrays. AUTO now checks the small-input eager path before building
 a generated traversal, and that single-ufunc case avoids opening a temporary
 scope. More complex small graphs still incur scheduler and scope costs; the
 reference-machine small-input budget has not yet been remeasured.
+
+AUTO selects eager for a single direct array ufunc with an available SIMD
+provider. Such an operation has no intermediate array for fusion to eliminate;
+the clean 0.5.0 ADD comparison also favored eager. A decision is reported as
+`single ufunc`. Scalar-provider dispatch and multi-operation thresholds remain
+unchanged. Since the kernels changed after the reference run, numerical
+threshold calibration requires new reference measurements; do not infer it
+from the older measurements. The allocation benchmark's ADD case now measures
+the selected eager path, while CHAIN exercises eligible fused execution.
