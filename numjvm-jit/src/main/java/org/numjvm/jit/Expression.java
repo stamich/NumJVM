@@ -90,24 +90,24 @@ public final class Expression {
             context.selected("block", "explicit mode");
             return;
         }
+        long size = output.shape().size();
+        if (size == 0) { context.selected("empty", "zero elements"); return; }
+        boolean small = size <= 512;
+        if (context.mode() == Jit.Mode.AUTO && small && EagerExecutor.tryRun(this, inputs, output, context.eagerBytes())) {
+            context.eagerRun();
+            context.selected("eager", "small expression");
+            return;
+        }
         boolean eligible = KernelLoader.supports(this) && GeneratedExecutor.eligible(inputs, output);
         if (context.mode() == Jit.Mode.REQUIRED && !eligible)
             throw new IllegalArgumentException("generated execution does not support this layout or graph size");
-        long size = output.shape().size();
-        if (size == 0) { context.selected("empty", "zero elements"); return; }
         var types = new org.numjvm.dtype.DType[inputs.length];
         for (int i = 0; i < inputs.length; i++) types[i] = inputs[i].dtype();
         boolean cached = eligible && context.cached(this, types);
         boolean homogeneous = true;
         for (int i = 1; i < types.length; i++) homogeneous &= types[i] == types[0];
         boolean vectorProvider = !org.numjvm.BackendInfo.simdProvider().equals("scalar");
-        boolean small = size <= 512;
         boolean eagerCandidate = small || (size <= 65536 && homogeneous && vectorProvider && graph.nodes().size() >= 3);
-        if (context.mode() == Jit.Mode.AUTO && small && EagerExecutor.tryRun(this, inputs, output, context.eagerBytes())) {
-            context.eagerRun();
-            context.selected("eager", "small expression");
-            return;
-        }
         String fusedFallback = null;
         if (context.mode() == Jit.Mode.AUTO && eligible && vectorProvider && FusedProviders.provider() != null) {
             boolean fusedCached = context.fusedCached(this, types);

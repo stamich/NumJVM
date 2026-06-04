@@ -19,6 +19,15 @@ final class EagerExecutor {
     /** Returns false without writing if the conservative intermediate budget is exceeded. */
     static boolean tryRun(Expression expression, NDArray[] inputs, NDArray output, long budget) {
         if (budget < 0) throw new IllegalArgumentException("negative temporary budget");
+        var root = expression.root();
+        // A single ufunc needs no intermediate scope or scheduling metadata.
+        if (root.left != null && root.left.op == Expr.Op.INPUT
+                && (root.right == null || root.right.op == Expr.Op.INPUT)) {
+            NDArray left = inputs[root.left.slot];
+            if (root.right == null) unary(root.op).apply(left, output);
+            else binary(root.op).apply(left, inputs[root.right.slot], output);
+            return true;
+        }
         DType[] inputTypes = new DType[inputs.length];
         for (int i = 0; i < inputs.length; i++) inputTypes[i] = inputs[i].dtype();
         var types = new TypeResolver(inputTypes);

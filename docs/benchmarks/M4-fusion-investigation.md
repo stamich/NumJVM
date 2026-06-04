@@ -34,3 +34,9 @@ A short exploratory JDK 25 smoke run also exercised C- and F-order float64
 and mixed CHAIN cases with the generated loops and GC profiler. Mixed
 float32-to-float64 transitions remain explicit so float32 nodes round before
 promotion. These smoke tests do not replace the reference campaign.
+
+For a single unary or binary ufunc with array inputs, the eager scheduler needs
+no temporary arrays. AUTO now checks the small-input eager path before building
+a generated traversal, and that single-ufunc case avoids opening a temporary
+scope. More complex small graphs still incur scheduler and scope costs; the
+reference-machine small-input budget has not yet been remeasured.
