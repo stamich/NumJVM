@@ -23,19 +23,9 @@ final class MixedFusedKernel implements FusedKernel {
         var floats = MixedConversions.FLOAT;
         Object[] values = new Object[inputTypes.size()];
         long bound = doubles.loopBound(count), i = 0;
-        for (; i < bound; i += doubles.length()) {
-            for (int slot = 0; slot < values.length; slot++) {
-                if (inputTypes.get(slot) == DType.FLOAT32) {
-                    values[slot] = strides[slot] == 0
-                            ? FloatVector.broadcast(floats, segments[slot].get(ValueLayout.JAVA_FLOAT_UNALIGNED, offsets[slot]))
-                            : FloatVector.fromMemorySegment(floats, segments[slot], offsets[slot] + i * strides[slot], ByteOrder.nativeOrder());
-                } else {
-                    values[slot] = strides[slot] == 0
-                            ? DoubleVector.broadcast(doubles, segments[slot].get(ValueLayout.JAVA_DOUBLE_UNALIGNED, offsets[slot]))
-                            : DoubleVector.fromMemorySegment(doubles, segments[slot], offsets[slot] + i * strides[slot], ByteOrder.nativeOrder());
-                }
-            }
-            expression.evaluate(values).intoMemorySegment(segments[values.length], offsets[values.length] + i * strides[values.length], ByteOrder.nativeOrder());
+        if (bound > 0) {
+            ((VectorLoop) expression).runVectors(segments, offsets, strides, bound, doubles.length());
+            i = bound;
         }
         for (; i < count; i++) {
             for (int slot = 0; slot < values.length; slot++) {

@@ -5,9 +5,25 @@ import org.junit.jupiter.api.Test;
 import org.numjvm.NJ;
 import org.numjvm.dtype.DType;
 import org.numjvm.ndarray.NDArray;
+import org.numjvm.ndarray.Order;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FusedMixedTest {
+    @Test void fortranMixedRunsKeepIntermediateRounding() {
+        Assumptions.assumeTrue(FusedProviders.provider() != null, "optional vector provider unavailable");
+        try (var context = Jit.context(Jit.Mode.REQUIRED)) {
+            var graph = context.trace(2, i -> i.input(0).add(Math.scalb(1.0, -24)).add(i.input(1)));
+            NDArray[] inputs = {NJ.ones(DType.FLOAT32, 33, 17).copy(Order.F),
+                    NJ.multiply(NJ.ones(DType.FLOAT64, 33, 17), Math.scalb(1.0, -25)).copy(Order.F)};
+            var output = NJ.zeros(DType.FLOAT64, 33, 17).copy(Order.F);
+            var kernel = FusedProviders.compile(graph, new DType[]{DType.FLOAT32, DType.FLOAT64});
+            assertNotNull(kernel);
+            GeneratedExecutor.run(kernel, inputs, output);
+            for (int i = 0; i < 33; i++) for (int j = 0; j < 17; j++)
+                assertEquals(1 + Math.scalb(1.0, -25), output.getDouble(i, j));
+        }
+    }
+
     @Test void mixedSpecialValuesAndBroadcastFollowScalarGraph() {
         Assumptions.assumeTrue(FusedProviders.provider() != null, "optional vector provider unavailable");
         float[] data = new float[35];

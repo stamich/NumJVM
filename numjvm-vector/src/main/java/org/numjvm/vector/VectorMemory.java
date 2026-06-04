@@ -14,6 +14,11 @@ final class VectorMemory {
         return stride == 0 ? FloatVector.broadcast(species, segment.get(ValueLayout.JAVA_FLOAT_UNALIGNED, offset))
                 : FloatVector.fromMemorySegment(species, segment, offset, ByteOrder.nativeOrder());
     }
+    static FloatVector loadMixedFloat(MemorySegment segment, long offset, long stride) {
+        var species = MixedConversions.FLOAT;
+        return stride == 0 ? FloatVector.broadcast(species, segment.get(ValueLayout.JAVA_FLOAT_UNALIGNED, offset))
+                : FloatVector.fromMemorySegment(species, segment, offset, ByteOrder.nativeOrder());
+    }
     static DoubleVector loadDouble(MemorySegment segment, long offset, long stride) {
         var species = DoubleVector.SPECIES_PREFERRED;
         return stride == 0 ? DoubleVector.broadcast(species, segment.get(ValueLayout.JAVA_DOUBLE_UNALIGNED, offset))

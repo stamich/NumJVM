@@ -27,6 +27,10 @@ based path with a generated whole-run loop. AUTO ADD allocation fell from about
 12.6 MB/op to 8.1 kB/op and CHAIN from 25.2 MB/op to 13.7 kB/op. These are
 separate runs on a shared machine, not reference-machine acceptance results.
 The generated loop keeps vector intermediates in locals, preserving a separate
-scalar-tail path; mixed graphs still use the original vector-array path until
-independently improved and measured. Repeat the full matrix on the reference
+scalar-tail path; mixed graphs are handled by a separately generated typed loop. Repeat the full matrix on the reference
 machine before closing performance gates.
+
+A short exploratory JDK 25 smoke run also exercised C- and F-order float64
+and mixed CHAIN cases with the generated loops and GC profiler. Mixed
+float32-to-float64 transitions remain explicit so float32 nodes round before
+promotion. These smoke tests do not replace the reference campaign.
