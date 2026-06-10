@@ -5,6 +5,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,6 +24,9 @@ public final class ParallelContext implements AutoCloseable {
     private static final Thread ACCESS_PROBE = new Thread(() -> { }, "numjvm-access-probe");
     private static final ThreadLocal<ParallelContext> CURRENT = new ThreadLocal<>();
     private final Object operationLock = new Object();
+    private final LongAdder parallelRuns = new LongAdder();
+    private final LongAdder fallbackRuns = new LongAdder();
+    private final ThreadLocal<Decision> decision = ThreadLocal.withInitial(() -> new Decision("none", "no operation"));
     private final int workers;
     private final ThreadPoolExecutor executor;
     private volatile boolean closed;
@@ -50,6 +54,36 @@ public final class ParallelContext implements AutoCloseable {
      */
     public boolean isClosed() { return closed; }
 
+    /** The strategy most recently selected on the calling thread. */
+    public record Decision(String strategy, String reason) { }
+
+    /** Returns the calling thread's last selection.
+     * @return last decision, initially {@code none}
+     */
+    public Decision lastDecision() { return decision.get(); }
+
+    /** Returns the number of completed parallel dispatches.
+     * @return completed parallel dispatches
+     */
+    public long parallelRuns() { return parallelRuns.sum(); }
+
+    /** Returns the number of completed single-worker fallbacks.
+     * @return completed fallbacks
+     */
+    public long fallbackRuns() { return fallbackRuns.sum(); }
+
+    private void dispatch(NDArray[] arrays, ChunkPlan plan, ChunkAction action, Runnable fallback) {
+        if (workerAccessible(arrays)) {
+            runChunks(plan, action);
+            parallelRuns.increment();
+            decision.set(new Decision("parallel", "worker-accessible memory"));
+        } else {
+            fallback.run();
+            fallbackRuns.increment();
+            decision.set(new Decision("sequential", "confined memory"));
+        }
+    }
+
     @FunctionalInterface
     interface ChunkAction { void run(long index, long start, long end); }
 
@@ -66,14 +100,12 @@ public final class ParallelContext implements AutoCloseable {
     void runOrElse(NDArray[] arrays, ChunkPlan plan, ChunkAction action, Runnable fallback) {
         if (CURRENT.get() == this) {
             if (closed) throw new IllegalStateException("parallel context is closed");
-            if (workerAccessible(arrays)) runChunks(plan, action);
-            else fallback.run();
+            dispatch(arrays, plan, action, fallback);
             return;
         }
         synchronized (operationLock) {
             if (closed) throw new IllegalStateException("parallel context is closed");
-            if (workerAccessible(arrays)) runChunks(plan, action);
-            else fallback.run();
+            dispatch(arrays, plan, action, fallback);
         }
     }
 

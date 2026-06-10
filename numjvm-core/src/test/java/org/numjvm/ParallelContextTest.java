@@ -28,6 +28,12 @@ class ParallelContextTest {
             context.runOrElse(new org.numjvm.ndarray.NDArray[]{confined}, new ChunkPlan(4, 2),
                     (i, start, end) -> fail("confined memory reached a worker"),
                     () -> { assertSame(caller, Thread.currentThread()); assertEquals(1.0, confined.getDouble(0)); });
+            assertEquals("sequential", context.lastDecision().strategy());
+            assertEquals(1, context.fallbackRuns());
+            context.runOrElse(new org.numjvm.ndarray.NDArray[]{shareable}, new ChunkPlan(4, 2),
+                    (i, start, end) -> assertEquals(1.0, shareable.getDouble(start)), () -> fail("unexpected fallback"));
+            assertEquals("parallel", context.lastDecision().strategy());
+            assertEquals(1, context.parallelRuns());
         }
     }
 
