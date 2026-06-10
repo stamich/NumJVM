@@ -52,6 +52,16 @@ public final class NJ {
         return VERSION;
     }
 
+    /**
+     * Creates an opt-in, reusable CPU execution context.
+     * @param workers maximum worker count, from 1 through 256
+     * @return a context that must be closed
+     */
+    @Experimental
+    public static ParallelContext parallel(int workers) {
+        return new ParallelContext(workers);
+    }
+
     private static HybridAllocator automatic() {
         return HybridAllocator.defaultInstance();
     }
