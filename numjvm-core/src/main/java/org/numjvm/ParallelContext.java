@@ -8,6 +8,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.numjvm.internal.ExpressionSemantics;
+import org.numjvm.internal.SharedSecrets;
+import org.numjvm.ndarray.NDArray;
 
 /**
  * An opt-in, bounded CPU execution context. Close it after its operations finish.
@@ -16,6 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Experimental
 public final class ParallelContext implements AutoCloseable {
     private static final AtomicInteger CONTEXT_IDS = new AtomicInteger();
+    // A distinct thread identifies confined FFM segments without starting a worker.
+    private static final Thread ACCESS_PROBE = new Thread(() -> { }, "numjvm-access-probe");
     private static final ThreadLocal<ParallelContext> CURRENT = new ThreadLocal<>();
     private final Object operationLock = new Object();
     private final int workers;
@@ -47,6 +52,22 @@ public final class ParallelContext implements AutoCloseable {
 
     @FunctionalInterface
     interface ChunkAction { void run(long index, long start, long end); }
+
+    boolean workerAccessible(NDArray... arrays) {
+        ExpressionSemantics.accessible(arrays);
+        for (var array : arrays) {
+            var buffer = SharedSecrets.arrayAccess().buffer(array);
+            buffer.checkAlive();
+            if (!buffer.segment().isAccessibleBy(ACCESS_PROBE)) return false;
+        }
+        return true;
+    }
+
+    void runOrElse(NDArray[] arrays, ChunkPlan plan, ChunkAction action, Runnable fallback) {
+        if (closed) throw new IllegalStateException("parallel context is closed");
+        if (workerAccessible(arrays)) runChunks(plan, action);
+        else fallback.run();
+    }
 
     /** Submits at most one task per worker; tasks claim fixed chunks dynamically. */
     void runChunks(ChunkPlan plan, ChunkAction action) {
