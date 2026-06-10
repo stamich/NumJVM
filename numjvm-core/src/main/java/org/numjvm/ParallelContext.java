@@ -64,9 +64,17 @@ public final class ParallelContext implements AutoCloseable {
     }
 
     void runOrElse(NDArray[] arrays, ChunkPlan plan, ChunkAction action, Runnable fallback) {
-        if (closed) throw new IllegalStateException("parallel context is closed");
-        if (workerAccessible(arrays)) runChunks(plan, action);
-        else fallback.run();
+        if (CURRENT.get() == this) {
+            if (closed) throw new IllegalStateException("parallel context is closed");
+            if (workerAccessible(arrays)) runChunks(plan, action);
+            else fallback.run();
+            return;
+        }
+        synchronized (operationLock) {
+            if (closed) throw new IllegalStateException("parallel context is closed");
+            if (workerAccessible(arrays)) runChunks(plan, action);
+            else fallback.run();
+        }
     }
 
     /** Submits at most one task per worker; tasks claim fixed chunks dynamically. */
@@ -79,10 +87,12 @@ public final class ParallelContext implements AutoCloseable {
         synchronized (operationLock) {
             var futures = new ArrayList<Future<?>>();
             var next = new AtomicLong();
+            Throwable submissionFailure = null;
             synchronized (this) {
                 if (closed) throw new IllegalStateException("parallel context is closed");
                 int tasks = (int) Math.min(plan.count, workers);
-                for (int worker = 0; worker < tasks; worker++) futures.add(executor.submit(() -> {
+                for (int worker = 0; worker < tasks; worker++) try {
+                    futures.add(executor.submit(() -> {
                     CURRENT.set(this);
                     try {
                         for (;;) {
@@ -91,10 +101,14 @@ public final class ParallelContext implements AutoCloseable {
                             action.run(index, plan.start(index), plan.end(index));
                         }
                     } finally { CURRENT.remove(); }
-                }));
+                    }));
+                } catch (RuntimeException | Error ex) {
+                    submissionFailure = ex;
+                    break;
+                }
             }
             boolean interrupted = false;
-            Throwable failure = null;
+            Throwable failure = submissionFailure;
             for (var future : futures) {
                 for (;;) {
                     try { future.get(); break; }
@@ -112,10 +126,13 @@ public final class ParallelContext implements AutoCloseable {
 
     /** Stops accepting work and waits for all submitted workers to terminate. */
     @Override public void close() {
-        synchronized (this) {
-            if (!closed) {
-                closed = true;
-                executor.shutdown();
+        if (CURRENT.get() == this) throw new IllegalStateException("cannot close a context from its worker");
+        synchronized (operationLock) {
+            synchronized (this) {
+                if (!closed) {
+                    closed = true;
+                    executor.shutdown();
+                }
             }
         }
         boolean interrupted = false;

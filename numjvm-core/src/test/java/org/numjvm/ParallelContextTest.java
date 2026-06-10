@@ -31,6 +31,75 @@ class ParallelContextTest {
         }
     }
 
+    @Test void nestedWorkDoesNotDeadlockAndWorkerCannotCloseContext() {
+        try (var context = NJ.parallel(2)) {
+            var seen = new java.util.concurrent.atomic.AtomicInteger();
+            context.runChunks(new ChunkPlan(2, 1), (index, start, end) -> {
+                context.runChunks(new ChunkPlan(3, 1), (j, a, b) -> seen.incrementAndGet());
+                assertThrows(IllegalStateException.class, context::close);
+            });
+            assertEquals(6, seen.get());
+        }
+    }
+
+    @Test void failureWaitsForOtherWorkersBeforeReturning() throws Exception {
+        try (var context = NJ.parallel(2)) {
+            var started = new java.util.concurrent.CountDownLatch(1);
+            var release = new java.util.concurrent.CountDownLatch(1);
+            var result = new java.util.concurrent.atomic.AtomicReference<Throwable>();
+            Thread caller = new Thread(() -> {
+                try {
+                    context.runChunks(new ChunkPlan(2, 1), (index, start, end) -> {
+                        if (index == 0) {
+                            try { started.await(); } catch (InterruptedException e) { throw new AssertionError(e); }
+                            throw new IllegalStateException("expected");
+                        }
+                        started.countDown();
+                        try { release.await(); } catch (InterruptedException e) { throw new AssertionError(e); }
+                    });
+                } catch (Throwable ex) { result.set(ex); }
+            });
+            caller.start();
+            assertTrue(started.await(5, java.util.concurrent.TimeUnit.SECONDS));
+            caller.join(100);
+            assertTrue(caller.isAlive());
+            release.countDown();
+            caller.join(5000);
+            assertFalse(caller.isAlive());
+            assertEquals("expected", result.get().getMessage());
+        }
+    }
+
+    @Test void interruptedCallerWaitsForWorkerAndRestoresInterrupt() throws Exception {
+        try (var context = NJ.parallel(1)) {
+            var started = new java.util.concurrent.CountDownLatch(1);
+            var release = new java.util.concurrent.CountDownLatch(1);
+            var interrupted = new java.util.concurrent.atomic.AtomicBoolean();
+            var result = new java.util.concurrent.atomic.AtomicReference<Throwable>();
+            Thread caller = new Thread(() -> {
+                try {
+                    context.runChunks(new ChunkPlan(1, 1), (index, start, end) -> {
+                        started.countDown();
+                        try { release.await(); } catch (InterruptedException ex) { throw new AssertionError(ex); }
+                    });
+                } catch (Throwable ex) {
+                    result.set(ex);
+                    interrupted.set(Thread.currentThread().isInterrupted());
+                }
+            });
+            caller.start();
+            assertTrue(started.await(5, java.util.concurrent.TimeUnit.SECONDS));
+            caller.interrupt();
+            caller.join(100);
+            assertTrue(caller.isAlive());
+            release.countDown();
+            caller.join(5000);
+            assertFalse(caller.isAlive());
+            assertInstanceOf(IllegalStateException.class, result.get());
+            assertTrue(interrupted.get());
+        }
+    }
+
     @Test void validatesWorkerLimitAndClosesIdempotently() {
         assertThrows(IllegalArgumentException.class, () -> NJ.parallel(0));
         assertThrows(IllegalArgumentException.class, () -> NJ.parallel(257));
