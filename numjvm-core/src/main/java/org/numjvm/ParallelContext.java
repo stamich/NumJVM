@@ -96,9 +96,15 @@ public final class ParallelContext implements AutoCloseable {
 
     private void dispatch(NDArray[] arrays, ChunkPlan plan, ChunkAction action, Runnable fallback) {
         if (workerAccessible(arrays)) {
+            boolean nested = CURRENT.get() == this;
             runChunks(plan, action);
-            parallelRuns.increment();
-            decision.set(new Decision("parallel", "worker-accessible memory"));
+            if (nested) {
+                fallbackRuns.increment();
+                decision.set(new Decision("sequential", "nested worker"));
+            } else {
+                parallelRuns.increment();
+                decision.set(new Decision("parallel", "worker-accessible memory"));
+            }
         } else {
             fallback.run();
             fallbackRuns.increment();
@@ -193,6 +199,7 @@ public final class ParallelContext implements AutoCloseable {
         long base = SharedSecrets.arrayAccess().offset(input);
         // Each index identifies a fixed input interval regardless of worker count.
         var partials = new double[(int) plan.count];
+        var computed = new java.util.concurrent.atomic.AtomicBoolean();
         runOrElse(new NDArray[]{input, result}, plan, (chunk, start, end) -> {
             if (input.dtype() == DType.FLOAT32) {
                 float value = 0;
@@ -203,11 +210,12 @@ public final class ParallelContext implements AutoCloseable {
                 for (long i = start; i < end; i++) value += segment.get(ValueLayout.JAVA_DOUBLE_UNALIGNED, base + i * Double.BYTES);
                 partials[(int) chunk] = value;
             }
+            computed.set(true);
         }, () -> {
             var sequentialResult = Reductions.sum(input);
             result.setDouble(sequentialResult.getDouble());
         });
-        if (lastDecision().strategy().equals("parallel")) {
+        if (computed.get()) {
             if (input.dtype() == DType.FLOAT32) {
                 float value = 0;
                 for (double part : partials) value += (float) part;

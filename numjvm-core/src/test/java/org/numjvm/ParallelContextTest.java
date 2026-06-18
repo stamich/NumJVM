@@ -59,8 +59,12 @@ class ParallelContextTest {
     @Test void nestedWorkDoesNotDeadlockAndWorkerCannotCloseContext() {
         try (var context = NJ.parallel(2)) {
             var seen = new java.util.concurrent.atomic.AtomicInteger();
+            var input = NJ.ones(org.numjvm.dtype.DType.FLOAT32, 65536);
             context.runChunks(new ChunkPlan(2, 1), (index, start, end) -> {
                 context.runChunks(new ChunkPlan(3, 1), (j, a, b) -> seen.incrementAndGet());
+                assertEquals(65536.0, context.sum(input).getDouble());
+                assertEquals("sequential", context.lastDecision().strategy());
+                assertEquals("nested worker", context.lastDecision().reason());
                 assertThrows(IllegalStateException.class, context::close);
             });
             assertEquals(6, seen.get());
@@ -172,6 +176,35 @@ class ParallelContextTest {
             assertEquals(65536.0, context.sum(confined).getDouble());
             assertEquals("sequential", context.lastDecision().strategy());
             var values = new float[65536]; values[7] = Float.NaN;
+            assertTrue(Double.isNaN(context.sum(NJ.array(values)).getDouble()));
+        }
+    }
+
+    @Test void fallsBackForStridesSmallSizesAndRejectsReadOnlyOutput() {
+        try (var context = NJ.parallel(2)) {
+            var small = NJ.ones(org.numjvm.dtype.DType.FLOAT32, 10);
+            var out = NJ.zeros(org.numjvm.dtype.DType.FLOAT32, 10);
+            context.apply(org.numjvm.ufunc.Ufuncs.NEGATIVE, small, out);
+            assertEquals("sequential", context.lastDecision().strategy());
+            assertEquals(-1.0, out.getDouble(9));
+            var source = NJ.ones(org.numjvm.dtype.DType.FLOAT32, 131072)
+                    .slice(org.numjvm.ndarray.Slice.step(2));
+            var dest = NJ.zeros(org.numjvm.dtype.DType.FLOAT32, 65536);
+            context.apply(org.numjvm.ufunc.Ufuncs.SQUARE, source, dest);
+            assertEquals("sequential", context.lastDecision().strategy());
+            assertEquals(1.0, dest.getDouble(65535));
+            var readonly = NJ.ones(org.numjvm.dtype.DType.FLOAT32, 1).broadcastTo(65536);
+            assertThrows(org.numjvm.exception.ReadOnlyArrayException.class,
+                    () -> context.apply(org.numjvm.ufunc.Ufuncs.SQUARE, dest, readonly));
+        }
+    }
+
+    @Test void sumHandlesInfinitiesAndSignedZero() {
+        try (var context = NJ.parallel(3)) {
+            float[] values = new float[65536];
+            java.util.Arrays.fill(values, -0.0f);
+            assertEquals(Float.floatToRawIntBits(0.0f), Float.floatToRawIntBits((float) context.sum(NJ.array(values)).getDouble()));
+            values[0] = Float.POSITIVE_INFINITY; values[values.length - 1] = Float.NEGATIVE_INFINITY;
             assertTrue(Double.isNaN(context.sum(NJ.array(values)).getDouble()));
         }
     }
