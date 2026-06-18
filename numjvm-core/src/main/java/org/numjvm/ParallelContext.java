@@ -13,10 +13,14 @@ import org.numjvm.internal.ExpressionSemantics;
 import org.numjvm.internal.SharedSecrets;
 import org.numjvm.ndarray.NDArray;
 import org.numjvm.ndarray.Slice;
+import org.numjvm.ndarray.Shape;
+import org.numjvm.ndarray.Order;
+import java.lang.foreign.ValueLayout;
 import org.numjvm.dtype.DType;
 import org.numjvm.ufunc.BinaryUfunc;
 import org.numjvm.ufunc.UnaryUfunc;
 import org.numjvm.ufunc.Ufuncs;
+import org.numjvm.ufunc.Reductions;
 
 /**
  * An opt-in, bounded CPU execution context. Close it after its operations finish.
@@ -161,6 +165,60 @@ public final class ParallelContext implements AutoCloseable {
                         destination.slice(Slice.range(start, end))),
                 () -> op.apply(left, right, output));
         return output;
+    }
+
+    /**
+     * Sums a contiguous real array using fixed logical chunks and a fixed merge order.
+     * The parallel result is reproducible across worker counts for the same inputs,
+     * dtype and runtime, but can differ from a sequential floating-point sum.
+     * Unsupported or confined arrays use the existing sequential reduction.
+     * @param input array to reduce
+     * @return scalar result with the existing sum dtype and ownership rules
+     */
+    public NDArray sum(NDArray input) {
+        if (CURRENT.get() == this) return sumNow(input);
+        synchronized (operationLock) { return sumNow(input); }
+    }
+
+    private NDArray sumNow(NDArray input) {
+        if (closed) throw new IllegalStateException("parallel context is closed");
+        ExpressionSemantics.accessible(input);
+        var plan = new ChunkPlan(input.size(), CHUNK_SIZE);
+        if (!input.isCContiguous() || !supported(input.dtype()) || input.size() < CHUNK_SIZE
+                || plan.count > Integer.MAX_VALUE)
+            return sequential(() -> Reductions.sum(input), "small or unsupported reduction");
+        var result = SharedSecrets.arrayAccess().allocate(ExpressionSemantics.allocator(input),
+                input.dtype(), Shape.of(), Order.C);
+        var segment = SharedSecrets.arrayAccess().buffer(input).segment();
+        long base = SharedSecrets.arrayAccess().offset(input);
+        // Each index identifies a fixed input interval regardless of worker count.
+        var partials = new double[(int) plan.count];
+        runOrElse(new NDArray[]{input, result}, plan, (chunk, start, end) -> {
+            if (input.dtype() == DType.FLOAT32) {
+                float value = 0;
+                for (long i = start; i < end; i++) value += segment.get(ValueLayout.JAVA_FLOAT_UNALIGNED, base + i * Float.BYTES);
+                partials[(int) chunk] = value;
+            } else {
+                double value = 0;
+                for (long i = start; i < end; i++) value += segment.get(ValueLayout.JAVA_DOUBLE_UNALIGNED, base + i * Double.BYTES);
+                partials[(int) chunk] = value;
+            }
+        }, () -> {
+            var sequentialResult = Reductions.sum(input);
+            result.setDouble(sequentialResult.getDouble());
+        });
+        if (lastDecision().strategy().equals("parallel")) {
+            if (input.dtype() == DType.FLOAT32) {
+                float value = 0;
+                for (double part : partials) value += (float) part;
+                result.setDouble(value);
+            } else {
+                double value = 0;
+                for (double part : partials) value += part;
+                result.setDouble(value);
+            }
+        }
+        return result;
     }
 
     private NDArray sequential(java.util.function.Supplier<NDArray> action, String reason) {

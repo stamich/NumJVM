@@ -141,6 +141,41 @@ class ParallelContextTest {
         }
     }
 
+    @Test void sumUsesIdenticalFixedChunksAcrossWorkerCounts() {
+        float[] data = new float[100003];
+        for (int i = 0; i < data.length; i++) data[i] = (i % 17 - 8) / 7.0f;
+        var input = NJ.array(data);
+        int expected = 0;
+        for (int workers : new int[]{1, 2, 3, 7}) {
+            try (var context = NJ.parallel(workers)) {
+                int actual = Float.floatToRawIntBits((float) context.sum(input).getDouble());
+                if (workers == 1) expected = actual;
+                else assertEquals(expected, actual);
+                assertEquals("parallel", context.lastDecision().strategy());
+            }
+        }
+        var doubleInput = input.astype(org.numjvm.dtype.DType.FLOAT64);
+        long expectedDouble = 0;
+        for (int workers : new int[]{1, 2, 4}) {
+            try (var context = NJ.parallel(workers)) {
+                long actual = Double.doubleToRawLongBits(context.sum(doubleInput).getDouble());
+                if (workers == 1) expectedDouble = actual;
+                else assertEquals(expectedDouble, actual);
+            }
+        }
+    }
+
+    @Test void sumPreservesEmptyAndSpecialValueBehavior() {
+        try (var context = NJ.parallel(2); var scope = NJ.scope()) {
+            assertEquals(0.0, context.sum(NJ.zeros(org.numjvm.dtype.DType.FLOAT32, 0)).getDouble());
+            var confined = scope.ones(org.numjvm.dtype.DType.FLOAT64, 65536);
+            assertEquals(65536.0, context.sum(confined).getDouble());
+            assertEquals("sequential", context.lastDecision().strategy());
+            var values = new float[65536]; values[7] = Float.NaN;
+            assertTrue(Double.isNaN(context.sum(NJ.array(values)).getDouble()));
+        }
+    }
+
     @Test void validatesWorkerLimitAndClosesIdempotently() {
         assertThrows(IllegalArgumentException.class, () -> NJ.parallel(0));
         assertThrows(IllegalArgumentException.class, () -> NJ.parallel(257));
