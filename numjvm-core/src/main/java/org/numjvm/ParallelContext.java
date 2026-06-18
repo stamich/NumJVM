@@ -25,6 +25,18 @@ import org.numjvm.ufunc.Ufuncs;
 @Experimental
 public final class ParallelContext implements AutoCloseable {
     private static final long CHUNK_SIZE = 32768;
+    static {
+        SharedSecrets.setParallelAccess((context, arrays, size, eligible, task, fallback) -> {
+            if (!eligible || context.workers == 1 || size < CHUNK_SIZE) {
+                context.sequential(() -> { fallback.run(); return null; }, "small or unsupported expression");
+            } else {
+                context.runOrElse(arrays, new ChunkPlan(size, CHUNK_SIZE),
+                        (index, start, end) -> task.run(start, end), fallback);
+            }
+        });
+    }
+
+
     private static final AtomicInteger CONTEXT_IDS = new AtomicInteger();
     // A distinct thread identifies confined FFM segments without starting a worker.
     private static final Thread ACCESS_PROBE = new Thread(() -> { }, "numjvm-access-probe");

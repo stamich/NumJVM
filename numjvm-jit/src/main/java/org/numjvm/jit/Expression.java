@@ -1,6 +1,9 @@
 package org.numjvm.jit;
 
 import org.numjvm.NJ;
+import org.numjvm.ParallelContext;
+import org.numjvm.dtype.DType;
+import org.numjvm.ndarray.Slice;
 import org.numjvm.Experimental;
 import org.numjvm.internal.SharedSecrets;
 import org.numjvm.ndarray.NDArray;
@@ -72,6 +75,43 @@ public final class Expression {
                 plan.copyBack(temporary, output);
             }
         }
+        return output;
+    }
+
+    /** Evaluates into an output using an opt-in parallel context when eligible.
+     * Unsupported layouts, small arrays and confined memory use the caller thread.
+     * @param parallel reusable CPU execution context
+     * @param output destination
+     * @param inputs expression inputs
+     * @return output
+     */
+    public NDArray evalInto(ParallelContext parallel, NDArray output, NDArray... inputs) {
+        java.util.Objects.requireNonNull(parallel, "parallel");
+        context.admit();
+        var plan = new InvocationPlan(this, inputs);
+        plan.checkOutput(output);
+        boolean eligible = output.isCContiguous() && !plan.needsTemporary(output)
+                && (output.dtype() == DType.FLOAT32 || output.dtype() == DType.FLOAT64);
+        for (var input : inputs) {
+            eligible &= input.isCContiguous() && input.shape().equals(output.shape())
+                    && (input.dtype() == DType.FLOAT32 || input.dtype() == DType.FLOAT64);
+        }
+        NDArray[] arrays = java.util.Arrays.copyOf(inputs, inputs.length + 1);
+        arrays[inputs.length] = output;
+        NDArray[] flat = null;
+        NDArray flatOutput = null;
+        if (eligible) {
+            flat = new NDArray[inputs.length];
+            for (int i = 0; i < inputs.length; i++) flat[i] = inputs[i].reshapeView(inputs[i].size());
+            flatOutput = output.reshapeView(output.size());
+        }
+        NDArray[] finalFlat = flat;
+        NDArray finalOutput = flatOutput;
+        SharedSecrets.parallelAccess().execute(parallel, arrays, output.size(), eligible, (start, end) -> {
+            NDArray[] part = new NDArray[finalFlat.length];
+            for (int i = 0; i < part.length; i++) part[i] = finalFlat[i].slice(Slice.range(start, end));
+            evalInto(finalOutput.slice(Slice.range(start, end)), part);
+        }, () -> evalInto(output, inputs));
         return output;
     }
 
