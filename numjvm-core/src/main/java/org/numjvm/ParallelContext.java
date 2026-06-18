@@ -97,7 +97,15 @@ public final class ParallelContext implements AutoCloseable {
     private boolean compatible(NDArray input, NDArray output) {
         return workers > 1 && output.size() >= CHUNK_SIZE && input.isCContiguous() && output.isCContiguous()
                 && input.shape().equals(output.shape()) && input.dtype() == output.dtype()
-                && supported(input.dtype()) && output.isWriteable() && !input.sharesMemoryWith(output);
+                && supported(input.dtype()) && output.isWriteable() && safeOverlap(input, output);
+    }
+
+    private static boolean safeOverlap(NDArray input, NDArray output) {
+        if (!input.sharesMemoryWith(output)) return true;
+        var access = SharedSecrets.arrayAccess();
+        return access.buffer(input).segment() == access.buffer(output).segment()
+                && access.offset(input) == access.offset(output)
+                && java.util.Arrays.equals(input.strides().values(), output.strides().values());
     }
 
     /** Applies a supported unary ufunc into an output, using workers when eligible.

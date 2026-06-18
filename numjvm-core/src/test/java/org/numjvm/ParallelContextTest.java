@@ -4,6 +4,25 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ParallelContextTest {
+    @Test void identicalViewsAreParallelAndShiftedOverlapUsesExistingFallback() {
+        try (var context = NJ.parallel(3)) {
+            var input = NJ.ones(org.numjvm.dtype.DType.FLOAT32, 65536);
+            var identical = input.reshapeView(65536);
+            context.apply(org.numjvm.ufunc.Ufuncs.ADD, input, identical, input);
+            assertEquals("parallel", context.lastDecision().strategy());
+            assertEquals(2.0, input.getDouble(0));
+            assertEquals(2.0, input.getDouble(65535));
+
+            var backing = NJ.ones(org.numjvm.dtype.DType.FLOAT32, 65537);
+            var left = backing.slice(org.numjvm.ndarray.Slice.range(0, 65536));
+            var shifted = backing.slice(org.numjvm.ndarray.Slice.range(1, 65537));
+            context.apply(org.numjvm.ufunc.Ufuncs.ADD, left, left, shifted);
+            assertEquals("sequential", context.lastDecision().strategy());
+            assertEquals(1.0, backing.getDouble(0));
+            assertEquals(2.0, backing.getDouble(100));
+        }
+    }
+
     @Test void fixedChunksCoverEveryElementOnce() {
         var counts = new java.util.concurrent.atomic.AtomicIntegerArray(103);
         try (var context = NJ.parallel(3)) {
