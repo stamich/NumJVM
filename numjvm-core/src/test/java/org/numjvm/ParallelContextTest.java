@@ -106,6 +106,22 @@ class ParallelContextTest {
         }
     }
 
+    @Test void appliesContiguousFloatUfuncsInParallel() {
+        for (var dtype : new org.numjvm.dtype.DType[]{org.numjvm.dtype.DType.FLOAT32, org.numjvm.dtype.DType.FLOAT64}) {
+            try (var context = NJ.parallel(3)) {
+                var left = NJ.ones(dtype, 256, 256);
+                var right = NJ.ones(dtype, 256, 256);
+                var output = NJ.zeros(dtype, 256, 256);
+                assertSame(output, context.apply(org.numjvm.ufunc.Ufuncs.ADD, left, right, output));
+                assertEquals("parallel", context.lastDecision().strategy());
+                assertEquals(2.0, output.getDouble(255, 255));
+                context.apply(org.numjvm.ufunc.Ufuncs.SQUARE, output, left);
+                assertEquals("parallel", context.lastDecision().strategy());
+                assertEquals(4.0, left.getDouble(0, 0));
+            }
+        }
+    }
+
     @Test void validatesWorkerLimitAndClosesIdempotently() {
         assertThrows(IllegalArgumentException.class, () -> NJ.parallel(0));
         assertThrows(IllegalArgumentException.class, () -> NJ.parallel(257));

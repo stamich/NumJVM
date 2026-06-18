@@ -12,6 +12,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.numjvm.internal.ExpressionSemantics;
 import org.numjvm.internal.SharedSecrets;
 import org.numjvm.ndarray.NDArray;
+import org.numjvm.ndarray.Slice;
+import org.numjvm.dtype.DType;
+import org.numjvm.ufunc.BinaryUfunc;
+import org.numjvm.ufunc.UnaryUfunc;
+import org.numjvm.ufunc.Ufuncs;
 
 /**
  * An opt-in, bounded CPU execution context. Close it after its operations finish.
@@ -19,6 +24,7 @@ import org.numjvm.ndarray.NDArray;
  */
 @Experimental
 public final class ParallelContext implements AutoCloseable {
+    private static final long CHUNK_SIZE = 32768;
     private static final AtomicInteger CONTEXT_IDS = new AtomicInteger();
     // A distinct thread identifies confined FFM segments without starting a worker.
     private static final Thread ACCESS_PROBE = new Thread(() -> { }, "numjvm-access-probe");
@@ -82,6 +88,72 @@ public final class ParallelContext implements AutoCloseable {
             fallbackRuns.increment();
             decision.set(new Decision("sequential", "confined memory"));
         }
+    }
+
+    private static boolean supported(DType dtype) {
+        return dtype == DType.FLOAT32 || dtype == DType.FLOAT64;
+    }
+
+    private boolean compatible(NDArray input, NDArray output) {
+        return workers > 1 && output.size() >= CHUNK_SIZE && input.isCContiguous() && output.isCContiguous()
+                && input.shape().equals(output.shape()) && input.dtype() == output.dtype()
+                && supported(input.dtype()) && output.isWriteable() && !input.sharesMemoryWith(output);
+    }
+
+    /** Applies a supported unary ufunc into an output, using workers when eligible.
+     * @param op unary ufunc
+     * @param input input array
+     * @param output destination
+     * @return output
+     */
+    public NDArray apply(UnaryUfunc op, NDArray input, NDArray output) {
+        java.util.Objects.requireNonNull(op, "op");
+        ExpressionSemantics.accessible(input, output);
+        boolean eligible = (op == Ufuncs.NEGATIVE || op == Ufuncs.ABSOLUTE || op == Ufuncs.SQUARE || op == Ufuncs.SQRT)
+                && compatible(input, output);
+        if (!eligible) return sequential(() -> op.apply(input, output), "small or unsupported operation");
+        var source = input.reshapeView(input.size());
+        var destination = output.reshapeView(output.size());
+        runOrElse(new NDArray[]{input, output}, new ChunkPlan(output.size(), CHUNK_SIZE),
+                (i, start, end) -> op.apply(source.slice(Slice.range(start, end)), destination.slice(Slice.range(start, end))),
+                () -> op.apply(input, output));
+        return output;
+    }
+
+    /** Applies a supported binary ufunc into an output, using workers when eligible.
+     * @param op binary ufunc
+     * @param left first input
+     * @param right second input
+     * @param output destination
+     * @return output
+     */
+    public NDArray apply(BinaryUfunc op, NDArray left, NDArray right, NDArray output) {
+        java.util.Objects.requireNonNull(op, "op");
+        ExpressionSemantics.accessible(left, right, output);
+        boolean eligible = (op == Ufuncs.ADD || op == Ufuncs.SUBTRACT || op == Ufuncs.MULTIPLY || op == Ufuncs.DIVIDE)
+                && compatible(left, output) && compatible(right, output);
+        if (!eligible) return sequential(() -> op.apply(left, right, output), "small or unsupported operation");
+        var a = left.reshapeView(left.size());
+        var b = right.reshapeView(right.size());
+        var destination = output.reshapeView(output.size());
+        runOrElse(new NDArray[]{left, right, output}, new ChunkPlan(output.size(), CHUNK_SIZE),
+                (i, start, end) -> op.apply(a.slice(Slice.range(start, end)), b.slice(Slice.range(start, end)),
+                        destination.slice(Slice.range(start, end))),
+                () -> op.apply(left, right, output));
+        return output;
+    }
+
+    private NDArray sequential(java.util.function.Supplier<NDArray> action, String reason) {
+        if (CURRENT.get() == this) return sequentialNow(action, reason);
+        synchronized (operationLock) { return sequentialNow(action, reason); }
+    }
+
+    private NDArray sequentialNow(java.util.function.Supplier<NDArray> action, String reason) {
+        if (closed) throw new IllegalStateException("parallel context is closed");
+        NDArray result = action.get();
+        fallbackRuns.increment();
+        decision.set(new Decision("sequential", reason));
+        return result;
     }
 
     @FunctionalInterface
