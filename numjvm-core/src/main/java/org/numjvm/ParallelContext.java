@@ -76,7 +76,10 @@ public final class ParallelContext implements AutoCloseable {
      */
     public boolean isClosed() { return closed; }
 
-    /** The strategy most recently selected on the calling thread. */
+    /** The strategy most recently selected on the calling thread.
+     * @param strategy execution strategy
+     * @param reason selection reason
+     */
     public record Decision(String strategy, String reason) { }
 
     /** Returns the calling thread's last selection.
@@ -182,6 +185,7 @@ public final class ParallelContext implements AutoCloseable {
      * @return scalar result with the existing sum dtype and ownership rules
      */
     public NDArray sum(NDArray input) {
+        rejectOtherContext();
         if (CURRENT.get() == this) return sumNow(input);
         synchronized (operationLock) { return sumNow(input); }
     }
@@ -230,6 +234,7 @@ public final class ParallelContext implements AutoCloseable {
     }
 
     private NDArray sequential(java.util.function.Supplier<NDArray> action, String reason) {
+        rejectOtherContext();
         if (CURRENT.get() == this) return sequentialNow(action, reason);
         synchronized (operationLock) { return sequentialNow(action, reason); }
     }
@@ -256,6 +261,7 @@ public final class ParallelContext implements AutoCloseable {
     }
 
     void runOrElse(NDArray[] arrays, ChunkPlan plan, ChunkAction action, Runnable fallback) {
+        rejectOtherContext();
         if (CURRENT.get() == this) {
             if (closed) throw new IllegalStateException("parallel context is closed");
             dispatch(arrays, plan, action, fallback);
@@ -269,6 +275,7 @@ public final class ParallelContext implements AutoCloseable {
 
     /** Submits at most one task per worker; tasks claim fixed chunks dynamically. */
     void runChunks(ChunkPlan plan, ChunkAction action) {
+        rejectOtherContext();
         if (CURRENT.get() == this) {
             if (closed) throw new IllegalStateException("parallel context is closed");
             for (long i = 0; i < plan.count; i++) action.run(i, plan.start(i), plan.end(i));
@@ -314,9 +321,15 @@ public final class ParallelContext implements AutoCloseable {
         }
     }
 
+    private void rejectOtherContext() {
+        var current = CURRENT.get();
+        if (current != null && current != this)
+            throw new IllegalStateException("nested execution across parallel contexts is unsupported");
+    }
+
     /** Stops accepting work and waits for all submitted workers to terminate. */
     @Override public void close() {
-        if (CURRENT.get() == this) throw new IllegalStateException("cannot close a context from its worker");
+        if (CURRENT.get() != null) throw new IllegalStateException("cannot close a context from a NumJVM worker");
         synchronized (operationLock) {
             synchronized (this) {
                 if (!closed) {
