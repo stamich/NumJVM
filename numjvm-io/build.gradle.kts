@@ -14,6 +14,7 @@ val oracleFixtures = rootProject.file("numjvm-tests-oracle/fixtures")
 val oracleResults = layout.buildDirectory.dir("oracle-out")
 tasks.test {
     inputs.dir(oracleFixtures).withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.file(rootProject.file("numjvm-tests-oracle/parallel-reference.json"))
     // NumPy verifies these files in a later CI step, including on a cache hit.
     outputs.dir(oracleResults)
     systemProperty("numjvm.oracle.fixtures", oracleFixtures.absolutePath)
