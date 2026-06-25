@@ -24,3 +24,8 @@ it must be evaluated as selected, not relabeled as a fused ADD measurement.
 
 Do not lower or waive the earlier targets. Record clean revision, patch status,
 JDK, SIMD/native provider and thread settings with raw JSON and logs.
+
+The [0.6.0 scaling protocol](M4-reference-protocol.md) is ready, but the
+reference campaign is outstanding. Crossover thresholds and multiworker
+speedups are not established. A short shared-machine benchmark verified the
+harness executes; it does not provide reference performance evidence.
