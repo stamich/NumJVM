@@ -26,5 +26,16 @@ public final class FusedExpressions {
             System.out.println(mode + " " + context.statistics());
           }
         }
+        // Automatic memory is accessible to the context's workers.
+        try (var pool = NJ.parallel(4); var context = Jit.context(Jit.Mode.AUTO)) {
+            var expression = context.trace(2, i -> i.input(0).add(i.input(1)).square());
+            var a = NJ.ones(DType.FLOAT32, 65536);
+            var b = NJ.ones(DType.FLOAT32, 65536);
+            var out = NJ.zeros(DType.FLOAT32, 65536);
+            expression.evalInto(pool, out, a, b);
+            if (out.getDouble(0) != 4) throw new AssertionError("parallel expression result");
+            System.out.println("parallel sum=" + pool.sum(out).getDouble());
+            System.out.println("execution=" + pool.lastDecision());
+        }
     }
 }

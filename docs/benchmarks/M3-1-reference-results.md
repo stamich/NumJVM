@@ -43,7 +43,7 @@ that run the recorded status also listed two untracked JSON files. For 1,048,576
 elements, F-order CHAIN eager versus AUTO was 391.303 versus 3,664.833 µs for
 float32, and 3,002.260 versus 7,548.619 µs for float64. The earlier apparent
 F-order AUTO advantage therefore does not hold in these corrected cases. The
-benchmark patch has not yet been applied to this repository.
+benchmark correction is applied on the 0.6.0 branch.
 
 ## JFR and compilation
 
