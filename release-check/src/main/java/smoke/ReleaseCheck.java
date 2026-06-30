@@ -32,6 +32,14 @@ public final class ReleaseCheck {
         }
         NDArray product = org.numjvm.linalg.Linalg.matmul(a, a.transpose());
         if (product.getDouble(0, 1) != 32.0) { throw new AssertionError("matmul failed"); }
+        try (var pool = NJ.parallel(2); var jit = org.numjvm.jit.Jit.context(org.numjvm.jit.Jit.Mode.AUTO)) {
+            var input = NJ.ones(org.numjvm.dtype.DType.FLOAT32, 65536);
+            var output = NJ.zeros(org.numjvm.dtype.DType.FLOAT32, 65536);
+            var expression = jit.trace(1, i -> i.input(0).add(2).square());
+            expression.evalInto(pool, output, input);
+            if (output.getDouble(65535) != 9 || pool.sum(output).getDouble() != 589824)
+                throw new AssertionError("parallel expression or sum failed");
+        }
         if (Boolean.getBoolean("expectVector")) {
             long before = org.numjvm.BackendInfo.vectorRuns();
             NDArray vectorInput = NJ.ones(257);

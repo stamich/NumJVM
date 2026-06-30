@@ -219,4 +219,18 @@ class ParallelContextTest {
         context.close();
         assertTrue(context.isClosed());
     }
+
+    @Test void closePreservesAnExistingInterrupt() throws Exception {
+        var observed = new java.util.concurrent.atomic.AtomicBoolean();
+        Thread thread = new Thread(() -> {
+            var context = NJ.parallel(1);
+            Thread.currentThread().interrupt();
+            context.close();
+            observed.set(Thread.currentThread().isInterrupted());
+        });
+        thread.start();
+        thread.join(5000);
+        assertFalse(thread.isAlive());
+        assertTrue(observed.get());
+    }
 }

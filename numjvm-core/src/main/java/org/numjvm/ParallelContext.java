@@ -297,7 +297,7 @@ public final class ParallelContext implements AutoCloseable {
                             if (index < 0 || index >= plan.count) break;
                             action.run(index, plan.start(index), plan.end(index));
                         }
-                    } finally { CURRENT.remove(); }
+                    } finally { decision.remove(); CURRENT.remove(); }
                     }));
                 } catch (RuntimeException | Error ex) {
                     submissionFailure = ex;
@@ -308,8 +308,10 @@ public final class ParallelContext implements AutoCloseable {
             Throwable failure = submissionFailure;
             for (var future : futures) {
                 for (;;) {
+                    // Keep the interrupt recorded while allowing every worker to be joined.
+                    if (interrupted) Thread.interrupted();
                     try { future.get(); break; }
-                    catch (InterruptedException ex) { interrupted = true; }
+                    catch (InterruptedException ex) { interrupted = true; Thread.currentThread().interrupt(); }
                     catch (ExecutionException ex) { if (failure == null) failure = ex.getCause(); break; }
                 }
             }
@@ -340,10 +342,12 @@ public final class ParallelContext implements AutoCloseable {
         }
         boolean interrupted = false;
         for (;;) {
+            if (interrupted) Thread.interrupted();
             try {
                 if (executor.awaitTermination(1, TimeUnit.DAYS)) break;
-            } catch (InterruptedException ex) { interrupted = true; }
+            } catch (InterruptedException ex) { interrupted = true; Thread.currentThread().interrupt(); }
         }
+        decision.remove();
         if (interrupted) Thread.currentThread().interrupt();
     }
 }
