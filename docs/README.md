@@ -29,3 +29,5 @@
 
 - [0.5.0 reference results](benchmarks/M3-1-reference-results.md)
 - [Proposed 0.6.0 milestone](milestones/M4-0.6-plan.md)
+- [Opt-in parallel CPU execution](design/parallel-cpu.md)
+- [0.6.0 reference protocol](benchmarks/M4-reference-protocol.md)
