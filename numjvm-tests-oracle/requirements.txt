@@ -1,0 +1,3 @@
+# NumPy is the reference implementation for the differential tests.
+# Any NumPy 2.x reproduces the committed fixtures byte for byte.
+numpy>=2.0,<3

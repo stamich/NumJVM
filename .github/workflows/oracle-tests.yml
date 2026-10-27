@@ -1,0 +1,47 @@
+name: oracle-tests
+
+# Differential tests against NumPy. Kept separate from the main build so that
+# `./gradlew build` never needs Python.
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: oracle-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  oracle:
+    name: NumPy oracle
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install NumPy
+        run: python -m pip install -r numjvm-tests-oracle/requirements.txt
+
+      - name: Fixtures are reproducible with the current NumPy
+        run: python numjvm-tests-oracle/generate_cases.py --check
+
+      - name: Java tests, including the NumPy oracle replay
+        run: ./gradlew test --stacktrace
+
+      - name: NumPy reads the files NumJVM wrote
+        run: python numjvm-tests-oracle/verify_results.py numjvm-io/build/oracle-out
