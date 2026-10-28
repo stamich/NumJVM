@@ -49,7 +49,7 @@ sketched `get(long... idx)` / `set(...)`. The spike found:
    | `setDouble` | every real dtype | integers: truncation toward zero (NumPy `astype` semantics); bool: `v != 0` |
    | `setLong` | every real dtype | narrowing for smaller integers, rounding to nearest for floats |
    | `setBoolean` | every real dtype | `true` → 1 |
-   | any | complex64/128 | `DTypeException` (storage-only in M0) |
+   | any | complex64/128 | `DTypeException` (storage-only in M0; M1 adds `getComplex`/`setComplex`, see `docs/design/dtype-system.md`) |
 
 5. **Writes check the `WRITEABLE` flag** and throw `ReadOnlyArrayException`
    (broadcast views are read-only).

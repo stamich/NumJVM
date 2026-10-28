@@ -10,6 +10,7 @@
  *     ├── {@link org.numjvm.exception.IndexException IndexException}         index outside an axis, wrong number of indices
  *     ├── {@link org.numjvm.exception.ReadOnlyArrayException ReadOnlyArrayException} write through a read-only view
  *     ├── {@link org.numjvm.exception.MemoryException MemoryException}       closed scope, wrong thread, allocation failure
+ *     ├── {@link org.numjvm.exception.ValueException ValueException}         value an operation cannot accept (negative integer power, ...)
  *     └── org.numjvm.io.NpyFormatException  malformed or unsupported .npy data (module org.numjvm.io)
  * </pre>
  *

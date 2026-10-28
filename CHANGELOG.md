@@ -3,6 +3,59 @@
 All notable changes to NumJVM are listed here. The project follows
 [Semantic Versioning](https://semver.org/); until 1.0 every minor version may change the API.
 
+## [0.2.0-alpha] - 2026-01-06
+
+Milestone M1: the elementwise engine, and the quality baseline it was built under.
+
+### Added
+
+- **Ufuncs** (`org.numjvm.ufunc`): 41 universal functions as constants of `Ufuncs`, with shortcuts on `NJ` and
+  `NDArray`: arithmetic (`add`, `subtract`, `multiply`, `divide`, `floor_divide`, `remainder`, `power`, `negative`,
+  `positive`, `absolute`, `conjugate`, `sign`, `square`), extrema (`maximum`, `minimum`, `fmax`, `fmin`), comparisons,
+  logical and bitwise operations, `sqrt`, `exp`, `log`, `sin`, `cos`, `tanh`, `floor`, `ceil`, `trunc`, `rint`, and
+  `round(x, decimals)`. Every ufunc broadcasts, accepts weak Java `long`, `double` and `Complex` scalars, and takes an
+  `out=` array; `addInPlace` and friends operate in place.
+- **Type promotion** (ADR-005): NumPy 2 / Array API v2025.12 lattice, `NJ.resultType`, `NJ.canCast` with the five
+  casting kinds, weak scalars (NEP 50), exact comparisons of signed integers with uint64.
+- **Reductions**: `sum` (pairwise, bit-identical to NumPy), `prod`, `max`, `min`, `mean`, `any`, `all` over axis lists
+  with `keepdims`, and `BinaryUfunc.reduce` for any reorderable ufunc.
+- **Iteration plans** (ADR-004): axes reordered by stride and coalesced, as NumPy's `nditer`; inner loops have
+  contiguous, broadcast, reduction and strided paths. Transposed and strided operands are read sequentially.
+- **Kernel registry**: about 650 inner loops, most generated at build time from templates (`numjvm-core/src/codegen`),
+  registered in NumPy's loop order; `astype` runs on the generated cast loops.
+- **Complex arithmetic**: `Complex` value type, `getComplex`/`setComplex`, `real()`/`imag()` views, NumPy-style
+  printing; add, subtract, multiply, divide (Smith), absolute, conjugate, square, sign, exp, log, sqrt, rint, equality,
+  sums and means.
+- **Results** are laid out in the operands' memory order (NumPy's `order='K'`) and live in the scope of a scoped operand.
+- **Accuracy contract** (decision D6): exact results except `power`, `exp`, `log`, `sin`, `cos`, `tanh` (≤ 4 ulp) and
+  complex `divide`, `absolute`, `sign` (≤ 2 ulp).
+- **Oracle**: 4,934 cases (from 103), including every ufunc × dtype × five layouts and 280 Hypothesis-drawn cases; a
+  4 MB fixture budget; ULP-tolerant comparison in Java and Python.
+- **Quality**: SonarCloud CI analysis with a blocking quality gate, an 80 % line-coverage floor (98.7 % reached), CI
+  actions pinned to commit SHAs with least-privilege permissions.
+- **Benchmarks**: JMH suites for ufuncs and reductions with NumPy counterparts and a comparison script; results in
+  `docs/benchmarks/M1.md`.
+- **Documentation**: ADR-004, ADR-005, design documents for ufuncs and type promotion, M1 retrospective.
+
+### Changed
+
+- `astype` and copies convert through the registry's cast loops; float64 → float16/bfloat16 rounds once, directly from
+  the double.
+- Complex arrays are no longer storage-only: `setDouble`/`setLong` store the real part, `getBoolean` tests both parts.
+- `SharedSecrets` accessors throw `IllegalStateException` instead of returning `null` before initialisation.
+
+### Removed
+
+- `org.numjvm.kernels.ValidationKernels` and the `org.numjvm.kernels` package: use `NJ.add`, `NJ.sum` and the other
+  ufuncs and reductions.
+
+### Known limitations
+
+- Inner loops are scalar Java; NumPy's SIMD loops are faster on contiguous data (see `docs/benchmarks/M1.md`). Vector
+  API kernels are M2 work.
+- Complex ordering (`less`, `maximum`, ...), complex `power` and complex trigonometric functions are not implemented.
+- No `where=` masks, `accumulate`, `outer` or generalized ufuncs.
+
 ## [0.1.0-alpha] - 2025-11-25
 
 Milestone M0: the core array and memory foundation.
@@ -43,4 +96,5 @@ Milestone M0: the core array and memory foundation.
   which needs loop reordering (M1) and SIMD (M2).
 - `@Experimental` APIs (`iteration`, `kernels`) will change in M1.
 
+[0.2.0-alpha]: https://github.com/stamich/NumJVM/releases/tag/v0.2.0-alpha
 [0.1.0-alpha]: https://github.com/stamich/NumJVM/releases/tag/v0.1.0-alpha

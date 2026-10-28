@@ -17,3 +17,6 @@ __pycache__/
 *.pyc
 .venv/
 .jqwik-database
+.hypothesis/
+# benchmark results written next to the benchmarks
+numjvm-bench/*.csv

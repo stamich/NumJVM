@@ -15,7 +15,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.numjvm.NJ;
 import org.numjvm.exception.MemoryException;
 import org.numjvm.exception.ReadOnlyArrayException;
-import org.numjvm.kernels.ValidationKernels;
 import org.numjvm.memory.NJScope;
 import org.numjvm.ndarray.NDArray;
 import org.numjvm.ndarray.Shape;
@@ -63,7 +62,7 @@ class NpyMapTest {
         try (NJScope scope = NJ.scope()) {
             NDArray m = Npy.map(f, scope);
             assertEquals(999_999.0, m.getDouble(999_999));
-            assertEquals(499_999_500_000.0, ValidationKernels.sumFloat64(m));
+            assertEquals(499_999_500_000.0, NJ.sum(m).getDouble());
         }
     }
 

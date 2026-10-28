@@ -3,7 +3,9 @@ package org.numjvm.ndarray;
 import java.lang.foreign.MemorySegment;
 import java.util.Objects;
 
+import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
+import org.numjvm.dtype.TypePromotion;
 import org.numjvm.exception.IndexException;
 import org.numjvm.exception.MemoryException;
 import org.numjvm.exception.ReadOnlyArrayException;
@@ -15,6 +17,9 @@ import org.numjvm.internal.memory.MemoryAllocator;
 import org.numjvm.internal.memory.MemoryErrors;
 import org.numjvm.internal.memory.Sizes;
 import org.numjvm.memory.MemoryOwner;
+import org.numjvm.ufunc.Reductions;
+import org.numjvm.ufunc.Rounding;
+import org.numjvm.ufunc.Ufuncs;
 
 /**
  * An N-dimensional array: a typed, strided view of a block of memory.
@@ -41,27 +46,36 @@ import org.numjvm.memory.MemoryOwner;
  * Because of (4), element access only checks each index against its axis length.
  *
  * <h2>Element access</h2>
- * Accessors exist for {@code double}, {@code long} and {@code boolean}, each for rank 0
- * to 3 with one index argument per axis and, for any rank, with a {@code long[]}
- * index (ADR-002). Setters take the value last. Indices must lie in
+ * Accessors exist for {@code double}, {@code long}, {@code boolean} and {@link Complex},
+ * each for rank 0 to 3 with one index argument per axis and, for any rank, with a
+ * {@code long[]} index (ADR-002). Setters take the value last. Indices must lie in
  * {@code [0, dim)}; negative indices are not wrapped (use {@link Slice} for that).
  * Values are converted as follows:
  * <table>
  *   <caption>Conversion rules</caption>
  *   <tr><th>Accessor</th><th>Rule</th></tr>
  *   <tr><td>{@code getDouble}</td><td>any real dtype; bool reads as 0 or 1, uint64 as
- *       its unsigned value, float16 and bfloat16 are widened exactly</td></tr>
+ *       its unsigned value, float16 and bfloat16 are widened exactly; complex dtypes
+ *       throw (use {@code getComplex})</td></tr>
  *   <tr><td>{@code getLong}</td><td>bool and integer dtypes; uint64 returns the raw
- *       bits (see {@link org.numjvm.dtype.Unsigned}); floating-point dtypes throw</td></tr>
- *   <tr><td>{@code getBoolean}</td><td>any real dtype; {@code true} for any non-zero
- *       value, including NaN</td></tr>
+ *       bits (see {@link org.numjvm.dtype.Unsigned}); floating-point and complex dtypes
+ *       throw</td></tr>
+ *   <tr><td>{@code getBoolean}</td><td>any dtype; {@code true} for any non-zero value,
+ *       including NaN, and for a complex value with either part non-zero</td></tr>
+ *   <tr><td>{@code getComplex}</td><td>any dtype; real values as {@code getDouble} with
+ *       a zero imaginary part, complex64 parts widened exactly</td></tr>
  *   <tr><td>{@code setDouble}</td><td>integer dtypes truncate toward zero and wrap to
- *       the dtype's width; bool stores {@code value != 0}; float types round to nearest</td></tr>
- *   <tr><td>{@code setLong}</td><td>integer dtypes keep the low bits; float types round
- *       to nearest; bool stores {@code value != 0}</td></tr>
- *   <tr><td>{@code setBoolean}</td><td>stores 1 or 0 in any real dtype</td></tr>
+ *       the dtype's width; bool stores {@code value != 0}; float types round once to
+ *       nearest (float16 and bfloat16 directly from the {@code double}); complex dtypes
+ *       store the value as the real part and zero as the imaginary part</td></tr>
+ *   <tr><td>{@code setLong}</td><td>integer dtypes keep the low bits; float and complex
+ *       types round to nearest; bool stores {@code value != 0}</td></tr>
+ *   <tr><td>{@code setBoolean}</td><td>stores 1 or 0 in any dtype</td></tr>
+ *   <tr><td>{@code setComplex}</td><td>complex dtypes only; complex64 rounds each part
+ *       to {@code float}; real dtypes throw, since dropping the imaginary part silently
+ *       would lose data</td></tr>
  * </table>
- * Complex dtypes are storage-only in this release; their accessors throw
+ * Conversions a getter or setter does not support throw
  * {@link org.numjvm.exception.DTypeException}. Writing to a read-only array throws
  * {@link ReadOnlyArrayException}; accessing an array whose scope is closed, or a
  * confined scope's array from another thread, throws {@link MemoryException}.
@@ -79,6 +93,11 @@ public final class NDArray {
             @Override
             public NDArray allocate(MemoryAllocator allocator, DType dtype, Shape shape, Order order) {
                 return NDArray.allocate(allocator, dtype, shape, order);
+            }
+
+            @Override
+            public NDArray convert(NDArray array, MemoryAllocator allocator, DType target, Order order) {
+                return Copier.copy(array, allocator, target, order);
             }
 
             @Override
@@ -365,6 +384,51 @@ public final class NDArray {
             axes[i] = n - 1 - i;
         }
         return permuteDims(axes);
+    }
+
+    /**
+     * Returns the real part ({@code NUMPY_COMPATIBILITY}: {@code ndarray.real}).
+     *
+     * <p>For a complex array this is a view of float32 (complex64) or float64 (complex128)
+     * elements on the same memory, with the same shape and strides: writing to it changes the
+     * real parts of this array, and it is writeable when this array is. For a real array it is
+     * this array itself.
+     *
+     * @return the real parts, as a view
+     */
+    public NDArray real() {
+        if (!dtype.isComplex()) {
+            return this;
+        }
+        return new NDArray(buffer, TypePromotion.component(dtype), offset, shape, strides, writeable);
+    }
+
+    /**
+     * Returns the imaginary part ({@code NUMPY_COMPATIBILITY}: {@code ndarray.imag}).
+     *
+     * <p>For a complex array this is a view of the imaginary parts on the same memory, like
+     * {@link #real()}. For a real array it is a new read-only array of zeros with this array's
+     * dtype and shape, as in NumPy.
+     *
+     * @return the imaginary parts
+     */
+    public NDArray imag() {
+        if (!dtype.isComplex()) {
+            NDArray zeros = allocate(HybridAllocator.defaultInstance(), dtype, shape, Order.C);
+            return new NDArray(zeros.buffer, dtype, 0, shape, zeros.strides, false);
+        }
+        return new NDArray(buffer, TypePromotion.component(dtype), offset + dtype.size() / 2, shape, strides,
+                writeable);
+    }
+
+    /**
+     * Returns the complex conjugate ({@code ARRAY_API}: {@code conj}); the same as
+     * {@link #conjugate()}.
+     *
+     * @return a new array; real arrays are copied unchanged
+     */
+    public NDArray conj() {
+        return Ufuncs.CONJUGATE.apply(this);
     }
 
     /**
@@ -655,15 +719,19 @@ public final class NDArray {
      * Returns a C-contiguous copy converted to another dtype ({@code NUMPY_COMPATIBILITY}:
      * NumPy's {@code astype} with {@code casting="unsafe"}).
      *
-     * <p>Integer and bool conversions go through {@code long}, so int64 and uint64 values
-     * keep all their bits; conversions involving a floating-point type go through
-     * {@code double} with the rules of {@code setDouble}. Real values become complex
-     * with a zero imaginary part; converting complex to real is rejected rather than
-     * silently discarding the imaginary part.
+     * <p>Integer and bool conversions keep the low bits of the value (int64 and uint64 keep
+     * all of them) and wrap to the target's width. Every conversion to a floating-point
+     * type rounds once to nearest, so int64 to float32 and float64 to float16 are
+     * correctly rounded as in NumPy. Floating-point values convert to integers by truncation
+     * toward zero; NaN and out-of-range values follow Java's saturating conversion to
+     * {@code long} and then wrap ({@code NUMJVM_SPECIFIC}: NumPy leaves them undefined).
+     * Real values become complex with a zero imaginary part; converting complex to bool gives
+     * {@code true} when either part is non-zero; converting complex to any other real dtype is
+     * rejected rather than silently discarding the imaginary part.
      *
      * @param target the dtype of the result
      * @return the converted copy; a plain copy if {@code target} equals this dtype
-     * @throws org.numjvm.exception.DTypeException for complex to real conversions
+     * @throws org.numjvm.exception.DTypeException for complex to real conversions other than bool
      */
     public NDArray astype(DType target) {
         return astype(target, Order.C);
@@ -678,6 +746,1050 @@ public final class NDArray {
      */
     public NDArray astype(DType target, Order order) {
         return Copier.copy(this, HybridAllocator.defaultInstance(), Objects.requireNonNull(target, "target"), order);
+    }
+
+    // ------------------------------------------------------------------ arithmetic
+
+    /**
+     * Returns {@code this + other}, element-wise with broadcasting
+     * ({@link org.numjvm.ufunc.Ufuncs#ADD}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape and the promoted dtype
+     */
+    public NDArray add(NDArray other) {
+        return Ufuncs.ADD.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this + other} with a weak scalar ({@link org.numjvm.ufunc.Ufuncs#ADD}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray add(double other) {
+        return Ufuncs.ADD.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this + other} with a weak scalar ({@link org.numjvm.ufunc.Ufuncs#ADD}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray add(long other) {
+        return Ufuncs.ADD.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this - other}, element-wise with broadcasting: not defined for two bool operands
+     * ({@link org.numjvm.ufunc.Ufuncs#SUBTRACT}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray subtract(NDArray other) {
+        return Ufuncs.SUBTRACT.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this - other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#SUBTRACT}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray subtract(double other) {
+        return Ufuncs.SUBTRACT.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this - other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#SUBTRACT}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray subtract(long other) {
+        return Ufuncs.SUBTRACT.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this * other}, element-wise with broadcasting: logical and for bool
+     * ({@link org.numjvm.ufunc.Ufuncs#MULTIPLY}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray multiply(NDArray other) {
+        return Ufuncs.MULTIPLY.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this * other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#MULTIPLY}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray multiply(double other) {
+        return Ufuncs.MULTIPLY.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this * other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#MULTIPLY}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray multiply(long other) {
+        return Ufuncs.MULTIPLY.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this / other}, element-wise with broadcasting: true division; integers give float64
+     * ({@link org.numjvm.ufunc.Ufuncs#DIVIDE}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray divide(NDArray other) {
+        return Ufuncs.DIVIDE.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this / other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#DIVIDE}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray divide(double other) {
+        return Ufuncs.DIVIDE.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this / other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#DIVIDE}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray divide(long other) {
+        return Ufuncs.DIVIDE.apply(this, other);
+    }
+
+    /**
+     * Returns {@code floor(this / other)}, element-wise with broadcasting: integer division by zero gives 0
+     * ({@link org.numjvm.ufunc.Ufuncs#FLOOR_DIVIDE}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray floorDivide(NDArray other) {
+        return Ufuncs.FLOOR_DIVIDE.apply(this, other);
+    }
+
+    /**
+     * Returns {@code floor(this / other)} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#FLOOR_DIVIDE}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray floorDivide(double other) {
+        return Ufuncs.FLOOR_DIVIDE.apply(this, other);
+    }
+
+    /**
+     * Returns {@code floor(this / other)} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#FLOOR_DIVIDE}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray floorDivide(long other) {
+        return Ufuncs.FLOOR_DIVIDE.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this % other}, element-wise with broadcasting: Python-style remainder with the sign of the divisor
+     * ({@link org.numjvm.ufunc.Ufuncs#REMAINDER}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray remainder(NDArray other) {
+        return Ufuncs.REMAINDER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this % other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#REMAINDER}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray remainder(double other) {
+        return Ufuncs.REMAINDER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this % other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#REMAINDER}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray remainder(long other) {
+        return Ufuncs.REMAINDER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this ** other}, element-wise with broadcasting: integer powers wrap
+     * ({@link org.numjvm.ufunc.Ufuncs#POWER}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray power(NDArray other) {
+        return Ufuncs.POWER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this ** other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#POWER}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray power(double other) {
+        return Ufuncs.POWER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this ** other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#POWER}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray power(long other) {
+        return Ufuncs.POWER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code max(this, other)}, element-wise with broadcasting: NaN propagates
+     * ({@link org.numjvm.ufunc.Ufuncs#MAXIMUM}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray maximum(NDArray other) {
+        return Ufuncs.MAXIMUM.apply(this, other);
+    }
+
+    /**
+     * Returns {@code max(this, other)} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#MAXIMUM}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray maximum(double other) {
+        return Ufuncs.MAXIMUM.apply(this, other);
+    }
+
+    /**
+     * Returns {@code max(this, other)} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#MAXIMUM}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray maximum(long other) {
+        return Ufuncs.MAXIMUM.apply(this, other);
+    }
+
+    /**
+     * Returns {@code min(this, other)}, element-wise with broadcasting: NaN propagates
+     * ({@link org.numjvm.ufunc.Ufuncs#MINIMUM}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray minimum(NDArray other) {
+        return Ufuncs.MINIMUM.apply(this, other);
+    }
+
+    /**
+     * Returns {@code min(this, other)} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#MINIMUM}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray minimum(double other) {
+        return Ufuncs.MINIMUM.apply(this, other);
+    }
+
+    /**
+     * Returns {@code min(this, other)} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#MINIMUM}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray minimum(long other) {
+        return Ufuncs.MINIMUM.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this == other}, element-wise with broadcasting: giving bool
+     * ({@link org.numjvm.ufunc.Ufuncs#EQUAL}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    @SuppressWarnings("java:S1221") // NumPy's name for the ufunc; not Object.equals
+    public NDArray equal(NDArray other) {
+        return Ufuncs.EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this == other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#EQUAL}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    @SuppressWarnings("java:S1221") // NumPy's name for the ufunc; not Object.equals
+    public NDArray equal(double other) {
+        return Ufuncs.EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this == other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#EQUAL}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    @SuppressWarnings("java:S1221") // NumPy's name for the ufunc; not Object.equals
+    public NDArray equal(long other) {
+        return Ufuncs.EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this != other}, element-wise with broadcasting: giving bool
+     * ({@link org.numjvm.ufunc.Ufuncs#NOT_EQUAL}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray notEqual(NDArray other) {
+        return Ufuncs.NOT_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this != other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#NOT_EQUAL}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray notEqual(double other) {
+        return Ufuncs.NOT_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this != other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#NOT_EQUAL}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray notEqual(long other) {
+        return Ufuncs.NOT_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this < other}, element-wise with broadcasting: giving bool
+     * ({@link org.numjvm.ufunc.Ufuncs#LESS}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray less(NDArray other) {
+        return Ufuncs.LESS.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this < other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#LESS}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray less(double other) {
+        return Ufuncs.LESS.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this < other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#LESS}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray less(long other) {
+        return Ufuncs.LESS.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this <= other}, element-wise with broadcasting: giving bool
+     * ({@link org.numjvm.ufunc.Ufuncs#LESS_EQUAL}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray lessEqual(NDArray other) {
+        return Ufuncs.LESS_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this <= other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#LESS_EQUAL}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray lessEqual(double other) {
+        return Ufuncs.LESS_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this <= other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#LESS_EQUAL}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray lessEqual(long other) {
+        return Ufuncs.LESS_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this > other}, element-wise with broadcasting: giving bool
+     * ({@link org.numjvm.ufunc.Ufuncs#GREATER}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray greater(NDArray other) {
+        return Ufuncs.GREATER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this > other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#GREATER}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray greater(double other) {
+        return Ufuncs.GREATER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this > other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#GREATER}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray greater(long other) {
+        return Ufuncs.GREATER.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this >= other}, element-wise with broadcasting: giving bool
+     * ({@link org.numjvm.ufunc.Ufuncs#GREATER_EQUAL}).
+     *
+     * @param other the other operand
+     * @return a new array with the broadcast shape
+     */
+    public NDArray greaterEqual(NDArray other) {
+        return Ufuncs.GREATER_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this >= other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#GREATER_EQUAL}).
+     *
+     * @param other the scalar
+     * @return a new array
+     */
+    public NDArray greaterEqual(double other) {
+        return Ufuncs.GREATER_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code this >= other} with a weak scalar
+     * ({@link org.numjvm.ufunc.Ufuncs#GREATER_EQUAL}).
+     *
+     * @param other the scalar; it must fit an integer dtype
+     * @return a new array
+     */
+    public NDArray greaterEqual(long other) {
+        return Ufuncs.GREATER_EQUAL.apply(this, other);
+    }
+
+    /**
+     * Returns {@code -this}, element-wise: integers wrap; not defined for bool
+     * ({@link org.numjvm.ufunc.Ufuncs#NEGATIVE}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray negative() {
+        return Ufuncs.NEGATIVE.apply(this);
+    }
+
+    /**
+     * Returns {@code |this|}, element-wise: abs(MIN) wraps to MIN
+     * ({@link org.numjvm.ufunc.Ufuncs#ABSOLUTE}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray abs() {
+        return Ufuncs.ABSOLUTE.apply(this);
+    }
+
+    /**
+     * Returns {@code sign(this)}, element-wise: -1, 0 or 1; NaN for NaN
+     * ({@link org.numjvm.ufunc.Ufuncs#SIGN}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray sign() {
+        return Ufuncs.SIGN.apply(this);
+    }
+
+    /**
+     * Returns {@code this * this}, element-wise: integers wrap
+     * ({@link org.numjvm.ufunc.Ufuncs#SQUARE}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray square() {
+        return Ufuncs.SQUARE.apply(this);
+    }
+
+    /**
+     * Returns {@code sqrt(this)}, element-wise: integers give the first float dtype they convert to safely
+     * ({@link org.numjvm.ufunc.Ufuncs#SQRT}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray sqrt() {
+        return Ufuncs.SQRT.apply(this);
+    }
+
+    /**
+     * Returns {@code exp(this)}, element-wise: integers give the first float dtype they convert to safely
+     * ({@link org.numjvm.ufunc.Ufuncs#EXP}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray exp() {
+        return Ufuncs.EXP.apply(this);
+    }
+
+    /**
+     * Returns {@code log(this)}, element-wise: integers give the first float dtype they convert to safely
+     * ({@link org.numjvm.ufunc.Ufuncs#LOG}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray log() {
+        return Ufuncs.LOG.apply(this);
+    }
+
+    /**
+     * Returns {@code sin(this)}, element-wise: integers give the first float dtype they convert to safely
+     * ({@link org.numjvm.ufunc.Ufuncs#SIN}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray sin() {
+        return Ufuncs.SIN.apply(this);
+    }
+
+    /**
+     * Returns {@code cos(this)}, element-wise: integers give the first float dtype they convert to safely
+     * ({@link org.numjvm.ufunc.Ufuncs#COS}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray cos() {
+        return Ufuncs.COS.apply(this);
+    }
+
+    /**
+     * Returns {@code tanh(this)}, element-wise: integers give the first float dtype they convert to safely
+     * ({@link org.numjvm.ufunc.Ufuncs#TANH}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray tanh() {
+        return Ufuncs.TANH.apply(this);
+    }
+
+    /**
+     * Returns {@code trunc(this)}, element-wise: integers keep their dtype
+     * ({@link org.numjvm.ufunc.Ufuncs#TRUNC}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray trunc() {
+        return Ufuncs.TRUNC.apply(this);
+    }
+
+    /**
+     * Returns this array rounded to the nearest integer, halves to even
+     * ({@link org.numjvm.ufunc.Rounding#round(NDArray)}).
+     *
+     * @return a new array; integer arrays keep their dtype
+     */
+    public NDArray round() {
+        return Rounding.round(this);
+    }
+
+    /**
+     * Returns this array rounded to {@code decimals} decimal places, halves to even
+     * ({@link org.numjvm.ufunc.Rounding#round(NDArray, int)}).
+     *
+     * @param decimals decimal places; negative values round to tens, hundreds, ...
+     * @return a new array of the same dtype
+     */
+    public NDArray round(int decimals) {
+        return Rounding.round(this, decimals);
+    }
+
+    /**
+     * Returns {@code floor(this)}, element-wise: integers keep their dtype
+     * ({@link org.numjvm.ufunc.Ufuncs#FLOOR}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray floor() {
+        return Ufuncs.FLOOR.apply(this);
+    }
+
+    /**
+     * Returns {@code ceil(this)}, element-wise: integers keep their dtype
+     * ({@link org.numjvm.ufunc.Ufuncs#CEIL}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray ceil() {
+        return Ufuncs.CEIL.apply(this);
+    }
+
+    /**
+     * Sum over all elements ({@link org.numjvm.ufunc.Reductions#sum(NDArray)}).
+     *
+     * @return a 0-D array
+     */
+    public NDArray sum() {
+        return Reductions.sum(this);
+    }
+
+    /**
+     * Sum over one axis ({@link org.numjvm.ufunc.Reductions#sum(NDArray, int)}).
+     *
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public NDArray sum(int axis) {
+        return Reductions.sum(this, axis);
+    }
+
+    /**
+     * Sum over several axes
+     * ({@link org.numjvm.ufunc.Reductions#sum(NDArray, int[], boolean)}).
+     *
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public NDArray sum(int[] axes, boolean keepdims) {
+        return Reductions.sum(this, axes, keepdims);
+    }
+
+    /**
+     * Product over all elements ({@link org.numjvm.ufunc.Reductions#prod(NDArray)}).
+     *
+     * @return a 0-D array
+     */
+    public NDArray prod() {
+        return Reductions.prod(this);
+    }
+
+    /**
+     * Product over one axis ({@link org.numjvm.ufunc.Reductions#prod(NDArray, int)}).
+     *
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public NDArray prod(int axis) {
+        return Reductions.prod(this, axis);
+    }
+
+    /**
+     * Product over several axes
+     * ({@link org.numjvm.ufunc.Reductions#prod(NDArray, int[], boolean)}).
+     *
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public NDArray prod(int[] axes, boolean keepdims) {
+        return Reductions.prod(this, axes, keepdims);
+    }
+
+    /**
+     * Maximum over all elements ({@link org.numjvm.ufunc.Reductions#max(NDArray)}).
+     *
+     * @return a 0-D array
+     */
+    public NDArray max() {
+        return Reductions.max(this);
+    }
+
+    /**
+     * Maximum over one axis ({@link org.numjvm.ufunc.Reductions#max(NDArray, int)}).
+     *
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public NDArray max(int axis) {
+        return Reductions.max(this, axis);
+    }
+
+    /**
+     * Maximum over several axes
+     * ({@link org.numjvm.ufunc.Reductions#max(NDArray, int[], boolean)}).
+     *
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public NDArray max(int[] axes, boolean keepdims) {
+        return Reductions.max(this, axes, keepdims);
+    }
+
+    /**
+     * Minimum over all elements ({@link org.numjvm.ufunc.Reductions#min(NDArray)}).
+     *
+     * @return a 0-D array
+     */
+    public NDArray min() {
+        return Reductions.min(this);
+    }
+
+    /**
+     * Minimum over one axis ({@link org.numjvm.ufunc.Reductions#min(NDArray, int)}).
+     *
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public NDArray min(int axis) {
+        return Reductions.min(this, axis);
+    }
+
+    /**
+     * Minimum over several axes
+     * ({@link org.numjvm.ufunc.Reductions#min(NDArray, int[], boolean)}).
+     *
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public NDArray min(int[] axes, boolean keepdims) {
+        return Reductions.min(this, axes, keepdims);
+    }
+
+    /**
+     * Mean over all elements ({@link org.numjvm.ufunc.Reductions#mean(NDArray)}).
+     *
+     * @return a 0-D array
+     */
+    public NDArray mean() {
+        return Reductions.mean(this);
+    }
+
+    /**
+     * Mean over one axis ({@link org.numjvm.ufunc.Reductions#mean(NDArray, int)}).
+     *
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public NDArray mean(int axis) {
+        return Reductions.mean(this, axis);
+    }
+
+    /**
+     * Mean over several axes
+     * ({@link org.numjvm.ufunc.Reductions#mean(NDArray, int[], boolean)}).
+     *
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public NDArray mean(int[] axes, boolean keepdims) {
+        return Reductions.mean(this, axes, keepdims);
+    }
+
+    /**
+     * Whether any element is true over all elements ({@link org.numjvm.ufunc.Reductions#any(NDArray)}).
+     *
+     * @return a 0-D array
+     */
+    public NDArray any() {
+        return Reductions.any(this);
+    }
+
+    /**
+     * Whether any element is true over one axis ({@link org.numjvm.ufunc.Reductions#any(NDArray, int)}).
+     *
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public NDArray any(int axis) {
+        return Reductions.any(this, axis);
+    }
+
+    /**
+     * Whether any element is true over several axes
+     * ({@link org.numjvm.ufunc.Reductions#any(NDArray, int[], boolean)}).
+     *
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public NDArray any(int[] axes, boolean keepdims) {
+        return Reductions.any(this, axes, keepdims);
+    }
+
+    /**
+     * Whether every element is true over all elements ({@link org.numjvm.ufunc.Reductions#all(NDArray)}).
+     *
+     * @return a 0-D array
+     */
+    public NDArray all() {
+        return Reductions.all(this);
+    }
+
+    /**
+     * Whether every element is true over one axis ({@link org.numjvm.ufunc.Reductions#all(NDArray, int)}).
+     *
+     * @param axis the axis; negative values count from the end
+     * @return the result, with that axis removed
+     */
+    public NDArray all(int axis) {
+        return Reductions.all(this, axis);
+    }
+
+    /**
+     * Whether every element is true over several axes
+     * ({@link org.numjvm.ufunc.Reductions#all(NDArray, int[], boolean)}).
+     *
+     * @param axes     the axes; {@code null} for all, an empty array for none
+     * @param keepdims keep reduced axes with length 1
+     * @return the result
+     */
+    public NDArray all(int[] axes, boolean keepdims) {
+        return Reductions.all(this, axes, keepdims);
+    }
+
+    /**
+     * {@code this += other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.ADD.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.addInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray addInPlace(NDArray other) {
+        return Ufuncs.ADD.apply(this, other, this);
+    }
+
+    /**
+     * {@code this += other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.ADD.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.addInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray addInPlace(double other) {
+        return Ufuncs.ADD.apply(this, other, this);
+    }
+
+    /**
+     * {@code this += other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.ADD.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.addInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray addInPlace(long other) {
+        return Ufuncs.ADD.apply(this, other, this);
+    }
+
+    /**
+     * {@code this -= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.SUBTRACT.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.subtractInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray subtractInPlace(NDArray other) {
+        return Ufuncs.SUBTRACT.apply(this, other, this);
+    }
+
+    /**
+     * {@code this -= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.SUBTRACT.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.subtractInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray subtractInPlace(double other) {
+        return Ufuncs.SUBTRACT.apply(this, other, this);
+    }
+
+    /**
+     * {@code this -= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.SUBTRACT.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.subtractInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray subtractInPlace(long other) {
+        return Ufuncs.SUBTRACT.apply(this, other, this);
+    }
+
+    /**
+     * {@code this *= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.MULTIPLY.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.multiplyInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray multiplyInPlace(NDArray other) {
+        return Ufuncs.MULTIPLY.apply(this, other, this);
+    }
+
+    /**
+     * {@code this *= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.MULTIPLY.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.multiplyInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray multiplyInPlace(double other) {
+        return Ufuncs.MULTIPLY.apply(this, other, this);
+    }
+
+    /**
+     * {@code this *= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.MULTIPLY.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.multiplyInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray multiplyInPlace(long other) {
+        return Ufuncs.MULTIPLY.apply(this, other, this);
+    }
+
+    /**
+     * {@code this /= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.DIVIDE.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.divideInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray divideInPlace(NDArray other) {
+        return Ufuncs.DIVIDE.apply(this, other, this);
+    }
+
+    /**
+     * {@code this /= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.DIVIDE.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.divideInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray divideInPlace(double other) {
+        return Ufuncs.DIVIDE.apply(this, other, this);
+    }
+
+    /**
+     * {@code this /= other} in place, with broadcasting of {@code other}
+     * ({@code Ufuncs.DIVIDE.apply(this, other, this)}). The result is converted to this array's
+     * dtype with {@code SAME_KIND} casting, so {@code int8Array.divideInPlace(1.5)} is a
+     * {@link org.numjvm.exception.DTypeException}, as in NumPy.
+     *
+     * @param other the other operand; a weak scalar
+     * @return this array
+     * @throws ReadOnlyArrayException if this array is read-only
+     */
+    public NDArray divideInPlace(long other) {
+        return Ufuncs.DIVIDE.apply(this, other, this);
+    }
+
+    /**
+     * Returns {@code conj(this)}, element-wise: the complex conjugate; real numbers are unchanged
+     * ({@link org.numjvm.ufunc.Ufuncs#CONJUGATE}).
+     *
+     * @return a new array with this array's shape
+     */
+    public NDArray conjugate() {
+        return Ufuncs.CONJUGATE.apply(this);
     }
 
     // ------------------------------------------------------------------ element access: helpers
@@ -776,6 +1888,24 @@ public final class NDArray {
         requireWriteable();
         try {
             ElementCodec.writeLong(segment, off, dtype, v);
+        } catch (IllegalStateException | WrongThreadException e) {
+            throw MemoryErrors.translate(e, buffer.owner());
+        }
+    }
+
+    private Complex readComplex(long off) {
+        try {
+            return ElementCodec.readComplex(segment, off, dtype);
+        } catch (IllegalStateException | WrongThreadException e) {
+            throw MemoryErrors.translate(e, buffer.owner());
+        }
+    }
+
+    private void writeComplex(long off, Complex v) {
+        Objects.requireNonNull(v, "value");
+        requireWriteable();
+        try {
+            ElementCodec.writeComplex(segment, off, dtype, v.re(), v.im());
         } catch (IllegalStateException | WrongThreadException e) {
             throw MemoryErrors.translate(e, buffer.owner());
         }
@@ -1097,5 +2227,111 @@ public final class NDArray {
      */
     public void setBoolean(long[] index, boolean value) {
         writeLong(elementOffset(index), value ? 1 : 0);
+    }
+
+    // ------------------------------------------------------------------ complex
+
+    /**
+     * Returns the single element of a 0-D array, as a {@link Complex}.
+     *
+     * @return the single element of a 0-D array, as a {@link Complex}
+     */
+    public Complex getComplex() {
+        return readComplex(at0());
+    }
+
+    /**
+     * Returns the element, as a {@link Complex}.
+     *
+     * @param i index on axis 0
+     * @return the element, as a {@link Complex}
+     */
+    public Complex getComplex(long i) {
+        return readComplex(at1(i));
+    }
+
+    /**
+     * Returns the element, as a {@link Complex}.
+     *
+     * @param i index on axis 0
+     * @param j index on axis 1
+     * @return the element, as a {@link Complex}
+     */
+    public Complex getComplex(long i, long j) {
+        return readComplex(at2(i, j));
+    }
+
+    /**
+     * Returns the element, as a {@link Complex}.
+     *
+     * @param i index on axis 0
+     * @param j index on axis 1
+     * @param k index on axis 2
+     * @return the element, as a {@link Complex}
+     */
+    public Complex getComplex(long i, long j, long k) {
+        return readComplex(at3(i, j, k));
+    }
+
+    /**
+     * Returns the element, as a {@link Complex}.
+     *
+     * @param index one index per axis
+     * @return the element, as a {@link Complex}
+     */
+    public Complex getComplex(long[] index) {
+        return readComplex(elementOffset(index));
+    }
+
+    /**
+     * Writes one element of a complex array, as described in the class documentation.
+     *
+     * @param value new value of the single element of a 0-D array
+     */
+    public void setComplex(Complex value) {
+        writeComplex(at0(), value);
+    }
+
+    /**
+     * Writes one element of a complex array, as described in the class documentation.
+     *
+     * @param i     index on axis 0
+     * @param value new value
+     */
+    public void setComplex(long i, Complex value) {
+        writeComplex(at1(i), value);
+    }
+
+    /**
+     * Writes one element of a complex array, as described in the class documentation.
+     *
+     * @param i     index on axis 0
+     * @param j     index on axis 1
+     * @param value new value
+     */
+    public void setComplex(long i, long j, Complex value) {
+        writeComplex(at2(i, j), value);
+    }
+
+    /**
+     * Writes one element of a complex array, as described in the class documentation.
+     *
+     * @param i     index on axis 0
+     * @param j     index on axis 1
+     * @param k     index on axis 2
+     * @param value new value
+     */
+    public void setComplex(long i, long j, long k, Complex value) {
+        writeComplex(at3(i, j, k), value);
+    }
+
+    /**
+     * Writes one element of a complex array, as described in the class documentation.
+     *
+     * @param index one index per axis
+     * @param value new value
+     */
+    public void setComplex(long[] index, Complex value) {
+        writeComplex(elementOffset(index), value);
     }
 }

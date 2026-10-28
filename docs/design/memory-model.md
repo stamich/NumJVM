@@ -28,9 +28,9 @@ NDArray  view   view of view ...
 
 | Created by                                                                         | Size                     | Memory                                     | Released                            |
 |------------------------------------------------------------------------------------|--------------------------|--------------------------------------------|-------------------------------------|
-| `NJ.*` factories, `copy()`, `astype()`, `Npy.read(path)`, kernels                  | ≤ heap threshold (1 MiB) | Java heap, `long[]`-backed                 | by the GC                           |
+| `NJ.*` factories, `copy()`, `astype()`, `Npy.read(path)`, operations on automatic arrays | ≤ heap threshold (1 MiB) | Java heap, `long[]`-backed           | by the GC                           |
 | same                                                                               | > heap threshold         | native, automatic arena, 64-byte aligned   | by the GC (via the arena's cleaner) |
-| `scope.*` factories, `Npy.read(path, scope)`, `ValidationKernels.add(a, b, scope)` | any                      | native, the scope's arena, 64-byte aligned | when the scope closes               |
+| `scope.*` factories, `Npy.read(path, scope)`, operations whose first scoped operand lives in the scope | any | native, the scope's arena, 64-byte aligned | when the scope closes |
 | `Npy.map(path, scope)`                                                             | any                      | memory-mapped file, read-only              | when the scope closes               |
 
 Heap buffers are backed by `long[]` rather than `byte[]`: heap segments are only as aligned as their array elements, and
@@ -107,3 +107,23 @@ arrays.
 | Native memory exhausted (`MaxDirectMemorySize`)        | `MemoryException` naming the flag                  |
 | Size overflow when computing bytes                     | `ShapeException`                                   |
 | Creating a view on closed memory                       | `MemoryException`                                  |
+
+## Results of operations (0.2)
+
+Ufuncs and reductions allocate their result, and every temporary conversion of an operand, in the scope of their
+first operand that lives in an open `NJScope`; with no scoped operand they use automatic memory. So a loop that
+computes on scoped arrays leaves nothing behind when the scope closes:
+
+```java
+try (NJScope scope = NJ.scope()) {
+    NDArray x = scope.zeros(DType.FLOAT64, 1_000_000);
+    for (int i = 0; i < 100; i++) {
+        x = NJ.add(NJ.multiply(x, 0.5), 1.0);   // both results live in the scope
+    }
+    result = scope.keep(x);                     // copy out what must survive
+}
+```
+
+`copy()` and `astype()` keep returning automatic, independent memory, and `out=` arrays are written wherever they
+live. A result that escapes its scope is not usable after `close()`: access throws `MemoryException`. Operations on a
+confined scope's arrays from another thread fail with `MemoryException` before computing.

@@ -1,11 +1,13 @@
 package org.numjvm.ndarray;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
 import org.numjvm.dtype.Unsigned;
 import org.numjvm.internal.HalfFloat;
@@ -188,13 +190,13 @@ final class ArrayFormatter {
             return idx -> pad(intString(a, idx), w);
         }
         if (t.isComplex()) {
-            return idx -> complexString(a, idx);
+            return complexFormatter(a, sample);
         }
         double[] values = new double[sample.size()];
         for (int i = 0; i < values.length; i++) {
             values[i] = a.getDouble(sample.get(i));
         }
-        FloatFormat ff = FloatFormat.of(values, t);
+        FloatFormat ff = FloatFormat.of(values, t, false);
         return idx -> ff.format(a.getDouble(idx));
     }
 
@@ -207,15 +209,28 @@ final class ArrayFormatter {
         return s.length() >= width ? s : " ".repeat(width - s.length()) + s;
     }
 
-    private static String complexString(NDArray a, long[] idx) {
-        long off = a.elementOffset(idx);
-        boolean single = a.dtype == DType.COMPLEX64;
-        double re = single ? a.segment.get(ElementCodec.F32, off) : a.segment.get(ElementCodec.F64, off);
-        double im = single ? a.segment.get(ElementCodec.F32, off + 4) : a.segment.get(ElementCodec.F64, off + 8);
-        DType component = single ? DType.FLOAT32 : DType.FLOAT64;
-        String imag = FloatFormat.of(new double[]{Math.abs(im)}, component).format(Math.abs(im)).strip();
-        String sign = im < 0 || (im == 0 && Double.doubleToRawLongBits(im) < 0) ? "-" : "+";
-        return FloatFormat.of(new double[]{re}, component).format(re).strip() + sign + imag + "j";
+    /**
+     * NumPy's {@code ComplexFloatingFormat}: the real parts and the imaginary parts are each
+     * column-aligned as a float array, the imaginary parts always signed; the {@code j} goes
+     * before the imaginary part's right padding.
+     */
+    private static Formatter complexFormatter(NDArray a, List<long[]> sample) {
+        DType component = a.dtype == DType.COMPLEX64 ? DType.FLOAT32 : DType.FLOAT64;
+        double[] re = new double[sample.size()];
+        double[] im = new double[sample.size()];
+        for (int i = 0; i < re.length; i++) {
+            Complex z = a.getComplex(sample.get(i));
+            re[i] = z.re();
+            im[i] = z.im();
+        }
+        FloatFormat real = FloatFormat.of(re, component, false);
+        FloatFormat imag = FloatFormat.of(im, component, true);
+        return idx -> {
+            Complex z = a.getComplex(idx);
+            String i = imag.format(z.im());
+            int end = stripTrailing(new StringBuilder(i)).length();
+            return real.format(z.re()) + i.substring(0, end) + "j" + i.substring(end);
+        };
     }
 
     /**
@@ -255,20 +270,25 @@ final class ArrayFormatter {
      */
     private static final class FloatFormat {
         private final boolean scientific;
+        private final boolean plus;
         private final DType type;
         private final int intWidth;
         private final int fracWidth;
         private final int expWidth;
 
-        private FloatFormat(boolean scientific, DType type, int intWidth, int fracWidth, int expWidth) {
+        private FloatFormat(boolean scientific, boolean plus, DType type, int intWidth, int fracWidth, int expWidth) {
             this.scientific = scientific;
+            this.plus = plus;
             this.type = type;
             this.intWidth = intWidth;
             this.fracWidth = fracWidth;
             this.expWidth = expWidth;
         }
 
-        static FloatFormat of(double[] values, DType type) {
+        /**
+         * @param plus whether non-negative values get a {@code +} sign (NumPy's {@code sign='+'})
+         */
+        static FloatFormat of(double[] values, DType type, boolean plus) {
             double maxAbs = 0;
             double minAbs = Double.POSITIVE_INFINITY;
             for (double v : values) {
@@ -286,10 +306,10 @@ final class ArrayFormatter {
             for (double v : values) {
                 if (!Double.isFinite(v)) {
                     special = true;
-                    negInf |= v == Double.NEGATIVE_INFINITY;
+                    negInf |= v == Double.NEGATIVE_INFINITY || plus;
                     continue;
                 }
-                String[] parts = sci ? scientificParts(v, type) : positionalParts(v, type);
+                String[] parts = parts(v, type, sci, plus);
                 iw = Math.max(iw, parts[0].length());
                 fw = Math.max(fw, parts[1].length());
                 if (sci) {
@@ -304,7 +324,7 @@ final class ArrayFormatter {
                 int offset = fw + 1 + (sci ? 2 + ew : 0);
                 iw = Math.max(iw, Math.max(3 - offset, 3 + (negInf ? 1 : 0) - offset));
             }
-            return new FloatFormat(sci, type, iw, fw, ew);
+            return new FloatFormat(sci, plus, type, iw, fw, ew);
         }
 
         String format(double v) {
@@ -312,7 +332,7 @@ final class ArrayFormatter {
                 int total = intWidth + 1 + fracWidth + (scientific ? 2 + expWidth : 0);
                 return pad(special(v), total);
             }
-            String[] parts = scientific ? scientificParts(v, type) : positionalParts(v, type);
+            String[] parts = parts(v, type, scientific, plus);
             StringBuilder sb = new StringBuilder();
             sb.append(" ".repeat(Math.max(0, intWidth - parts[0].length()))).append(parts[0]).append('.');
             if (scientific) {
@@ -327,8 +347,19 @@ final class ArrayFormatter {
             return sb.toString();
         }
 
-        private static String special(double v) {
-            return Double.isNaN(v) ? "nan" : v > 0 ? "inf" : "-inf";
+        private String special(double v) {
+            if (Double.isNaN(v)) {
+                return plus ? "+nan" : "nan";
+            }
+            return v < 0 ? "-inf" : plus ? "+inf" : "inf";
+        }
+
+        private static String[] parts(double v, DType type, boolean scientific, boolean plus) {
+            String[] parts = scientific ? scientificParts(v, type) : positionalParts(v, type);
+            if (plus && !parts[0].startsWith("-")) {
+                parts[0] = "+" + parts[0];
+            }
+            return parts;
         }
 
         /**
@@ -373,7 +404,7 @@ final class ArrayFormatter {
             if (type == DType.FLOAT32) {
                 return new BigDecimal(Float.toString((float) v));
             }
-            BigDecimal exact = new BigDecimal(v);
+            BigDecimal exact = exactDecimal(v);
             for (int p = 1; p < 17; p++) {
                 BigDecimal candidate = exact.round(new MathContext(p, RoundingMode.HALF_EVEN));
                 if (roundTrip(candidate.doubleValue(), type) == v) {
@@ -390,5 +421,39 @@ final class ArrayFormatter {
                 default -> (float) x;
             };
         }
+    }
+
+    /**
+     * Returns the exact decimal value of a finite {@code double}, built from its IEEE 754
+     * fields as significand × 2<sup>exponent</sup> in integer arithmetic. The result equals
+     * {@code new BigDecimal(v)}, including its scale.
+     */
+    static BigDecimal exactDecimal(double v) {
+        long bits = Double.doubleToRawLongBits(v);
+        int biased = (int) ((bits >>> 52) & 0x7FF);
+        if (biased == 0x7FF) {
+            throw new NumberFormatException("not a finite number: " + v);
+        }
+        long significand = bits & 0x000F_FFFF_FFFF_FFFFL;
+        int exponent;
+        if (biased == 0) {
+            exponent = -1074;
+        } else {
+            significand |= 1L << 52;
+            exponent = biased - 1075;
+        }
+        if (significand == 0) {
+            return BigDecimal.ZERO;
+        }
+        int zeros = Long.numberOfTrailingZeros(significand);
+        significand >>= zeros;
+        exponent += zeros;
+        BigInteger m = BigInteger.valueOf(bits < 0 ? -significand : significand);
+        if (exponent >= 0) {
+            return new BigDecimal(m.shiftLeft(exponent));
+        }
+        // m / 2^k == m * 5^k / 10^k
+        int k = -exponent;
+        return new BigDecimal(m.multiply(BigInteger.valueOf(5).pow(k)), k);
     }
 }

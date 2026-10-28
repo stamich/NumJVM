@@ -83,6 +83,18 @@ public final class SharedSecrets {
         NDArray allocate(MemoryAllocator allocator, DType dtype, Shape shape, Order order);
 
         /**
+         * Copies an array into new contiguous memory from {@code allocator}, converting its
+         * dtype: {@code astype} with a chosen allocator.
+         *
+         * @param array     the source
+         * @param allocator where the copy's memory comes from
+         * @param target    dtype of the copy
+         * @param order     memory order of the copy
+         * @return the copy
+         */
+        NDArray convert(NDArray array, MemoryAllocator allocator, DType target, Order order);
+
+        /**
          * Returns its buffer.
          *
          * @param array an array
@@ -117,13 +129,19 @@ public final class SharedSecrets {
     /**
      * Returns the scope accessor, initialising {@link NJScope} if necessary.
      *
-     * @return the scope accessor, initialising {@link NJScope} if necessary
+     * @return the scope accessor; never {@code null}
+     * @throws IllegalStateException if {@link NJScope} did not register an accessor while
+     *                               being initialised (a bug, or a call made from inside its
+     *                               static initialiser)
      */
     public static ScopeAccess scopeAccess() {
         ScopeAccess a = scopeAccess;
         if (a == null) {
             ensureInitialized(NJScope.class);
             a = scopeAccess;
+            if (a == null) {
+                throw notRegistered(NJScope.class);
+            }
         }
         return a;
     }
@@ -140,15 +158,25 @@ public final class SharedSecrets {
     /**
      * Returns the array accessor, initialising {@link NDArray} if necessary.
      *
-     * @return the array accessor, initialising {@link NDArray} if necessary
+     * @return the array accessor; never {@code null}
+     * @throws IllegalStateException if {@link NDArray} did not register an accessor while
+     *                               being initialised (a bug, or a call made from inside its
+     *                               static initialiser)
      */
     public static ArrayAccess arrayAccess() {
         ArrayAccess a = arrayAccess;
         if (a == null) {
             ensureInitialized(NDArray.class);
             a = arrayAccess;
+            if (a == null) {
+                throw notRegistered(NDArray.class);
+            }
         }
         return a;
+    }
+
+    private static IllegalStateException notRegistered(Class<?> c) {
+        return new IllegalStateException(c.getName() + " did not register its SharedSecrets accessor");
     }
 
     private static void ensureInitialized(Class<?> c) {

@@ -20,6 +20,7 @@ import json
 import os
 import sys
 import tempfile
+import warnings
 
 import numpy as np
 
@@ -34,8 +35,175 @@ def hash_unit(n):
     return ((i * np.uint64(2654435761)) & np.uint64(0xFFFFFFFF)).astype(np.float64) / 4294967296.0
 
 
+# Eight values per dtype that exercise wrap-around, signed zeros, infinities and NaN.
+EDGE = {
+    "bool": [True, False, True, True, False, False, True, False],
+    "int8": [-128, -100, -1, 0, 1, 7, 100, 127],
+    "uint8": [0, 1, 7, 100, 128, 200, 254, 255],
+    "int16": [-32768, -300, -1, 0, 1, 7, 300, 32767],
+    "uint16": [0, 1, 7, 300, 32768, 40000, 65534, 65535],
+    "int32": [-2 ** 31, -70000, -1, 0, 1, 7, 70000, 2 ** 31 - 1],
+    "uint32": [0, 1, 7, 70000, 2 ** 31, 3000000000, 2 ** 32 - 2, 2 ** 32 - 1],
+    "int64": [-2 ** 63, -2 ** 40, -1, 0, 1, 7, 2 ** 40, 2 ** 63 - 1],
+    "uint64": [0, 1, 7, 2 ** 40, 2 ** 63, 2 ** 63 + 12345, 2 ** 64 - 2, 2 ** 64 - 1],
+    "float16": [-np.inf, -65504.0, -1.5, -0.0, 0.0, 0.1, 3.0, np.nan],
+    "float32": [-np.inf, -3.0e38, -1.5, -0.0, 0.0, 0.1, 7.0, np.nan],
+    "float64": [-np.inf, -1.0e308, -1.5, -0.0, 0.0, 0.1, 7.0, np.nan],
+}
+NUMPY_REAL = list(EDGE)
+COMPLEX = ["complex64", "complex128"]
+MATRIX_DTYPES = NUMPY_REAL + COMPLEX
+
+# The ufunc x dtype x layout matrix (T6.1). Every ufunc runs on every NumPy dtype in five
+# layouts of the same logical 3x4 operands: C order, Fortran order, a transposed view, a
+# strided view (every other column of a 3x8 array) and broadcasting (a row against the
+# full array, or a row broadcast to 3x4 for unary ufuncs). The first four have the same
+# logical result, so they share one expected file.
+MATRIX_BINARY = ["add", "subtract", "multiply", "divide", "floor_divide", "remainder", "power", "maximum", "minimum",
+                 "fmax", "fmin", "equal", "not_equal", "less", "less_equal", "greater", "greater_equal",
+                 "logical_and", "logical_or", "logical_xor", "bitwise_and", "bitwise_or", "bitwise_xor"]
+MATRIX_UNARY = ["logical_not", "invert", "negative", "positive", "absolute", "conjugate", "sign", "square", "sqrt",
+                "exp", "log", "sin", "cos", "tanh", "floor", "ceil", "trunc", "rint"]
+LAYOUTS = ["C", "F", "T", "S", "B"]
+# NumPy has complex loops that NumJVM 0.2 does not: ordering comparisons and maximum/minimum
+# (lexicographic in NumPy), power and the trigonometric functions. These cases expect an error.
+NOT_IN_NUMJVM = {("maximum", "c"), ("minimum", "c"), ("fmax", "c"), ("fmin", "c"), ("less", "c"),
+                 ("less_equal", "c"), ("greater", "c"), ("greater_equal", "c"), ("power", "c"), ("sin", "c"),
+                 ("cos", "c"), ("tanh", "c")}
+# Complex results that may differ from NumPy in the last bits (see the complex cases above).
+MATRIX_ULP = {("divide", "c"): 2, ("absolute", "c"): 2, ("sign", "c"): 2, ("sqrt", "c"): 4}
+# The whole oracle (inputs, expected results, manifest) must stay below this many bytes.
+FIXTURE_BUDGET = 4_000_000
+
+
+def matrix_operands(dt):
+    """Two 3x4 operands: the eight edge values plus four small ones, the second rotated."""
+    if dt in COMPLEX:
+        values = [complex(-np.inf, 1), complex(-1.5, -0.0), complex(-0.0, 2.5), 0j, complex(0.5, -0.25),
+                  complex(3, 4), complex(np.nan, 1), complex(1, np.inf), 1 + 1j, -2 + 0.5j, 0.25 - 3j, 4 + 0j]
+    else:
+        extra = {"bool": [True, False, False, True]}.get(dt, [2, 3, 5, 1] if dt[0] in "iu" else [2.5, -0.75, 4.0, 1.0])
+        values = EDGE[dt] + extra
+    a = np.array(values, dtype=dt).reshape(3, 4)
+    return a, np.roll(a.reshape(-1), 5).reshape(3, 4)
+
+
+def layout_inputs(layout, dt, binary):
+    if layout == "C":
+        names = [f"lay_a_{dt}", f"lay_b_{dt}"]
+    elif layout == "B":
+        names = [f"lay_a_{dt}", f"lay_row_{dt}"] if binary else [f"lay_row_{dt}"]
+    else:
+        names = [f"lay_a_{layout}_{dt}", f"lay_b_{layout}_{dt}"]
+    return names if binary or layout == "B" else names[:1]
+
+
+def layout_view(layout, a):
+    """The logical operand NumJVM sees after applying the case's layout to a stored input."""
+    if layout == "T":
+        return a.T
+    if layout == "S":
+        return a[..., ::2]
+    if layout == "B" and a.ndim == 1:
+        return np.broadcast_to(a, (3, 4))
+    return a
+
+
+def edge(dtype):
+    return np.array(EDGE[dtype], dtype=dtype)
+
+
+def edge2(dtype):
+    """A second operand: the edge values rotated by three, so every pair of positions differs."""
+    return np.roll(edge(dtype), 3)
+
+
 def inputs():
-    return {
+    arr = {}
+    for dt in NUMPY_REAL:
+        arr[f"edge_{dt}"] = edge(dt)
+        arr[f"edge2_{dt}"] = edge2(dt)
+    for dt in ["int8", "int16", "int32", "int64"]:
+        lo = np.iinfo(dt).min
+        arr[f"div_a_{dt}"] = np.array([lo, lo, 5, -5, 0, 7, -7, 7], dtype=dt)
+        arr[f"div_b_{dt}"] = np.array([-1, 1, 0, 0, 0, -2, 2, 3], dtype=dt)
+    for dt in ["uint8", "uint64"]:
+        hi = np.iinfo(dt).max
+        arr[f"div_a_{dt}"] = np.array([hi, hi, 5, 0, 7, 7], dtype=dt)
+        arr[f"div_b_{dt}"] = np.array([1, 2, 0, 0, 3, hi], dtype=dt)
+    for dt in [d for d in NUMPY_REAL if d != "bool"]:
+        arr[f"exp_{dt}"] = np.array([0, 1, 2, 3, 7, 8, 0, 1], dtype=dt)
+    for dt in ["float64", "float32"]:
+        arr[f"pow_x_{dt}"] = np.array([1.0, 1.0, -1.0, -1.0, np.nan, 2.0, 0.0, -0.0, -8.0, 0.5], dtype=dt)
+        arr[f"pow_y_{dt}"] = np.array([np.nan, np.inf, np.inf, -np.inf, 0.0, np.nan, -1.0, -1.0, 1 / 3, -np.inf],
+                                      dtype=dt)
+    # 64 values per float dtype for the transcendental functions: [-12, 12) and (0, 1000)
+    for dt in ["float16", "float32", "float64"]:
+        u = hash_unit(64)
+        arr[f"dense_{dt}"] = (u * 24.0 - 12.0).astype(dt)
+        # ldexp is exact; exp2 is not correctly rounded and its last bit depends on the CPU
+        arr[f"dense_pos_{dt}"] = np.ldexp(1.0 + u, np.floor(u * 1e6).astype(np.int64) % 20 - 10).astype(dt)
+    # complex values: signed zeros, infinities and NaN in either part (cedge), and finite
+    # dyadic values whose products are exact (cmul), so that NumPy's fused SIMD multiply and
+    # the textbook formula agree bit for bit
+    cedge = [complex(-np.inf, 1), complex(-1.5, -0.0), complex(-0.0, 2.5), 0j, complex(0.1, -0.1),
+             complex(3, 4), complex(np.nan, 1), complex(1, np.inf)]
+    cmul = [1 + 2j, -0.5 + 0.25j, 3 - 4j, complex(-0.0, 1), complex(0.75, -0.0), -2 - 2j, 1.5 + 0.5j, 8 + 0.125j]
+    for dt in COMPLEX:
+        arr[f"cedge_{dt}"] = np.array(cedge, dtype=dt)
+        arr[f"cedge2_{dt}"] = np.roll(arr[f"cedge_{dt}"], 3)
+        arr[f"cmul_{dt}"] = np.array(cmul, dtype=dt)
+        arr[f"cmul2_{dt}"] = np.roll(arr[f"cmul_{dt}"], 3)
+    # moderate values for the complex functions: real parts in [-12, 12), imaginary parts in
+    # [-6, 6); values on and near the unit circle, where log|z| cancels; 1000 values for sums
+    u = hash_unit(128)
+    cdense = (u[:64] * 24.0 - 12.0) + 1j * (u[64:] * 12.0 - 6.0)
+    cunit = [complex(0.6, 0.8), complex(1.0 + 2.0 ** -30, 0), complex(0.75, 0.6614378277661477), complex(-1, 1e-9),
+             complex(0, -1), complex(0.7071067811865476, 0.7071067811865476), complex(1e-8, 1), complex(-0.28, 0.96)]
+    v = hash_unit(2000)
+    csum = (v[:1000] * 10.0 - 3.0) + 1j * (v[1000:] - 0.3)
+    for dt in COMPLEX:
+        arr[f"cdense_{dt}"] = cdense.astype(dt)
+        arr[f"cunit_{dt}"] = np.array(cunit, dtype=dt)
+        arr[f"csum_{dt}"] = csum.astype(dt)
+    # the layout matrix (T6.1): one 3x4 logical operand pair per dtype, stored once per layout
+    for dt in MATRIX_DTYPES:
+        a, b = matrix_operands(dt)
+        filler = np.zeros_like(a)
+        arr[f"lay_a_{dt}"] = a
+        arr[f"lay_b_{dt}"] = b
+        arr[f"lay_a_F_{dt}"] = np.asfortranarray(a)
+        arr[f"lay_b_F_{dt}"] = np.asfortranarray(b)
+        arr[f"lay_a_T_{dt}"] = np.ascontiguousarray(a.T)
+        arr[f"lay_b_T_{dt}"] = np.ascontiguousarray(b.T)
+        arr[f"lay_a_S_{dt}"] = np.stack([a, filler], axis=2).reshape(3, 8)
+        arr[f"lay_b_S_{dt}"] = np.stack([b, filler], axis=2).reshape(3, 8)
+        arr[f"lay_row_{dt}"] = b[1]
+    # Hypothesis-drawn operands (T6.2)
+    examples = property_examples()
+    PROPERTY_CACHE.clear()
+    PROPERTY_CACHE.update(examples)
+    for k, (_, a, b, _) in enumerate(examples["ufunc"]):
+        arr[f"prop_u{k}_a"] = a
+        arr[f"prop_u{k}_b"] = b
+    for k, (_, a, _, _, _) in enumerate(examples["reduction"]):
+        arr[f"prop_r{k}"] = a
+    arr["halves_float64"] = np.array([-2.5, -1.5, -0.5, -0.0, 0.5, 1.5, 2.5, 3.5, 1e300, -0.49999999999999994])
+    for dt in ["float16", "float32", "float64"]:
+        arr[f"round_in_{dt}"] = np.array([1.005, 2.675, 0.125, -0.125, 1234.5, -1250.0, 1.5e-5, 99.95,
+                                          65000.0 if dt == "float16" else 1e30, np.nan, np.inf], dtype=dt)
+    arr["round_int_int8"] = np.array([125, 127, -125, -128, 15, -15, 25, -25], dtype=np.int8)
+    arr["round_int_uint8"] = np.array([125, 255, 15, 25, 35, 0, 254, 245], dtype=np.uint8)
+    arr["round_int_int32"] = np.array([125, 135, -125, -2 ** 31 + 50, 2 ** 31 - 50, 15, 250, -350], dtype=np.int32)
+    arr["round_int_int64"] = np.array([2 ** 62 + 1, 2 ** 62 + 15, -15, 25, -25, 2 ** 53 + 5, -2 ** 63, 7], dtype=np.int64)
+    arr["nan_grid"] = np.array([[1.0, np.nan, 3.0, -np.inf], [np.nan, 2.0, -1.0, 5.0], [0.5, 0.25, np.nan, 7.0]])
+    arr["cmp_i8"] = np.array([2 ** 63 - 1, -1, 5, -2 ** 63, 0, 2 ** 53 + 1], dtype=np.int64)
+    arr["cmp_u8"] = np.array([2 ** 63, 2 ** 64 - 1, 5, 0, 0, 2 ** 53], dtype=np.uint64)
+    arr["nan_x_float64"] = np.array([np.nan, 1.0, np.nan, -np.inf, 2.0, np.inf])
+    arr["nan_y_float64"] = np.array([1.0, np.nan, np.nan, 3.0, -0.5, np.nan])
+    arr["div_a_float64"] = np.array([6.0, -6.0, 0.0, -0.0, 7.5, -7.5, 1.0, np.inf, 5.0, 1e300])
+    arr["div_b_float64"] = np.array([-3.0, 3.0, -1.0, 2.0, -2.0, 2.0, -0.0, 2.0, np.inf, 1e-300])
+    return arr | {
         "f8_2x3x4": np.arange(24.0).reshape(2, 3, 4),
         "f8_3x4": np.arange(12.0).reshape(3, 4),
         "f8_hash_7x11": hash_unit(77).reshape(7, 11),
@@ -52,7 +220,84 @@ def inputs():
         "f4_2x2": np.array([[0.1, 0.2], [0.3, 0.4]], dtype=np.float32),
         "c16_2x2": (np.arange(4.0) + 1j * np.arange(4.0, 8.0)).reshape(2, 2),
         "c8_3": np.array([1 + 2j, 3 - 4j, 0j], dtype=np.complex64),
+        "c16_grid": ((hash_unit(1000) * 10.0 - 3.0) + 1j * (hash_unit(2000)[1000:] - 0.3)).reshape(25, 40),
     }
+
+
+PROMOTION_DTYPES = ["bool", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64",
+                    "float16", "float32", "float64", "complex64", "complex128"]
+CASTINGS = ["no", "equiv", "safe", "same_kind", "unsafe"]
+
+
+def promotion_tag(a, b):
+    """ARRAY_API where the standard defines the result type, else NUMPY_COMPATIBILITY."""
+    ka, kb = np.dtype(a).kind, np.dtype(b).kind
+    if a == b or ka == kb:
+        return ARRAY_API
+    ints = {"i", "u"}
+    if ka in ints and kb in ints:
+        return ARRAY_API if "uint64" not in (a, b) else NUMPY
+    if {ka, kb} == {"f", "c"}:
+        return ARRAY_API
+    return NUMPY
+
+
+# Decision D6: results of transcendental functions may differ from NumPy's by a few units in
+# the last place (NumPy uses its own SIMD implementations or the C library, NumJVM uses
+# java.lang.Math). Such cases carry "ulp" in their parameters; OracleTest and --check compare
+# them with that tolerance instead of bit for bit.
+ULP_TOLERANCE = {"power": 4, "exp": 4, "log": 4, "sin": 4, "cos": 4, "tanh": 4}
+
+
+def ulp_distance(a, b):
+    """Elementwise distance in units in the last place of a's dtype; NaN equals NaN."""
+    a = np.asarray(a)
+    b = np.asarray(b)
+    if a.dtype.kind == "c":
+        return np.maximum(ulp_distance(a.real, b.real), ulp_distance(a.imag, b.imag))
+
+    def line(x):
+        # sign-magnitude bit patterns mapped onto a monotonic integer line (-0.0 == 0.0)
+        bits = x.view({2: np.uint16, 4: np.uint32, 8: np.uint64}[x.dtype.itemsize])
+        n = 8 * x.dtype.itemsize
+        magnitude = (bits & np.array((1 << (n - 1)) - 1, dtype=bits.dtype)).astype(np.int64)
+        negative = (bits >> np.array(n - 1, dtype=bits.dtype)).astype(bool)
+        return np.where(negative, -magnitude, magnitude)
+
+    d = np.abs(line(a) - line(b))
+    return np.where(np.isnan(a) & np.isnan(b), 0, d)
+
+
+def round_(a, decimals):
+    with np.errstate(all="ignore"):
+        return np.round(a, decimals)
+
+
+def reduction(name, a, **kw):
+    """Applies a NumPy reduction with its warnings silenced (empty means warn and give NaN)."""
+    with np.errstate(all="ignore"), warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        return getattr(np, name)(a, **kw)
+
+
+def ufunc_reduce(name, a, **kw):
+    with np.errstate(all="ignore"):
+        return getattr(np, name).reduce(a, **kw)
+
+
+def ufunc_out(name, out_dtype, *args):
+    """A ufunc writing into a zero-filled out= array of out_dtype."""
+    shape = np.broadcast_shapes(*[np.shape(a) for a in args])
+    out = np.zeros(shape, dtype=out_dtype)
+    with np.errstate(all="ignore"):
+        getattr(np, name)(*args, out=out, casting="same_kind")
+    return out
+
+
+def ufunc(name, *args):
+    """Applies a NumPy ufunc with floating-point warnings silenced (NumJVM has no warnings)."""
+    with np.errstate(all="ignore"):
+        return getattr(np, name)(*args)
 
 
 def slice_expr(spec):
@@ -65,6 +310,69 @@ def slice_expr(spec):
         return int(spec)
     parts = [int(p) if p else None for p in spec.split(":")]
     return slice(*parts)
+
+
+PROPERTY_CACHE = {}
+PROPERTY_SEED_EXAMPLES = {"ufunc": 160, "reduction": 120}
+PROPERTY_UFUNCS = ["add", "subtract", "multiply", "maximum", "minimum", "fmax", "fmin", "equal", "not_equal", "less",
+                   "greater_equal", "logical_and", "logical_xor", "floor_divide", "remainder", "bitwise_and",
+                   "bitwise_xor", "divide"]
+PROPERTY_REDUCTIONS = ["sum", "prod", "max", "min", "mean", "any", "all"]
+PROPERTY_DTYPES = NUMPY_REAL + COMPLEX
+
+
+def property_examples():
+    """Operands drawn by Hypothesis (T6.2): random dtypes, broadcast-compatible shapes of up to
+    three axes, strided views and arbitrary values (NaN, infinities, subnormals, extremes).
+
+    Hypothesis runs derandomized, generation phase only, so the examples depend only on the
+    pinned Hypothesis version (requirements.txt), the strategies below and NumPy; --check
+    reproduces them byte for byte.
+    """
+    from hypothesis import HealthCheck, Phase, given, settings
+    from hypothesis import strategies as st
+    from hypothesis.extra import numpy as hnp
+
+    def values(dtype, shape):
+        return hnp.arrays(np.dtype(dtype), shape)
+
+    out = {"ufunc": [], "reduction": []}
+    common = dict(derandomize=True, database=None, phases=[Phase.generate], deadline=None,
+                  suppress_health_check=list(HealthCheck))
+
+    @settings(max_examples=PROPERTY_SEED_EXAMPLES["ufunc"], **common)
+    @given(st.data())
+    def ufuncs(data):
+        name = data.draw(st.sampled_from(PROPERTY_UFUNCS))
+        da = data.draw(st.sampled_from(PROPERTY_DTYPES))
+        db = data.draw(st.sampled_from(PROPERTY_DTYPES))
+        shapes = data.draw(hnp.mutually_broadcastable_shapes(num_shapes=2, min_dims=1, max_dims=3, max_side=4))
+        strided = data.draw(st.booleans())
+        if strided:
+            # store twice the last axis and let NumJVM take every other element
+            stored = [s[:-1] + (2 * s[-1],) for s in shapes.input_shapes]
+        else:
+            stored = list(shapes.input_shapes)
+        a = data.draw(values(da, stored[0]))
+        b = data.draw(values(db, stored[1]))
+        out["ufunc"].append((name, a, b, strided))
+
+    @settings(max_examples=PROPERTY_SEED_EXAMPLES["reduction"], **common)
+    @given(st.data())
+    def reductions(data):
+        name = data.draw(st.sampled_from(PROPERTY_REDUCTIONS))
+        dt = data.draw(st.sampled_from([d for d in PROPERTY_DTYPES if not (d in COMPLEX and name in ("max", "min"))]))
+        shape = data.draw(hnp.array_shapes(min_dims=1, max_dims=3, min_side=1, max_side=6))
+        a = data.draw(values(dt, shape))
+        axis = data.draw(st.none() | st.lists(st.integers(0, len(shape) - 1), unique=True, min_size=1)
+                         .map(sorted))
+        keepdims = data.draw(st.booleans())
+        transpose = data.draw(st.booleans())
+        out["reduction"].append((name, a, axis, keepdims, transpose))
+
+    ufuncs()
+    reductions()
+    return out
 
 
 def cases(arr):
@@ -166,41 +474,448 @@ def cases(arr):
             lambda a, specs=specs: {"c": bool(a[tuple(slice_expr(s) for s in specs)].flags.c_contiguous),
                                     "f": bool(a[tuple(slice_expr(s) for s in specs)].flags.f_contiguous)})
 
+    # --- arithmetic ufuncs ---------------------------------------------------------------------
+    for name in ["add", "subtract", "multiply", "divide", "floor_divide", "remainder", "power", "maximum",
+                 "minimum", "fmax", "fmin"]:
+        for dt in NUMPY_REAL:
+            tag = ARRAY_API if dt != "bool" else NUMPY
+            if name == "subtract" and dt == "bool":
+                add(f"ufunc_{name}_{dt}", NUMPY, "ufunc", [f"edge_{dt}", f"edge2_{dt}"], {"ufunc": name}, None)
+                continue
+            add(f"ufunc_{name}_{dt}", tag, "ufunc", [f"edge_{dt}", f"edge2_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        for x, y in [("int8", "uint8"), ("int16", "float16"), ("int64", "uint64"), ("bool", "int8"),
+                     ("uint32", "float32"), ("float16", "float64"), ("int32", "uint64"), ("uint16", "int16")]:
+            add(f"ufunc_{name}_{x}_{y}", promotion_tag(x, y), "ufunc", [f"edge_{x}", f"edge2_{y}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        add(f"ufunc_{name}_broadcast", ARRAY_API, "ufunc", ["f8_col3", "f8_row4"], {"ufunc": name},
+            lambda a, b, name=name: ufunc(name, a, b))
+        add(f"ufunc_{name}_transposed", ARRAY_API, "ufunc", ["f8_hash_7x11", "f8_hash_7x11"],
+            {"ufunc": name, "view": "transpose"}, lambda a, b, name=name: ufunc(name, a.T, b.T))
+    # integer MIN // -1 wraps; division and remainder by zero give 0 for integers
+    for dt in ["int8", "int16", "int32", "int64", "uint8", "uint64"]:
+        for name in ["floor_divide", "remainder", "divide"]:
+            add(f"ufunc_{name}_{dt}_min_and_zero", NUMPY, "ufunc", [f"div_a_{dt}", f"div_b_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+    for name in ["floor_divide", "remainder"]:
+        add(f"ufunc_{name}_float64_signs", NUMPY, "ufunc", ["div_a_float64", "div_b_float64"], {"ufunc": name},
+            lambda a, b, name=name: ufunc(name, a, b))
+
+    # --- comparisons ------------------------------------------------------------------------
+    for name in ["equal", "not_equal", "less", "less_equal", "greater", "greater_equal"]:
+        for dt in NUMPY_REAL:
+            add(f"ufunc_{name}_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}", f"edge2_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+            add(f"ufunc_{name}_{dt}_self", ARRAY_API, "ufunc", [f"edge_{dt}", f"edge_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        # signed integers against uint64 are compared exactly (NumPy 2), not through float64
+        for x, y in [("cmp_i8", "cmp_u8"), ("cmp_u8", "cmp_i8"), ("edge_int8", "edge2_uint64"),
+                     ("edge_int16", "edge_float16"), ("edge_bool", "edge_int8")]:
+            add(f"ufunc_{name}_{x}_{y}", NUMPY, "ufunc", [x, y], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        # Java long scalars outside the array's range compare exactly
+        for dt, value in [("uint8", 300), ("uint8", -1), ("int8", 1000), ("uint64", -1), ("int64", 5),
+                          ("bool", 2)]:
+            add(f"ufunc_{name}_{dt}_long_{value}", NUMPY, "ufunc", [f"edge_{dt}"],
+                {"ufunc": name, "scalar": value, "scalar_type": "long", "scalar_side": "right"},
+                lambda a, value=value, name=name: ufunc(name, a, value))
+            add(f"ufunc_{name}_long_{value}_{dt}", NUMPY, "ufunc", [f"edge_{dt}"],
+                {"ufunc": name, "scalar": value, "scalar_type": "long", "scalar_side": "left"},
+                lambda a, value=value, name=name: ufunc(name, value, a))
+        add(f"ufunc_{name}_int8_double", NUMPY, "ufunc", ["edge_int8"],
+            {"ufunc": name, "scalar": 1.5, "scalar_type": "double", "scalar_side": "right"},
+            lambda a, name=name: ufunc(name, a, 1.5))
+
+    # --- logical and bitwise ---------------------------------------------------------------------
+    for name in ["logical_and", "logical_or", "logical_xor"]:
+        for dt in NUMPY_REAL:
+            add(f"ufunc_{name}_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}", f"edge2_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        add(f"ufunc_{name}_float64_int8", NUMPY, "ufunc", ["edge_float64", "edge2_int8"], {"ufunc": name},
+            lambda a, b, name=name: ufunc(name, a, b))
+        add(f"ufunc_{name}_complex128", NUMPY, "ufunc", ["c16_2x2", "c16_2x2"], {"ufunc": name, "view": "transpose"},
+            lambda a, b, name=name: ufunc(name, a.T, b.T))
+    for dt in NUMPY_REAL:
+        add(f"ufunc_logical_not_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}"], {"ufunc": "logical_not"},
+            lambda a: ufunc("logical_not", a))
+    for name in ["bitwise_and", "bitwise_or", "bitwise_xor"]:
+        for dt in NUMPY_REAL:
+            if dt.startswith("float"):
+                add(f"ufunc_{name}_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}", f"edge2_{dt}"], {"ufunc": name}, None)
+                continue
+            add(f"ufunc_{name}_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}", f"edge2_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        for x, y in [("int8", "uint8"), ("bool", "int16"), ("int64", "uint32")]:
+            add(f"ufunc_{name}_{x}_{y}", promotion_tag(x, y), "ufunc", [f"edge_{x}", f"edge2_{y}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        add(f"ufunc_{name}_uint8_long", NUMPY, "ufunc", ["edge_uint8"],
+            {"ufunc": name, "scalar": 15, "scalar_type": "long", "scalar_side": "right"},
+            lambda a, name=name: ufunc(name, a, 15))
+    for dt in NUMPY_REAL:
+        if dt.startswith("float"):
+            add(f"ufunc_invert_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}"], {"ufunc": "invert"}, None)
+        else:
+            add(f"ufunc_invert_{dt}", ARRAY_API, "ufunc", [f"edge_{dt}"], {"ufunc": "invert"},
+                lambda a: ufunc("invert", a))
+
+    # --- unary arithmetic --------------------------------------------------------------------
+    for name in ["negative", "positive", "absolute", "sign", "square"]:
+        for dt in NUMPY_REAL:
+            tag = NUMPY if dt == "bool" else ARRAY_API
+            add(f"ufunc_{name}_{dt}", tag, "ufunc", [f"edge_{dt}"], {"ufunc": name}, lambda a, name=name: ufunc(name, a))
+        add(f"ufunc_{name}_transposed", ARRAY_API, "ufunc", ["f8_hash_7x11"], {"ufunc": name, "view": "transpose"},
+            lambda a, name=name: ufunc(name, a.T))
+
+    # --- floating-point functions (decision D6) -------------------------------------------------
+    for name in ["sqrt", "exp", "log", "sin", "cos", "tanh"]:
+        for dt in NUMPY_REAL:
+            add(f"ufunc_{name}_{dt}", NUMPY if not dt.startswith("float") else ARRAY_API, "ufunc", [f"edge_{dt}"],
+                {"ufunc": name}, lambda a, name=name: ufunc(name, a))
+        for dt in ["float16", "float32", "float64"]:
+            src = "dense_pos" if name in ("sqrt", "log") else "dense"
+            add(f"ufunc_{name}_{dt}_{src}", ARRAY_API, "ufunc", [f"{src}_{dt}"], {"ufunc": name},
+                lambda a, name=name: ufunc(name, a))
+
+    # --- complex arithmetic ------------------------------------------------------------------
+    # Complex division and absolute value may differ from NumPy in the last bit (C compilers may
+    # contract Smith's formula into fused multiply-adds; hypot is libm's), so they carry a
+    # 2-ulp tolerance per part; everything else is exact.
+    for dt in COMPLEX:
+        for name in ["add", "subtract", "equal", "not_equal"]:
+            add(f"ufunc_{name}_{dt}", ARRAY_API, "ufunc", [f"cedge_{dt}", f"cedge2_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+            add(f"ufunc_{name}_{dt}_self", ARRAY_API, "ufunc", [f"cedge_{dt}", f"cedge_{dt}"], {"ufunc": name},
+                lambda a, b, name=name: ufunc(name, a, b))
+        add(f"ufunc_multiply_{dt}", ARRAY_API, "ufunc", [f"cmul_{dt}", f"cmul2_{dt}"], {"ufunc": "multiply"},
+            lambda a, b: ufunc("multiply", a, b))
+        for x in ["cedge", "cmul"]:
+            add(f"ufunc_divide_{dt}_{x}", ARRAY_API, "ufunc", [f"{x}_{dt}", f"{x}2_{dt}"], {"ufunc": "divide", "ulp": 2},
+                lambda a, b: ufunc("divide", a, b))
+        for name in ["negative", "positive", "conjugate"]:
+            add(f"ufunc_{name}_{dt}", ARRAY_API, "ufunc", [f"cedge_{dt}"], {"ufunc": name},
+                lambda a, name=name: ufunc(name, a))
+        add(f"ufunc_square_{dt}", ARRAY_API, "ufunc", [f"cmul_{dt}"], {"ufunc": "square"}, lambda a: ufunc("square", a))
+        add(f"ufunc_absolute_{dt}", ARRAY_API, "ufunc", [f"cedge_{dt}"], {"ufunc": "absolute", "ulp": 2},
+            lambda a: ufunc("absolute", a))
+        add(f"ufunc_floor_divide_{dt}", NUMPY, "ufunc", [f"cmul_{dt}", f"cmul2_{dt}"], {"ufunc": "floor_divide"}, None)
+    for dt in COMPLEX:
+        for name, ulp in [("exp", 4), ("log", 4), ("sqrt", 4), ("sign", 2), ("rint", 0)]:
+            for x in ["cedge", "cdense", "cunit"]:
+                params = {"ufunc": name} | ({"ulp": ulp} if ulp else {})
+                add(f"ufunc_{name}_{dt}_{x}", ARRAY_API if name != "rint" else NUMPY, "ufunc", [f"{x}_{dt}"], params,
+                    lambda a, name=name: ufunc(name, a))
+        for d in [0, 1, 2, -1]:
+            add(f"round_{dt}_{d}", NUMPY, "round", [f"cdense_{dt}"], {"decimals": d}, lambda a, d=d: round_(a, d))
+        for name in ["sum", "prod", "mean"]:
+            src = "cmul" if name == "prod" else "cedge"
+            add(f"{name}_{dt}_{src}", ARRAY_API, "reduction", [f"{src}_{dt}"], {"reduction": name, "axis": None},
+                lambda a, name=name: np.asarray(reduction(name, a)))
+        for name in ["sum", "mean"]:
+            add(f"{name}_{dt}_pairwise", ARRAY_API, "reduction", [f"csum_{dt}"], {"reduction": name, "axis": None},
+                lambda a, name=name: np.asarray(reduction(name, a)))
+        for name in ["add", "multiply", "subtract", "divide", "equal"]:
+            add(f"ufunc_{name}_{dt}_complex_scalar", NUMPY, "ufunc", [f"cmul_{dt}"],
+                {"ufunc": name, "scalar": [0.5, -2.0], "scalar_type": "complex", "scalar_side": "right",
+                 "ulp": 2} if name == "divide" else
+                {"ufunc": name, "scalar": [0.5, -2.0], "scalar_type": "complex", "scalar_side": "right"},
+                lambda a, name=name: ufunc(name, a, complex(0.5, -2.0)))
+    for name in ["sum", "mean"]:
+        for axis, view in [([0], "none"), ([1], "none"), ([0], "transpose"), ([0, 1], "transpose")]:
+            add(f"{name}_complex128_grid_{'_'.join(map(str, axis))}_{view}", ARRAY_API, "reduction", ["c16_grid"],
+                {"reduction": name, "axis": axis, "view": view},
+                lambda a, name=name, axis=axis, view=view: np.asarray(reduction(
+                    name, a.T if view == "transpose" else a, axis=tuple(axis))))
+    for dt in ["float32", "float16", "int8", "bool", "float64"]:
+        add(f"ufunc_multiply_{dt}_complex_scalar", NUMPY, "ufunc", [f"edge_{dt}"],
+            {"ufunc": "multiply", "scalar": [0.5, -2.0], "scalar_type": "complex", "scalar_side": "left"},
+            lambda a: ufunc("multiply", complex(0.5, -2.0), a))
+    for x, y in [("float32", "complex64"), ("float64", "complex64"), ("int64", "complex64"), ("uint8", "complex128"),
+                 ("float16", "complex64"), ("bool", "complex128")]:
+        add(f"ufunc_add_{x}_{y}", promotion_tag(x, y), "ufunc", [f"edge_{x}", f"cedge_{y}"], {"ufunc": "add"},
+            lambda a, b: ufunc("add", a, b))
+    add("ufunc_multiply_complex128_transposed", ARRAY_API, "ufunc", ["c16_2x2", "c16_2x2"],
+        {"ufunc": "multiply", "view": "transpose"}, lambda a, b: ufunc("multiply", a.T, b.T))
+    for dt in NUMPY_REAL:
+        add(f"ufunc_conjugate_{dt}", ARRAY_API if dt != "bool" else NUMPY, "ufunc", [f"edge_{dt}"],
+            {"ufunc": "conjugate"}, lambda a: ufunc("conjugate", a))
+
+    # --- rounding -----------------------------------------------------------------------------
+    for name in ["floor", "ceil", "trunc", "rint"]:
+        for dt in NUMPY_REAL:
+            add(f"ufunc_{name}_{dt}", ARRAY_API if name != "rint" else NUMPY, "ufunc", [f"edge_{dt}"],
+                {"ufunc": name}, lambda a, name=name: ufunc(name, a))
+        add(f"ufunc_{name}_halves", ARRAY_API if name != "rint" else NUMPY, "ufunc", ["halves_float64"],
+            {"ufunc": name}, lambda a, name=name: ufunc(name, a))
+    for dt in NUMPY_REAL:
+        for d in [0, 1, 2, -1, -2]:
+            if d < 0 and dt[0] in "iu":
+                # rounding the extreme edge values leaves the integer range, and NumPy leaves
+                # the conversion back undefined; round_ints_* covers negative decimals
+                continue
+            if dt == "bool" and d != 0:
+                add(f"round_{dt}_{d}", NUMPY, "round", [f"edge_{dt}"], {"decimals": d}, None)
+                continue
+            add(f"round_{dt}_{d}", ARRAY_API if d == 0 else NUMPY, "round", [f"edge_{dt}"], {"decimals": d},
+                lambda a, d=d: round_(a, d))
+    for d in [0, 1, 2, 3, -1, -3, 10, 30]:
+        for dt in ["float16", "float32", "float64"]:
+            add(f"round_decimals_{dt}_{d}", NUMPY, "round", [f"round_in_{dt}"], {"decimals": d},
+                lambda a, d=d: round_(a, d))
+    for dt in ["int8", "uint8", "int32", "int64"]:
+        add(f"round_ints_{dt}_-1", NUMPY, "round", [f"round_int_{dt}"], {"decimals": -1}, lambda a: round_(a, -1))
+        add(f"round_ints_{dt}_-2", NUMPY, "round", [f"round_int_{dt}"], {"decimals": -2}, lambda a: round_(a, -2))
+
+    # --- sum and prod ---------------------------------------------------------------------------
+    for name in ["sum", "prod"]:
+        for dt in NUMPY_REAL:
+            add(f"{name}_{dt}", ARRAY_API, "reduction", [f"edge_{dt}"], {"reduction": name, "axis": None},
+                lambda a, name=name: np.asarray(reduction(name, a)))
+        for axis, keep in [(None, False), ([0], False), ([1], True), ([0, 1], True), ([-1], False)]:
+            for view in ["none", "transpose"]:
+                cid = f"{name}_hash_{'all' if axis is None else '_'.join(map(str, axis))}_{view}" + (
+                    "_keepdims" if keep else "")
+                add(cid.replace("-", "m"), ARRAY_API, "reduction", ["f8_hash_7x11"],
+                    {"reduction": name, "axis": axis, "keepdims": keep, "view": view},
+                    lambda a, name=name, axis=axis, keep=keep, view=view: np.asarray(reduction(
+                        name, a.T if view == "transpose" else a, axis=None if axis is None else tuple(axis),
+                        keepdims=keep)))
+    for name in ["max", "min"]:
+        for dt in NUMPY_REAL:
+            add(f"{name}_{dt}", ARRAY_API, "reduction", [f"edge_{dt}"], {"reduction": name, "axis": None},
+                lambda a, name=name: np.asarray(reduction(name, a)))
+            add(f"{name}_{dt}_no_nan", ARRAY_API, "reduction", [f"edge2_{dt}"], {"reduction": name, "axis": None},
+                lambda a, name=name: np.asarray(reduction(name, a)))
+        for axis, keep in [([0], False), ([1], True), ([0, 1], False)]:
+            cid = f"{name}_hash_{'_'.join(map(str, axis))}" + ("_keepdims" if keep else "")
+            add(cid, ARRAY_API, "reduction", ["f8_hash_7x11"], {"reduction": name, "axis": axis, "keepdims": keep,
+                                                                 "view": "transpose"},
+                lambda a, name=name, axis=axis, keep=keep: np.asarray(reduction(name, a.T, axis=tuple(axis),
+                                                                                  keepdims=keep)))
+        add(f"{name}_nan_columns", ARRAY_API, "reduction", ["nan_grid"], {"reduction": name, "axis": [0]},
+            lambda a, name=name: reduction(name, a, axis=0))
+        add(f"{name}_empty", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": name, "axis": None}, None)
+        add(f"{name}_empty_axis0", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": name, "axis": [0]}, None)
+        add(f"{name}_empty_axis1", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": name, "axis": [1]},
+            lambda a, name=name: reduction(name, a, axis=1))
+    for name in ["mean", "any", "all"]:
+        for dt in NUMPY_REAL:
+            add(f"{name}_{dt}", ARRAY_API, "reduction", [f"edge_{dt}"], {"reduction": name, "axis": None},
+                lambda a, name=name: np.asarray(reduction(name, a)))
+            add(f"{name}_{dt}_shifted", ARRAY_API, "reduction", [f"edge2_{dt}"], {"reduction": name, "axis": None},
+                lambda a, name=name: np.asarray(reduction(name, a)))
+        for axis, keep in [([0], False), ([1], True), ([0, 1], False), ([], False)]:
+            cid = f"{name}_hash_{'_'.join(map(str, axis)) or 'none'}" + ("_keepdims" if keep else "")
+            add(cid, ARRAY_API, "reduction", ["f8_hash_7x11"], {"reduction": name, "axis": axis, "keepdims": keep},
+                lambda a, name=name, axis=axis, keep=keep: np.asarray(reduction(name, a, axis=tuple(axis),
+                                                                                  keepdims=keep)))
+        add(f"{name}_int_columns", ARRAY_API, "reduction", ["i4_3x4"], {"reduction": name, "axis": [0],
+                                                                         "view": "transpose"},
+            lambda a, name=name: reduction(name, a.T, axis=0))
+        add(f"{name}_empty", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": name, "axis": [0]},
+            lambda a, name=name: reduction(name, a, axis=0))
+        add(f"{name}_empty_all", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": name, "axis": None},
+            lambda a, name=name: np.asarray(reduction(name, a)))
+    for dt in ["float16", "float32"]:
+        add(f"mean_dense_{dt}", ARRAY_API, "reduction", [f"dense_{dt}"], {"reduction": "mean", "axis": None},
+            lambda a: np.asarray(np.mean(a)))
+    # pairwise summation, bit for bit: inputs generated identically in Java (hash_unit)
+    for dt in ["float64", "float32", "float16"]:
+        for n in [7, 8, 9, 127, 128, 129, 1000, 4097, 65536]:
+            add(f"sum_pairwise_{dt}_{n}", ARRAY_API, "reduction", [],
+                {"reduction": "sum", "axis": None, "generator": "hash_unit", "n": n, "dtype": dt},
+                lambda n=n, dt=dt: np.asarray(np.sum(hash_unit(n).astype(dt))))
+    add("sum_pairwise_rows", ARRAY_API, "reduction", [],
+        {"reduction": "sum", "axis": [1], "generator": "hash_unit", "n": 4096, "dtype": "float64", "shape": [8, 512]},
+        lambda: np.sum(hash_unit(4096).reshape(8, 512), axis=1))
+    add("sum_pairwise_columns", ARRAY_API, "reduction", [],
+        {"reduction": "sum", "axis": [0], "generator": "hash_unit", "n": 4096, "dtype": "float64", "shape": [512, 8]},
+        lambda: np.sum(hash_unit(4096).reshape(512, 8), axis=0))
+    add("sum_empty", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": "sum", "axis": [0]},
+        lambda a: np.sum(a, axis=0))
+    add("prod_empty", ARRAY_API, "reduction", ["f8_empty_0x3"], {"reduction": "prod", "axis": None},
+        lambda a: np.asarray(np.prod(a)))
+
+    # --- ufunc.reduce --------------------------------------------------------------------------
+    for name in ["add", "multiply", "maximum", "minimum", "fmax", "logical_and", "logical_or", "bitwise_or",
+                 "bitwise_xor"]:
+        src = "i4_3x4" if name.startswith("bitwise") else "f8_2x3x4"
+        for axis, keep in [(None, False), ([0], False), ([1], True), ([0, 2], False), ([-1, 0], True), ([], False)]:
+            cid = f"reduce_{name}_{'all' if axis is None else '_'.join(map(str, axis)) or 'none'}" \
+                  + ("_keepdims" if keep else "")
+            if src == "i4_3x4" and axis is not None and any(a in (2, -3) for a in axis):
+                continue
+            add(cid.replace("-", "m"), NUMPY, "reduce", [src], {"ufunc": name, "axis": axis, "keepdims": keep},
+                lambda a, name=name, axis=axis, keep=keep: np.asarray(getattr(np, name).reduce(
+                    a, axis=None if axis is None else tuple(axis), keepdims=keep)))
+    for name in ["add", "multiply", "maximum", "minimum"]:
+        for dt in ["int8", "uint8", "float16", "bool"]:
+            add(f"reduce_{name}_{dt}", NUMPY, "reduce", [f"edge_{dt}"], {"ufunc": name, "axis": None, "keepdims": False},
+                lambda a, name=name: np.asarray(ufunc_reduce(name, a)))
+    add("reduce_maximum_empty", NUMPY, "reduce", ["f8_empty_0x3"], {"ufunc": "maximum", "axis": [0], "keepdims": False},
+        None)
+    add("reduce_maximum_empty_other_axis", NUMPY, "reduce", ["f8_empty_0x3"],
+        {"ufunc": "maximum", "axis": [1], "keepdims": False}, lambda a: np.maximum.reduce(a, axis=1))
+    add("reduce_add_empty", NUMPY, "reduce", ["f8_empty_0x3"], {"ufunc": "add", "axis": [0], "keepdims": True},
+        lambda a: np.add.reduce(a, axis=0, keepdims=True))
+    add("reduce_subtract_axis0", NUMPY, "reduce", ["f8_3x4"], {"ufunc": "subtract", "axis": [0], "keepdims": False},
+        lambda a: np.subtract.reduce(a, axis=0))
+    add("reduce_subtract_two_axes", NUMPY, "reduce", ["f8_3x4"], {"ufunc": "subtract", "axis": [0, 1],
+                                                                    "keepdims": False}, None)
+
+    # integer powers with non-negative exponents wrap; floating-point special cases follow C99
+    for dt in [d for d in NUMPY_REAL if d != "bool"]:
+        add(f"ufunc_power_{dt}_exponents", NUMPY if dt.startswith(("int", "uint")) else ARRAY_API, "ufunc",
+            [f"edge_{dt}", f"exp_{dt}"], {"ufunc": "power"}, lambda a, b: ufunc("power", a, b))
+    add("ufunc_power_float64_c99", NUMPY, "ufunc", ["pow_x_float64", "pow_y_float64"], {"ufunc": "power"},
+        lambda a, b: ufunc("power", a, b))
+    add("ufunc_power_float32_c99", NUMPY, "ufunc", ["pow_x_float32", "pow_y_float32"], {"ufunc": "power"},
+        lambda a, b: ufunc("power", a, b))
+    # NaN handling of the min/max family
+    for name in ["maximum", "minimum", "fmax", "fmin"]:
+        add(f"ufunc_{name}_nan", ARRAY_API if name in ("maximum", "minimum") else NUMPY, "ufunc",
+            ["nan_x_float64", "nan_y_float64"], {"ufunc": name}, lambda a, b, name=name: ufunc(name, a, b))
+
+    # out= arrays: the loop dtype comes from the inputs; the result is converted to out's dtype
+    for name, x, y, out_dtype in [("add", "edge_int8", "edge2_int8", "int16"), ("add", "edge_int8", "edge2_int8", "float64"),
+                                  ("multiply", "edge_float64", "edge2_float64", "float32"),
+                                  ("less", "edge_int32", "edge2_int32", "int8"),
+                                  ("divide", "edge_int16", "edge2_int16", "float16"),
+                                  ("maximum", "edge_uint8", "edge2_uint8", "uint64")]:
+        add(f"ufunc_{name}_{x[5:]}_out_{out_dtype}", NUMPY, "ufunc", [x, y], {"ufunc": name, "out": out_dtype},
+            lambda a, b, name=name, out_dtype=out_dtype: ufunc_out(name, out_dtype, a, b))
+    add("ufunc_add_float64_out_int32", NUMPY, "ufunc", ["edge_float64", "edge2_float64"],
+        {"ufunc": "add", "out": "int32"}, None)
+
+    # Java long and double arguments are weak scalars, as Python int and float (NEP 50)
+    weak = [("uint8", 1, "long"), ("int8", -128, "long"), ("int8", 1.5, "double"), ("bool", 1, "long"),
+            ("bool", 1.5, "double"), ("float16", 100000, "long"), ("float32", 0.1, "double"),
+            ("uint64", 2, "long"), ("int64", 3, "long"), ("float64", -2.5, "double")]
+    for dt, value, kind in weak:
+        for side in ["right", "left"]:
+            add(f"ufunc_add_{dt}_{kind}_{side}", NUMPY, "ufunc", [f"edge_{dt}"],
+                {"ufunc": "add", "scalar": value, "scalar_type": kind, "scalar_side": side},
+                lambda a, value=value, side=side: ufunc("add", a, value) if side == "right" else ufunc("add", value, a))
+        add(f"ufunc_multiply_{dt}_{kind}", NUMPY, "ufunc", [f"edge_{dt}"],
+            {"ufunc": "multiply", "scalar": value, "scalar_type": kind, "scalar_side": "right"},
+            lambda a, value=value: ufunc("multiply", a, value))
+    for dt, value in [("uint8", 300), ("uint8", -1), ("int8", 128), ("uint64", -1)]:
+        add(f"ufunc_add_{dt}_out_of_bounds_{value}", NUMPY, "ufunc", [f"edge_{dt}"],
+            {"ufunc": "add", "scalar": value, "scalar_type": "long", "scalar_side": "right"}, None)
+
+    # --- type promotion (ADR-005) --------------------------------------------------------------
+    for a in PROMOTION_DTYPES:
+        for b in PROMOTION_DTYPES:
+            add(f"result_type_{a}_{b}", promotion_tag(a, b), "result_type", [], {"dtypes": [a, b]},
+                lambda a=a, b=b: np.result_type(a, b))
+    for seq in [["int16", "uint16", "float32"], ["int8", "uint16", "float16"], ["int64", "uint64", "float16"],
+                ["int8", "uint8", "float32", "bool"], ["uint8", "int8", "uint16"], ["bool", "bool", "bool"],
+                ["int32", "float16", "complex64"], ["uint32", "int8", "float32", "float16"]]:
+        add("result_type_" + "_".join(seq), NUMPY, "result_type", [], {"dtypes": seq},
+            lambda seq=seq: np.result_type(*seq))
+    # bfloat16 is not a NumPy dtype; NumJVM follows ml_dtypes (ADR-005)
+    for a, b, r in [("bfloat16", "float16", "float32"), ("bfloat16", "int8", "bfloat16"),
+                    ("bfloat16", "uint8", "bfloat16"), ("bfloat16", "int16", "float32"),
+                    ("bfloat16", "float32", "float32"), ("bfloat16", "float64", "float64"),
+                    ("bfloat16", "complex64", "complex64"), ("bfloat16", "bool", "bfloat16"),
+                    ("bfloat16", "bfloat16", "bfloat16")]:
+        add(f"result_type_{a}_{b}", NUMJVM, "result_type", [], {"dtypes": [a, b], "expected": r}, None)
+    for casting in CASTINGS:
+        for a in PROMOTION_DTYPES:
+            add(f"can_cast_{casting}_{a}", NUMPY, "can_cast", [], {"from": a, "casting": casting},
+                lambda a=a, casting=casting: {b: bool(np.can_cast(a, b, casting)) for b in PROMOTION_DTYPES})
+
     # --- printing ---------------------------------------------------------------------------
     for name in ["f8_3x4", "f8_hash_7x11", "i8_neg", "u1_5", "u8_big", "b1_2x3", "f2_4", "f4_2x2", "c16_2x2",
                  "c8_3", "f8_scalar", "f8_empty_0x3"]:
         add(f"repr_{name}", NUMPY, "repr", [name], {}, lambda a: repr(a))
+
+    # --- ufunc x dtype x layout matrix (T6.1) ---------------------------------------------------
+    for name in MATRIX_BINARY + MATRIX_UNARY:
+        binary = name in MATRIX_BINARY
+        for dt in MATRIX_DTYPES:
+            missing = (name, np.dtype(dt).kind) in NOT_IN_NUMJVM
+            for layout in LAYOUTS:
+                ins = layout_inputs(layout, dt, binary)
+                params = {"ufunc": name, "layout": layout}
+                if (name, np.dtype(dt).kind) in MATRIX_ULP:
+                    params["ulp"] = MATRIX_ULP[(name, np.dtype(dt).kind)]
+                cid = f"matrix_{name}_{dt}_{layout}"
+                if missing:
+                    add(cid, NUMJVM, "ufunc", ins, params, None)
+                    continue
+                tag = NUMPY if dt == "bool" or dt in ("uint64",) else ARRAY_API
+                add(cid, tag, "ufunc", ins, params,
+                    lambda *xs, name=name, layout=layout: ufunc(name, *[layout_view(layout, x) for x in xs]))
+
+    # --- Hypothesis-driven property cases (T6.2) --------------------------------------------------
+    for k, (name, a, b, strided) in enumerate(PROPERTY_CACHE["ufunc"]):
+        layout = "S" if strided else "C"
+        tag = promotion_tag(a.dtype.name, b.dtype.name)
+        if "c" in (a.dtype.kind, b.dtype.kind) and (name, "c") in NOT_IN_NUMJVM:
+            add(f"prop_ufunc_{k}_{name}_{a.dtype.name}_{b.dtype.name}", NUMJVM, "ufunc",
+                [f"prop_u{k}_a", f"prop_u{k}_b"], {"ufunc": name, "layout": layout}, None)
+            continue
+        add(f"prop_ufunc_{k}_{name}_{a.dtype.name}_{b.dtype.name}", tag, "ufunc", [f"prop_u{k}_a", f"prop_u{k}_b"],
+            {"ufunc": name, "layout": layout} | ({"ulp": 2} if name == "divide" and a.dtype.kind + b.dtype.kind
+                                                  in ("cc", "cf", "fc", "ci", "ic", "cu", "uc", "cb", "bc")
+                                                  else {}),
+            lambda x, y, name=name, layout=layout: ufunc(name, layout_view(layout, x), layout_view(layout, y)))
+    for k, (name, a, axis, keepdims, transpose) in enumerate(PROPERTY_CACHE["reduction"]):
+        axes = None if axis is None else [a.ndim - 1 - d for d in axis] if transpose else axis
+        add(f"prop_{name}_{k}_{a.dtype.name}", ARRAY_API, "reduction", [f"prop_r{k}"],
+            {"reduction": name, "axis": axes, "keepdims": keepdims, "view": "transpose" if transpose else "none"},
+            lambda x, name=name, axes=axes, keepdims=keepdims, transpose=transpose: np.asarray(reduction(
+                name, x.T if transpose else x, axis=None if axes is None else tuple(axes), keepdims=keepdims)))
     return c
 
 
 def generate(out_dir):
     os.makedirs(out_dir, exist_ok=True)
+    for f in os.listdir(out_dir):  # drop fixtures of cases that no longer exist
+        if f.endswith(".npy") or f == "manifest.json":
+            os.remove(os.path.join(out_dir, f))
     arr = inputs()
     for name, a in arr.items():
         np.save(os.path.join(out_dir, f"in_{name}.npy"), a)
     manifest = []
+    shared = {}
     for cid, tag, op, ins, params, fn in cases(arr):
         entry = {"id": cid, "tag": tag, "op": op, "inputs": [f"in_{n}.npy" for n in ins], "params": params}
-        if fn is None:
+        if fn is None and "expected" in params:
+            entry["expect"] = {"dtype_name": params.pop("expected")}
+        elif fn is None:
             entry["expect"] = {"error": True}
         else:
             try:
                 result = fn(*[arr[n] for n in ins])
-            except ValueError:
+            except (ValueError, TypeError):  # NumPy errors become error expectations
                 result = None
             if result is None:
                 entry["expect"] = {"error": True}
             elif isinstance(result, np.ndarray):
+                if op == "ufunc" and params["ufunc"] in ULP_TOLERANCE and result.dtype.kind in "fc":
+                    params["ulp"] = ULP_TOLERANCE[params["ufunc"]]
+                fortran = bool(result.flags.f_contiguous and not result.flags.c_contiguous)
                 fname = f"expected_{cid}.npy"
-                np.save(os.path.join(out_dir, fname), result)
+                if op == "ufunc":
+                    # identical logical results share one file (the layouts of the matrix)
+                    result = np.ascontiguousarray(result)
+                    key = (result.dtype.str, result.shape, result.tobytes(), params.get("ulp"))
+                    fname = shared.setdefault(key, fname)
+                if not os.path.exists(os.path.join(out_dir, fname)):
+                    np.save(os.path.join(out_dir, fname), result)
                 entry["expect"] = {"file": fname, "shape": list(result.shape), "dtype": result.dtype.str,
-                                   "fortran": bool(result.flags.f_contiguous and not result.flags.c_contiguous)}
+                                   "fortran": fortran}
+            elif isinstance(result, np.dtype):
+                entry["expect"] = {"dtype_name": result.name}
             elif isinstance(result, float):
                 entry["expect"] = {"value": result}
             elif isinstance(result, str):
                 entry["expect"] = {"repr": result}
             elif isinstance(result, list):
                 entry["expect"] = {"shape": result}
+            elif isinstance(result, dict) and op == "can_cast":
+                entry["expect"] = {"can_cast": result}
             elif isinstance(result, dict):
                 entry["expect"] = {"flags": result}
             else:
@@ -209,6 +924,10 @@ def generate(out_dir):
     with open(os.path.join(out_dir, "manifest.json"), "w", encoding="utf-8") as f:
         json.dump({"numpy_version_used": "2.x", "cases": manifest}, f, indent=1, sort_keys=True)
         f.write("\n")
+    total = sum(os.path.getsize(os.path.join(out_dir, f)) for f in os.listdir(out_dir))
+    if total > FIXTURE_BUDGET:
+        raise SystemExit(f"fixtures take {total} bytes, over the budget of {FIXTURE_BUDGET}; "
+                         "use smaller arrays or share expected files")
     return manifest
 
 
@@ -223,15 +942,35 @@ def main():
         print(f"wrote {len(manifest)} cases to {fixtures}")
         return 0
     with tempfile.TemporaryDirectory() as tmp:
-        generate(tmp)
+        generated = generate(tmp)
         expected = sorted(os.listdir(tmp))
         actual = sorted(f for f in os.listdir(fixtures) if not f.startswith("."))
         if expected != actual:
             print("fixture file list differs:", sorted(set(expected) ^ set(actual)))
             return 1
         _, mismatch, errors = filecmp.cmpfiles(tmp, fixtures, expected, shallow=False)
+        tolerant = {c["expect"]["file"]: c["params"]["ulp"] for c in generated
+                    if "ulp" in c["params"] and "file" in c["expect"]}
+        for f in list(mismatch):
+            if f in tolerant:
+                new = np.load(os.path.join(tmp, f))
+                old = np.load(os.path.join(fixtures, f))
+                if new.dtype == old.dtype and new.shape == old.shape \
+                        and int(np.max(ulp_distance(new, old), initial=0)) <= tolerant[f]:
+                    mismatch.remove(f)
         if mismatch or errors:
-            print("fixtures out of date:", mismatch + errors)
+            details = []
+            for f in mismatch:
+                new = np.load(os.path.join(tmp, f)) if f.endswith(".npy") else None
+                old = np.load(os.path.join(fixtures, f)) if f.endswith(".npy") else None
+                if new is not None and new.dtype == old.dtype and new.shape == old.shape and new.dtype.kind in "fc":
+                    details.append(f"{f} ({int(np.max(ulp_distance(new, old), initial=0))} ulp)")
+                else:
+                    details.append(f)
+            message = "fixtures out of date: " + ", ".join(details + errors)
+            print(message)
+            if os.environ.get("GITHUB_ACTIONS") == "true":
+                print(f"::error title=Oracle fixtures::{message[:4000]}")
             return 1
     print(f"fixtures are up to date ({len(expected)} files, numpy {np.__version__})")
     return 0

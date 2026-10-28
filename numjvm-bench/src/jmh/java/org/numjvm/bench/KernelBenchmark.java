@@ -2,7 +2,7 @@ package org.numjvm.bench;
 
 import java.util.concurrent.TimeUnit;
 
-import org.numjvm.kernels.ValidationKernels;
+import org.numjvm.NJ;
 import org.numjvm.ndarray.NDArray;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -17,7 +17,9 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 /**
- * MiniAdd and MiniSum: the validation kernels with the first operand in each layout.
+ * MiniAdd and MiniSum from the M0 specification, with the first operand in each layout. M0
+ * measured the validation kernels; since M1 these are the public ufunc and reduction, so the
+ * numbers compare across milestones.
  * {@code add} includes allocating its result, as a user call does.
  */
 @BenchmarkMode(Mode.AverageTime)
@@ -45,11 +47,11 @@ public class KernelBenchmark {
 
     @Benchmark
     public NDArray miniAdd() {
-        return ValidationKernels.add(a, b);
+        return NJ.add(a, b);
     }
 
     @Benchmark
     public double miniSum() {
-        return ValidationKernels.sumFloat64(a);
+        return NJ.sum(a).getDouble();
     }
 }

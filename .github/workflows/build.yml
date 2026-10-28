@@ -5,9 +5,10 @@ on:
     branches: [ "**" ]
   pull_request:
 
+# Least privilege: read-only by default; the build job may additionally publish the
+# test-results check run.
 permissions:
   contents: read
-  checks: write
 
 concurrency:
   group: build-${{ github.ref }}
@@ -16,20 +17,28 @@ concurrency:
 jobs:
   build:
     name: Build and test (JDK 25)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      checks: write
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6  # v6.0.1
         with:
           distribution: temurin
           java-version: 25
 
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6  # v6.4.0
 
       - name: Build
         run: ./gradlew build --stacktrace
+
+      - name: Coverage summary
+        run: python3 scripts/coverage_summary.py numjvm-core numjvm-io
 
       - name: Run examples
         run: ./gradlew --quiet :examples:basic-arrays:run :examples:memory-scopes:run
@@ -41,7 +50,7 @@ jobs:
 
       - name: Publish test results
         if: always()
-        uses: mikepenz/action-junit-report@v5
+        uses: mikepenz/action-junit-report@b7b80d7ac5b1da46d6aaff9fb57ad50d8453bcb3  # v6.6.0
         with:
           check_name: test results
           report_paths: "**/build/test-results/test/TEST-*.xml"
@@ -50,7 +59,7 @@ jobs:
 
       - name: Upload test reports
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: test-reports
           path: "**/build/reports/tests/"

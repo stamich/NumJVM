@@ -3,7 +3,8 @@ NumPy's own results.
 
 OracleTest (numjvm-io) writes every array-valued result to an output directory, one
 `<case id>.npy` per case. This script loads each of them with np.load and compares
-dtype, shape, memory order and values with the expected fixture.
+dtype, shape, memory order and values with the expected fixture: exactly (NaN equal to
+NaN), or within the case's "ulp" tolerance for transcendental functions (decision D6).
 
 Usage:
   python3 verify_results.py <oracle-out directory>     # e.g. numjvm-io/build/oracle-out
@@ -14,6 +15,8 @@ import os
 import sys
 
 import numpy as np
+
+from generate_cases import ulp_distance
 
 
 def main():
@@ -43,9 +46,13 @@ def main():
             failures.append(f"{case['id']}: dtype {actual.dtype} != {expected.dtype}")
         elif actual.shape != expected.shape:
             failures.append(f"{case['id']}: shape {actual.shape} != {expected.shape}")
+        elif "ulp" in case["params"]:
+            worst = int(np.max(ulp_distance(actual, expected), initial=0))
+            if worst > case["params"]["ulp"]:
+                failures.append(f"{case['id']}: values differ by {worst} ulp (tolerance {case['params']['ulp']})")
         elif not np.array_equal(actual, expected, equal_nan=True):
             failures.append(f"{case['id']}: values differ")
-        elif case["op"] == "copy" and expect["fortran"] and not actual.flags.f_contiguous:
+        elif case["op"] in ("copy", "ufunc") and expect["fortran"] and not actual.flags.f_contiguous:
             failures.append(f"{case['id']}: expected Fortran order")
         checked += 1
     for line in failures:

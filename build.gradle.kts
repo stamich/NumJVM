@@ -58,6 +58,7 @@ subprojects {
     val jacocoTestReport = tasks.named<JacocoReport>("jacocoTestReport") {
         reports {
             xml.required = true
+            csv.required = true
             html.required = true
         }
     }
@@ -74,7 +75,10 @@ subprojects {
 //
 // The defaults below point at SonarCloud. For a self-hosted SonarQube server, set
 // SONAR_HOST_URL and override the keys, e.g. -Dsonar.projectKey=numjvm.
-// Only the published libraries are analysed; benchmarks and examples are skipped.
+//
+// Scope (decision D1, docs/quality/README.md): the main code of the published libraries,
+// numjvm-core and numjvm-io, with their tests analysed as test code. Benchmarks, examples,
+// the architecture spike, release-check and the oracle fixtures are not analysed.
 
 sonar {
     properties {
@@ -82,6 +86,15 @@ sonar {
         property("sonar.organization", "stamich")
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.projectName", "NumJVM")
+        property("sonar.gradle.scanAll", "false")
+        property("sonar.sourceEncoding", "UTF-8")
+        property("sonar.links.scm", "https://github.com/stamich/NumJVM")
+        property("sonar.links.ci", "https://github.com/stamich/NumJVM/actions")
+        // Decision D3: generated inner loops are analysed, but not counted as duplication.
+        property("sonar.cpd.exclusions", "**/build/generated/**")
+        // Decision D2: the analysis step fails when the quality gate fails.
+        property("sonar.qualitygate.wait", "true")
+        property("sonar.qualitygate.timeout", "300")
     }
 }
 
@@ -107,6 +120,22 @@ configure(subprojects.filter { it.name in publishedModules }) {
     extensions.configure<JavaPluginExtension> {
         withSourcesJar()
         withJavadocJar()
+    }
+
+    // Decision D2: at least 80 % line coverage for the published libraries, checked by
+    // `./gradlew check` (and so by `build`) as well as by the SonarCloud quality gate.
+    val coverageVerification = tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+        violationRules {
+            rule {
+                limit {
+                    counter = "LINE"
+                    minimum = "0.80".toBigDecimal()
+                }
+            }
+        }
+    }
+    tasks.named("check") {
+        dependsOn(coverageVerification)
     }
 
     tasks.named<Jar>("jar") {

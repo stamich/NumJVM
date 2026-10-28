@@ -1,0 +1,7 @@
+        if (sa == 0 && so == 0 && pa == po && a == o) {
+            // reduction into one element: NumPy's pairwise summation of the run
+            ${CT} x = ${READ_A};
+            x += ${PAIRWISE}(b, pb, sb, n);
+            ${WRITE_X};
+            return;
+        }

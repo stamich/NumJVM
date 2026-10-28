@@ -14,7 +14,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
 
 concurrency:
   group: sonar-${{ github.ref }}
@@ -23,24 +22,28 @@ concurrency:
 jobs:
   sonar:
     name: SonarCloud analysis
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: read
     timeout-minutes: 30
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           fetch-depth: 0  # full history for blame data and new-code detection
+          persist-credentials: false
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6  # v6.0.1
         with:
           distribution: temurin
           java-version: 25
 
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6  # v6.4.0
 
       - name: Cache SonarCloud packages
-        uses: actions/cache@v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
@@ -51,8 +54,45 @@ jobs:
 
       - name: Analyse
         if: env.SONAR_TOKEN != ''
-        run: ./gradlew sonar --stacktrace
+        run: |
+          set +e
+          ./gradlew sonar --stacktrace 2>&1 | tee sonar.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            # Surface the scanner's reason as annotations, readable without opening the log.
+            if grep -q "Automatic Analysis is enabled" sonar.log; then
+              echo "::error title=SonarCloud::Automatic Analysis is still on for this project. In SonarCloud open Administration > Analysis Method and switch off Automatic Analysis; CI-based analysis replaces it."
+            fi
+            grep -E "ERROR|[Nn]ot authorized|Project not found|QUALITY GATE|Caused by|What went wrong" sonar.log \
+              | grep -v "^[[:space:]]*at " | head -10 | while IFS= read -r line; do echo "::error title=SonarCloud::${line}"; done
+          fi
+          exit "$status"
+
+      # Why the gate failed, as annotations: SonarCloud's public API lists each condition.
+      - name: Quality gate conditions
+        if: failure() && env.SONAR_TOKEN != ''
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          scope="branch=main"
+          [ -n "$PR_NUMBER" ] && scope="pullRequest=$PR_NUMBER"
+          curl -sf "https://sonarcloud.io/api/qualitygates/project_status?projectKey=stamich_NumJVM&$scope" \
+            | jq -r '.projectStatus.conditions[] | select(.status != "OK")
+                     | "::error title=Quality gate::\(.metricKey) is \(.actualValue) (threshold \(.comparator) \(.errorThreshold))"' \
+            || echo "::warning::quality gate status not available"
+          # the Reliability and Security issues behind a failed rating, one annotation each
+          curl -sf "https://sonarcloud.io/api/issues/search?componentKeys=stamich_NumJVM&$scope&types=BUG,VULNERABILITY&resolved=false&ps=100" \
+            | jq -r '.issues[] | "::error file=\(.component | sub("^[^:]*:"; "")),line=\(.line // 1),title=\(.type) \(.rule)::\(.message)"' \
+            || echo "::warning::issue list not available"
 
       - name: Analysis skipped
         if: env.SONAR_TOKEN == ''
         run: echo "::notice::SONAR_TOKEN is not available; SonarCloud analysis skipped."
+
+      # Public SonarCloud data, so this works without the token too (it then shows the
+      # results of Automatic Analysis). Informational only; never fails the job.
+      - name: Open findings in the job summary
+        continue-on-error: true
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: python3 scripts/sonar_findings.py ${PR_NUMBER:+--pull-request "$PR_NUMBER"} >> "$GITHUB_STEP_SUMMARY"

@@ -20,16 +20,23 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.numjvm.NJ;
+import org.numjvm.dtype.Casting;
+import org.numjvm.dtype.Complex;
 import org.numjvm.dtype.DType;
+import org.numjvm.dtype.TypePromotion;
 import org.numjvm.exception.NumJVMException;
 import org.numjvm.internal.SharedSecrets;
 import org.numjvm.io.Npy;
-import org.numjvm.kernels.ValidationKernels;
 import org.numjvm.ndarray.NDArray;
 import org.numjvm.ndarray.Order;
 import org.numjvm.ndarray.Shape;
 import org.numjvm.ndarray.Slice;
 import org.numjvm.shape.Broadcasting;
+import org.numjvm.ufunc.BinaryUfunc;
+import org.numjvm.ufunc.Reductions;
+import org.numjvm.ufunc.Ufunc;
+import org.numjvm.ufunc.UnaryUfunc;
+import org.numjvm.ufunc.Ufuncs;
 
 /**
  * Replays every case of the NumPy oracle ({@code numjvm-tests-oracle/fixtures/manifest.json})
@@ -89,8 +96,12 @@ class OracleTest {
             NDArray expected = Npy.read(fixtures().resolve((String) expect.get("file")));
             assertEquals(expected.dtype(), actual.dtype(), id + " dtype");
             assertEquals(expected.shape(), actual.shape(), id + " shape");
-            assertArrayEquals(bytes(expected), bytes(actual), id + " values");
-            if (Boolean.TRUE.equals(expect.get("fortran")) && op.equals("copy")) {
+            if (params.containsKey("ulp")) {
+                assertWithinUlps(id, expected, actual, ((Number) params.get("ulp")).longValue());
+            } else {
+                assertSameElements(id, expected, actual);
+            }
+            if (Boolean.TRUE.equals(expect.get("fortran")) && (op.equals("copy") || op.equals("ufunc"))) {
                 assertTrue(actual.isFContiguous(), id + " fortran order");
             }
             Npy.write(out.resolve(id + ".npy"), actual);
@@ -105,6 +116,16 @@ class OracleTest {
             NDArray a = (NDArray) result;
             assertEquals(flags.get("c"), a.isCContiguous(), id + " C_CONTIGUOUS");
             assertEquals(flags.get("f"), a.isFContiguous(), id + " F_CONTIGUOUS");
+        } else if (expect.containsKey("dtype_name")) {
+            assertEquals(DType.fromName((String) expect.get("dtype_name")), result, id);
+        } else if (expect.containsKey("can_cast")) {
+            Map<String, Object> table = (Map<String, Object>) expect.get("can_cast");
+            DType from = DType.fromName((String) params.get("from"));
+            Casting casting = Casting.valueOf(((String) params.get("casting")).toUpperCase(java.util.Locale.ROOT));
+            for (Map.Entry<String, Object> e : table.entrySet()) {
+                assertEquals(e.getValue(), TypePromotion.canCast(from, DType.fromName(e.getKey()), casting),
+                        id + " -> " + e.getKey());
+            }
         } else if (expect.containsKey("shape")) {
             assertArrayEquals(longs((List<Object>) expect.get("shape")), ((Shape) result).dimensions(), id);
         } else {
@@ -139,14 +160,191 @@ class OracleTest {
                 yield src.copy("F".equals(p.get("order")) ? Order.F : Order.C);
             }
             case "astype" -> in.get(0).astype(DType.fromNumpyDescriptor((String) p.get("dtype")));
-            case "add" -> ValidationKernels.add(in.get(0), in.get(1));
-            case "add_transposed" -> ValidationKernels.add(in.get(0).transpose(), in.get(1).transpose());
-            case "sum" -> ValidationKernels.sumFloat64(
-                    "transpose".equals(p.get("view")) ? in.get(0).transpose() : in.get(0));
-            case "sum_generated" -> ValidationKernels.sumFloat64(hashUnit(((Number) p.get("n")).intValue()));
+            case "add" -> NJ.add(in.get(0), in.get(1));
+            case "add_transposed" -> NJ.add(in.get(0).transpose(), in.get(1).transpose());
+            case "sum" -> NJ.sum("transpose".equals(p.get("view")) ? in.get(0).transpose() : in.get(0)).getDouble();
+            case "sum_generated" -> NJ.sum(hashUnit(((Number) p.get("n")).intValue())).getDouble();
             case "repr" -> in.get(0);
+            case "ufunc" -> ufunc(in, p);
+            case "reduction" -> reduction(in, p);
+            case "reduce" -> {
+                BinaryUfunc u = (BinaryUfunc) Ufuncs.byName((String) p.get("ufunc")).orElseThrow();
+                List<Object> axis = (List<Object>) p.get("axis");
+                yield u.reduce(in.get(0), axis == null ? null : ints(axis), Boolean.TRUE.equals(p.get("keepdims")));
+            }
+            case "round" -> NJ.round(in.get(0), ((Number) p.get("decimals")).intValue());
+            case "result_type" -> TypePromotion.resultType(((List<Object>) p.get("dtypes")).stream()
+                    .map(o -> DType.fromName((String) o)).toArray(DType[]::new));
+            case "can_cast" -> null;
             default -> throw new AssertionError("unknown op " + op);
         };
+    }
+
+    private static NDArray ufunc(List<NDArray> in, Map<String, Object> p) {
+        Ufunc u = Ufuncs.byName((String) p.get("ufunc")).orElseThrow(() -> new AssertionError("no ufunc " + p));
+        if (p.containsKey("layout")) {
+            List<NDArray> views = in.stream().map(a -> layout((String) p.get("layout"), a)).toList();
+            if (u instanceof BinaryUfunc b) {
+                return b.apply(views.get(0), views.get(1));
+            }
+            NDArray x = "B".equals(p.get("layout")) ? views.get(0).broadcastTo(3, 4) : views.get(0);
+            return ((UnaryUfunc) u).apply(x);
+        }
+        boolean transpose = "transpose".equals(p.get("view"));
+        NDArray x = transpose ? in.get(0).transpose() : in.get(0);
+        if (p.containsKey("scalar")) {
+            BinaryUfunc b = (BinaryUfunc) u;
+            boolean right = "right".equals(p.get("scalar_side"));
+            if ("complex".equals(p.get("scalar_type"))) {
+                List<?> parts = (List<?>) p.get("scalar");
+                Complex z = Complex.of(((Number) parts.get(0)).doubleValue(), ((Number) parts.get(1)).doubleValue());
+                return right ? b.apply(x, z) : b.apply(z, x);
+            }
+            Number v = (Number) p.get("scalar");
+            if ("long".equals(p.get("scalar_type"))) {
+                return right ? b.apply(x, v.longValue()) : b.apply(v.longValue(), x);
+            }
+            return right ? b.apply(x, v.doubleValue()) : b.apply(v.doubleValue(), x);
+        }
+        if (u instanceof BinaryUfunc b) {
+            NDArray y = transpose ? in.get(1).transpose() : in.get(1);
+            if (p.containsKey("out")) {
+                NDArray out = NJ.zeros(DType.fromName((String) p.get("out")),
+                        Broadcasting.broadcastShapes(x.shape(), y.shape()).dimensions());
+                return b.apply(x, y, out);
+            }
+            return b.apply(x, y);
+        }
+        return ((UnaryUfunc) u).apply(x);
+    }
+
+    /**
+     * The operand a matrix case sees (generate_cases.layout_view): C and F inputs as stored,
+     * T the transpose, S every other element of the last axis; for B the caller broadcasts the 1-D row of a
+     * unary ufunc to 3x4 (binary ufuncs broadcast it themselves).
+     */
+    private static NDArray layout(String layout, NDArray a) {
+        return switch (layout) {
+            case "T" -> a.transpose();
+            case "S" -> a.slice(Slice.ellipsis(), Slice.step(2));
+            default -> a;
+        };
+    }
+
+    @SuppressWarnings("unchecked")
+    private static NDArray reduction(List<NDArray> in, Map<String, Object> p) {
+        NDArray x;
+        if (p.containsKey("generator")) {
+            x = hashUnit(((Number) p.get("n")).intValue()).astype(DType.fromName((String) p.get("dtype")));
+            if (p.containsKey("shape")) {
+                x = x.reshape(longs((List<Object>) p.get("shape")));
+            }
+        } else {
+            x = "transpose".equals(p.get("view")) ? in.get(0).transpose() : in.get(0);
+        }
+        List<Object> axis = (List<Object>) p.get("axis");
+        int[] axes = axis == null ? null : ints(axis);
+        boolean keep = Boolean.TRUE.equals(p.get("keepdims"));
+        return switch ((String) p.get("reduction")) {
+            case "sum" -> Reductions.sum(x, axes, keep);
+            case "prod" -> Reductions.prod(x, axes, keep);
+            case "max" -> Reductions.max(x, axes, keep);
+            case "min" -> Reductions.min(x, axes, keep);
+            case "mean" -> Reductions.mean(x, axes, keep);
+            case "any" -> Reductions.any(x, axes, keep);
+            case "all" -> Reductions.all(x, axes, keep);
+            default -> throw new AssertionError("unknown reduction " + p);
+        };
+    }
+
+    /**
+     * Exact comparison of two arrays of the same dtype and shape: integers and bools byte for
+     * byte; floats value by value with signed zeros distinguished and any NaN equal to any NaN
+     * (NaN payloads are not part of NumPy's or NumJVM's contract); complex part by part.
+     */
+    static void assertSameElements(String id, NDArray expected, NDArray actual) {
+        DType t = expected.dtype();
+        if (t.isComplex()) {
+            assertSameElements(id + " real", expected.real(), actual.real());
+            assertSameElements(id + " imag", expected.imag(), actual.imag());
+            return;
+        }
+        if (!t.isFloatingPoint()) {
+            assertArrayEquals(bytes(expected), bytes(actual), id + " values");
+            return;
+        }
+        NDArray e = expected.copy().reshape(-1);
+        NDArray a = actual.copy().reshape(-1);
+        for (long i = 0; i < e.size(); i++) {
+            double x = e.getDouble(i);
+            double y = a.getDouble(i);
+            if (Double.isNaN(x) && Double.isNaN(y)) {
+                continue;
+            }
+            long k = i;
+            assertEquals(Double.doubleToLongBits(x), Double.doubleToLongBits(y),
+                    () -> id + " element " + k + ": expected " + x + " but was " + y);
+        }
+    }
+
+    /**
+     * Floating-point comparison with a tolerance in units in the last place of the dtype
+     * (decision D6, for transcendental functions); NaN equals NaN, and -0.0 equals 0.0.
+     */
+    static void assertWithinUlps(String id, NDArray expected, NDArray actual, long maxUlps) {
+        DType t = expected.dtype();
+        if (t.isComplex()) {
+            assertWithinUlps(id + " real", expected.real(), actual.real(), maxUlps);
+            assertWithinUlps(id + " imag", expected.imag(), actual.imag(), maxUlps);
+            return;
+        }
+        if (!t.isFloatingPoint()) {
+            assertSameElements(id, expected, actual);
+            return;
+        }
+        NDArray e = expected.copy().reshape(-1);
+        NDArray a = actual.copy().reshape(-1);
+        for (long i = 0; i < e.size(); i++) {
+            double x = e.getDouble(i);
+            double y = a.getDouble(i);
+            if (Double.isNaN(x) && Double.isNaN(y)) {
+                continue;
+            }
+            long d = Math.abs(line(x, t) - line(y, t));
+            long k = i;
+            assertTrue(!Double.isNaN(x) && !Double.isNaN(y) && d <= maxUlps,
+                    () -> id + " element " + k + ": expected " + x + " but was " + y + " (" + d + " ulp)");
+        }
+    }
+
+    /**
+     * Position of {@code v} on a monotonic integer line of {@code t}'s values: adjacent values
+     * differ by 1.
+     */
+    static long line(double v, DType t) {
+        long bits;
+        int width;
+        switch (t) {
+            case FLOAT64 -> {
+                bits = Double.doubleToRawLongBits(v);
+                width = 64;
+            }
+            case FLOAT32 -> {
+                bits = Float.floatToRawIntBits((float) v) & 0xFFFF_FFFFL;
+                width = 32;
+            }
+            case FLOAT16 -> {
+                bits = Float.floatToFloat16((float) v) & 0xFFFFL;
+                width = 16;
+            }
+            default -> {
+                bits = (Float.floatToRawIntBits((float) v) >>> 16) & 0xFFFFL;
+                width = 16;
+            }
+        }
+        long magnitude = width == 64 ? bits & Long.MAX_VALUE : bits & ((1L << (width - 1)) - 1);
+        boolean negative = width == 64 ? bits < 0 : (bits >>> (width - 1)) != 0;
+        return negative ? -magnitude : magnitude;
     }
 
     /**
