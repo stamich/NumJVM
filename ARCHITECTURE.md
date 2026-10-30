@@ -2,7 +2,7 @@
 
 NumJVM is a Java-first numerical library: Java owns the array model, memory management and the numerical loops; native
 code is used only where existing implementations give a clear advantage (BLAS and LAPACK from M2). This document
-describes the state after milestone M1 (0.2.0-alpha) and where later milestones attach.
+describes the M2 implementation candidate (0.3.0-alpha), its optional CPU providers, and future extension points.
 
 ```text
                  Java / Kotlin / Scala callers
@@ -19,7 +19,7 @@ describes the state after milestone M1 (0.2.0-alpha) and where later milestones 
                               │
                   Kernel registry              internal.loops (generated + hand-written loops)
               ┌───────────────┼──────────────┐
-         Scalar Java     Vector API (M2)   Native BLAS/LAPACK (M2)
+         Scalar Java     Optional Vector API (M2)   Optional OpenBLAS GEMM (M2)
               └───────────────┬──────────────┘
                         Memory layer           org.numjvm.memory, internal.memory
                               │
@@ -32,10 +32,13 @@ describes the state after milestone M1 (0.2.0-alpha) and where later milestones 
 |-----------------------|----------------------|---------------|-----------------------------------------------------------------------------|
 | `numjvm-core`         | `org.numjvm.core`    | JDK only      | dtypes, memory, NDArray, views, broadcasting, iteration, ufuncs, reductions |
 | `numjvm-io`           | `org.numjvm.io`      | core          | `.npy` read, write and memory-map                                           |
+| `numjvm-vector` | `org.numjvm.vector` | core, incubating Vector API | optional generated SIMD loops |
+| `numjvm-linalg` | `org.numjvm.linalg` | core | Java matmul, optional OpenBLAS LP64 GEMM |
 | `numjvm-bench`        | none (not published) | core, io, JMH | benchmarks                                                                  |
 | `numjvm-tests-oracle` | none (Python)        | NumPy         | differential test fixtures                                                  |
 
-Neither library module needs Python, NumPy or native libraries at run time.
+Core, I/O and Java linalg need no Python, NumPy or native library at runtime.
+The vector artifact is optional and requires the incubator module when selected.
 
 ## Packages of `org.numjvm.core`
 
@@ -49,9 +52,9 @@ Neither library module needs Python, NumPy or native libraries at run time.
 | `org.numjvm.iteration`       | yes, experimental       | `IterationPlan`, `StridedIterator`, `IndexIterator`                         |
 | `org.numjvm.ufunc`           | yes                     | `Ufuncs`, `BinaryUfunc`, `UnaryUfunc`, `Reductions`, `Rounding`             |
 | `org.numjvm.exception`       | yes                     | `NumJVMException` and subclasses                                            |
-| `org.numjvm.internal`        | to `org.numjvm.io` only | `SharedSecrets`, `Factories`, `HalfFloat`                                   |
-| `org.numjvm.internal.loops`  | no                      | `KernelRegistry`, generated and complex loops, `Pairwise`, `ScalarMath`     |
-| `org.numjvm.internal.memory` | to `org.numjvm.io` only | `Buffer`, allocators, tracker                                               |
+| `org.numjvm.internal`        | to trusted I/O/linalg modules | `SharedSecrets`, `Factories`, `HalfFloat`                                   |
+| `org.numjvm.internal.loops`  | to vector provider                      | `KernelRegistry`, generated and complex loops, `Pairwise`, `ScalarMath`     |
+| `org.numjvm.internal.memory` | to trusted I/O/linalg modules | `Buffer`, allocators, tracker                                               |
 
 `Buffer` stays internal: exposing the full writable segment would let callers bypass the read-only flag of views.
 Internal callers in other packages reach non-public members through `SharedSecrets`, the pattern the JDK uses for the
@@ -98,3 +101,8 @@ same problem.
   change.
 - **M4 ecosystem**: Arrow and DLPack exchange buffers; this is where an advanced, explicitly unsafe segment API would be
   introduced.
+
+
+M2's implemented provider boundaries, conversion leases, numerical contracts and
+native packing are described in [CPU execution](docs/design/cpu-backends.md) and
+[ADR-006](docs/adr/ADR-006-cpu-backends.md). Thread pools and LAPACK remain follow-ups.

@@ -41,3 +41,20 @@ python3 numjvm-bench/numpy/compare.py numjvm-bench/jmh-m1.csv numjvm-bench/numpy
 
 Always pass `-prof gc` when checking allocation: element access and iteration must show 0 B/op, and a ufunc only the
 bytes of its result.
+
+M2 adds `M2Benchmark` (mixed conversion and integer reduction allocation/out pairs)
+and `MatmulBenchmark` (square/rectangular/vector-sized shapes, automatic/explicit
+native memory and packing). Use `-PsimdBench` to include the optional provider.
+Set `numjvm.linalg` and `numjvm.openblas.path` through JVM options inherited by
+forks, and record those settings. Example smoke command:
+
+```sh
+./gradlew :numjvm-bench:jmh -PjmhArgs='M2Benchmark.mixedAddOut -p size=65536 -f 3 -wi 1 -w 100ms -i 1 -r 100ms -prof gc'
+./gradlew :numjvm-bench:nativeAccounting
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python3 numjvm-bench/numpy/bench_m2.py
+```
+
+`nativeAccounting` samples counters outside timing loops; GC profiling alone cannot
+measure native scratch. Short smoke runs verify instrumentation and dispatch, not
+performance targets. Compare matrix packing-inclusive and already-native layouts
+separately. Automatic native inputs avoid retaining every allocating result in a trial-long scope.

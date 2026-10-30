@@ -1,0 +1,56 @@
+name: CPU backends
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  scalar:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        simd: [auto, off]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: 25
+      - run: ./gradlew build --stacktrace
+        env:
+          JAVA_TOOL_OPTIONS: -Dnumjvm.simd=${{ matrix.simd }}
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: scalar-${{ matrix.simd }}-reports
+          path: '**/build/reports/'
+# Vector and native jobs are added with their implementations; this job does not
+# claim to validate a provider that has not been built and exercised.
+  vector:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        mode: [off, required]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: 25
+      - run: ./gradlew build -PsimdEnabled=true -PsimdMode=${{ matrix.mode }} --stacktrace
+  native:
+    runs-on: ubuntu-24.04
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: 25
+      - run: sudo apt-get update && sudo apt-get install -y libopenblas0-pthread
+      - run: ./gradlew :numjvm-linalg:backendCheck --stacktrace
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: native-test-and-coverage
+          path: 'numjvm-linalg/build/reports/'

@@ -323,6 +323,10 @@ public final class BinaryUfunc extends Ufunc {
         Shape shape = Broadcasting.broadcastShapes(a.shape(), b.shape());
         Outputs.check(name(), out, shape, r.out());
         MemoryAllocator allocator = Operands.allocator(out, a, b);
+        if (out.dtype() == r.out() && !Outputs.unsafeOverlap(out, a) && !Outputs.unsafeOverlap(out, b)) {
+            org.numjvm.internal.loops.BufferedBinary.run(r.loop(), r.in(), a, b, out);
+            return out;
+        }
         NDArray x = Operands.cast(a, r.in(), allocator);
         NDArray y = Operands.cast(b, r.in(), allocator);
         if (out.dtype() == r.out() && !Outputs.unsafeOverlap(out, x) && !Outputs.unsafeOverlap(out, y)) {
@@ -404,6 +408,10 @@ public final class BinaryUfunc extends Ufunc {
             throw Reducer.notReducible(name());
         }
         MemoryAllocator allocator = Operands.allocator(x);
+        if (widensSmallIntegers && x.dtype() != r.in()) {
+            return Reducer.reduceAs(name(), org.numjvm.internal.loops.Widening.loop(x.dtype(), name().equals("multiply")),
+                    x, reduced, keepdims, identity, reorderable, allocator, r.in());
+        }
         return Reducer.reduce(name(), r.loop(), Operands.cast(x, r.in(), allocator), reduced, keepdims, identity,
                 reorderable, allocator);
     }
@@ -419,6 +427,24 @@ public final class BinaryUfunc extends Ufunc {
      * @return {@code out}
      */
     public NDArray reduce(NDArray x, int[] axes, boolean keepdims, NDArray out) {
+        Outputs.accessible(x, out);
+        boolean[] reduced = Reducer.reducedAxes(axes, x.ndim());
+        if (comparison) { throw new DTypeException("ufunc '" + name() + "' cannot reduce"); }
+        DType t = x.dtype();
+        if (widensSmallIntegers && (t.isBool() || t.isInteger() && t.size() < 8)) {
+            t = t.isUnsigned() ? DType.UINT64 : DType.INT64;
+        }
+        Resolution r = resolve(t, t, t);
+        if (r.in() != r.out()) { throw Reducer.notReducible(name()); }
+        Outputs.check(name(), out, Reducer.outputShape(x, reduced, keepdims), r.out());
+        if (out.dtype() == r.out() && out.isCContiguous() && !out.sharesMemoryWith(x)
+                && (x.dtype() == r.in() || widensSmallIntegers)) {
+            BinaryLoop loop = x.dtype() == r.in() ? r.loop()
+                    : org.numjvm.internal.loops.Widening.loop(x.dtype(), name().equals("multiply"));
+            Reducer.reduceAs(name(), loop, x, reduced, keepdims, identity, reorderable,
+                    Operands.allocator(out, x), r.out(), out);
+            return out;
+        }
         return Outputs.store(name(), reduce(x, axes, keepdims), out);
     }
 
@@ -465,10 +491,8 @@ public final class BinaryUfunc extends Ufunc {
         Resolution r = resolve(common, a.dtype(), b.dtype());
         Shape shape = Broadcasting.broadcastShapes(a.shape(), b.shape());
         MemoryAllocator allocator = Operands.allocator(a, b);
-        NDArray x = Operands.cast(a, r.in(), allocator);
-        NDArray y = Operands.cast(b, r.in(), allocator);
-        NDArray out = Operands.allocate(allocator, r.out(), shape, x, y);
-        LoopExecutor.binary(r.loop(), x, y, out);
+        NDArray out = Operands.allocate(allocator, r.out(), shape, a, b);
+        org.numjvm.internal.loops.BufferedBinary.run(r.loop(), r.in(), a, b, out);
         return out;
     }
 

@@ -17,3 +17,7 @@
 | [M0 summary and retrospective](milestones/M0.md) | Exit criteria, plan vs actual, lessons, M1 inputs               |
 | [M1 summary and retrospective](milestones/M1.md) | Exit criteria, plan vs actual, lessons, M2 inputs               |
 | [Roadmap](../ROADMAP.md)                         | Milestones M-1 to M6, re-planned M2                             |
+
+- [CPU backends and matmul](design/cpu-backends.md)
+- [M2 implementation plan](milestones/M2-plan.md)
+- [M2 evidence and remaining gates](milestones/M2-status.md)

@@ -1,0 +1,16 @@
+    private static UnaryLoop ${NAME}(UnaryLoop scalar) {
+        return (in, pi, si, out, po, so, n) -> {
+            var species = ${VECTOR}.SPECIES_PREFERRED;
+            long bound = species.loopBound(n);
+            if (si != ${BYTES} || so != ${BYTES} || bound == 0) {
+                scalar.run(in, pi, si, out, po, so, n); return;
+            }
+            for (long i = 0; i < bound; i += species.length()) {
+                var x = ${VECTOR}.fromMemorySegment(species, in, pi + i * ${BYTES}, ByteOrder.nativeOrder());
+                var z = ${EXPRESSION};
+                z.intoMemorySegment(out, po + i * ${BYTES}, ByteOrder.nativeOrder());
+            }
+            scalar.run(in, pi + bound * si, si, out, po + bound * so, so, n - bound);
+            Accelerators.executed();
+        };
+    }

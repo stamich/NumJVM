@@ -3,6 +3,36 @@
 All notable changes to NumJVM are listed here. The project follows
 [Semantic Versioning](https://semver.org/); until 1.0 every minor version may change the API.
 
+## [0.3.0-alpha] - Unreleased
+
+Milestone M2 implementation candidate. Release performance and remote quality gates
+remain open; see [implementation evidence](docs/milestones/M2-status.md).
+
+### Added
+
+- Optional `numjvm-vector` artifact with generated float32/64 and int32/64 kernels,
+  selected reductions, immutable backend configuration and execution diagnostics.
+  Scalar fallback and the existing pairwise numerical tree remain available.
+- `numjvm-linalg`: real float32/64 `Linalg.matmul`, vector/matrix promotions,
+  broadcast batches, Java fallback, scoped results, exact output dtype/shape,
+  alias-safe copyback and arbitrary valid input strides.
+- Optional Linux x86-64 OpenBLAS LP64 CBLAS float32/64 GEMM through checked FFM
+  bindings, explicit native access, packing and provider/dispatch diagnostics.
+- Backend CI definitions, direct parity/dispatch/lifetime tests, NumPy and
+  high-precision matmul checks, independent classpath/JPMS consumers and examples.
+- Separate allocation/output/packing benchmarks, native counter probe and retained
+  three-fork matrix measurements with uncertainty.
+
+### Changed
+
+- Mixed binary conversions use bounded per-call scratch with a global active budget;
+  hazardous aliases retain snapshot fallback.
+- Narrow integer sum/prod read directly into widened accumulators. Integer mean
+  avoids full-input casts, retaining cast-layout arithmetic order for strided inputs.
+- Compatible real reduction outputs execute directly after lifecycle validation.
+- M2 scope excludes worker pools, LAPACK, dot/vecdot, complex matmul and additional
+  native ABIs. Those require separately planned follow-ups.
+
 ## [0.2.0-alpha] - 2026-01-06
 
 Milestone M1: the elementwise engine, and the quality baseline it was built under.

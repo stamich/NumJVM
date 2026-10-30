@@ -197,6 +197,16 @@ public final class KernelRegistry {
      * @throws DTypeException if there is none
      */
     public static UnaryLoop unary(String op, DType in) {
+        return org.numjvm.internal.backend.Accelerators.unary(op, in, scalarUnary(op, in));
+    }
+
+    /**
+     * Returns original unary loop for internal parity checks.
+     * @param op operation name
+     * @param in input dtype
+     * @return original unary loop for internal parity checks
+     */
+    public static UnaryLoop scalarUnary(String op, DType in) {
         Object loop = table(op).loops.get(key(in));
         if (!(loop instanceof UnaryLoop u)) {
             throw noLoop(op, in);
@@ -214,6 +224,18 @@ public final class KernelRegistry {
      * @throws DTypeException if there is none
      */
     public static BinaryLoop binary(String op, DType in1, DType in2) {
+        BinaryLoop scalar = scalarBinary(op, in1, in2);
+        return in1 == in2 ? org.numjvm.internal.backend.Accelerators.binary(op, in1, scalar) : scalar;
+    }
+
+    /**
+     * Returns original binary loop for internal parity checks.
+     * @param op operation name
+     * @param in1 first input dtype
+     * @param in2 second input dtype
+     * @return original binary loop for internal parity checks
+     */
+    public static BinaryLoop scalarBinary(String op, DType in1, DType in2) {
         Object loop = table(op).loops.get(key(in1, in2));
         if (!(loop instanceof BinaryLoop b)) {
             throw noLoop(op, in1, in2);

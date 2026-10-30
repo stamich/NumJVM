@@ -40,7 +40,9 @@ jobs:
         run: python -m pip install --only-binary ":all:" --require-hashes -r numjvm-tests-oracle/requirements.txt
 
       - name: Fixtures are reproducible with the current NumPy
-        run: python numjvm-tests-oracle/generate_cases.py --check
+        run: |
+          python numjvm-tests-oracle/generate_cases.py --check
+          python numjvm-tests-oracle/generate_matmul_cases.py --check
 
       - name: Java tests, including the NumPy oracle replay
         run: ./gradlew test --stacktrace

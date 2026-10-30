@@ -14,8 +14,12 @@ dependencyResolutionManagement {
 
 include(
     "numjvm-core",
+    "numjvm-linalg",
+    "numjvm-vector",
     "numjvm-io",
     "numjvm-bench",
     "examples:basic-arrays",
+    "examples:accelerated-arrays",
+    "examples:matmul",
     "examples:memory-scopes",
 )

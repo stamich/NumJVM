@@ -14,11 +14,10 @@
 Numerical computing for the Java Virtual Machine: N-dimensional arrays with NumPy semantics, built on the Java 25
 Foreign Function & Memory API. No Python, NumPy or native libraries are needed at run time.
 
-> **Status: 0.2.0-alpha (milestone M1).** On top of M0's array model, memory management,
-> views, broadcasting and `.npy` I/O, NumJVM now has an elementwise engine: 41 ufuncs over
-> every dtype, NumPy 2 type promotion, axis reductions, `out=` and in-place operations, and
-> complex arithmetic. Everything is tested against NumPy. The API may still change (see
-> [`ROADMAP.md`](ROADMAP.md)).
+> **Status: 0.3.0-alpha review candidate (M2).** Optional SIMD and portable real
+> matrix multiplication extend the existing array and elementwise API. Release
+> performance and remote quality evidence remain open; see [M2 status](docs/milestones/M2-status.md).
+> The API remains experimental.
 
 ## Quick start
 
@@ -70,7 +69,7 @@ Runnable versions: [`examples/basic-arrays`](examples/basic-arrays) and
 ./gradlew :examples:memory-scopes:run
 ```
 
-## What 0.2 provides
+## Array and elementwise API
 
 | Area           | Contents                                                                                                         |
 |----------------|------------------------------------------------------------------------------------------------------------------|
@@ -94,8 +93,37 @@ Runnable versions: [`examples/basic-arrays`](examples/basic-arrays) and
 |-----------------------|---------------------------------|---------------------------------------------------------|
 | `numjvm-core`         | `io.github.stamich:numjvm-core` | dtypes, memory, NDArray, views, ufuncs, reductions      |
 | `numjvm-io`           | `io.github.stamich:numjvm-io`   | NumPy `.npy` I/O                                        |
+| `numjvm-vector` | `io.github.stamich:numjvm-vector` | optional SIMD kernels |
+| `numjvm-linalg` | `io.github.stamich:numjvm-linalg` | Java matmul, optional OpenBLAS |
 | `numjvm-bench`        | not published                   | JMH benchmarks                                          |
 | `numjvm-tests-oracle` | not published                   | NumPy differential-test fixtures                        |
+
+## Optional CPU acceleration and matmul
+
+M2 adds optional `numjvm-vector` and `numjvm-linalg` artifacts. Core remains usable
+without Vector API resolution or a native library. Matrix multiplication is real
+float32/64, with vector promotion, broadcast batches, arbitrary input strides and
+an exact-shape/dtype `out` variant:
+
+```java
+import org.numjvm.linalg.Linalg;
+
+NDArray a = NJ.array(new double[]{1, 2, 3, 4, 5, 6}, 2, 3);
+NDArray gram = Linalg.matmul(a, a.transpose()); // [[14, 32], [32, 77]]
+```
+
+```sh
+./gradlew :examples:accelerated-arrays:run
+./gradlew :examples:accelerated-arrays:run -PwithoutVector
+./gradlew :examples:matmul:run
+```
+
+The optional SIMD provider accelerates selected contiguous and broadcast operations,
+with scalar fallback elsewhere. Java matmul needs no native dependencies; optional
+OpenBLAS supports Linux x86-64 LP64 CBLAS. See the [setup and backend guide](docs/development-cpu.md)
+for flags, forced modes, ownership, diagnostics, native validation and consumer examples.
+The [M2 status](docs/milestones/M2-status.md) distinguishes implemented behavior from
+outstanding release performance evidence.
 
 ## Building
 
