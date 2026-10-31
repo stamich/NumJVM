@@ -2,7 +2,7 @@
 
 NumJVM is a Java-first numerical library: Java owns the array model, memory management and the numerical loops; native
 code is used only where existing implementations give a clear advantage (BLAS from M2; LAPACK remains a follow-up). This document
-describes the M2 implementation candidate (0.3.0-alpha), its optional CPU providers, and future extension points.
+describes the CPU providers, expression execution and future extension points.
 
 ```text
                  Java / Kotlin / Scala callers
@@ -95,7 +95,7 @@ same problem.
 
 ## Where later milestones attach
 
-- **M2 fast paths**: Vector API kernels on the 64-byte aligned native buffers; BLAS and LAPACK through FFM downcalls on
+- **CPU fast paths**: Vector API kernels on supported buffers; BLAS through FFM downcalls on
   the same segments.
 - **M3 JIT**: traces `NDArray` expressions and generates fused kernels with the ClassFile API; the array model does not
   change.

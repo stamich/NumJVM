@@ -25,4 +25,20 @@ class GeneratedExecutorTest {
         NDArray a = NJ.ones(DType.FLOAT64, 4).slice(Slice.step(-1));
         assertFalse(GeneratedExecutor.eligible(new NDArray[]{a}, NJ.ones(DType.FLOAT64, 4)));
     }
+    @Test void hoistsAllSlotsForMaximumArityAndNonzeroOffsets() {
+        NDArray[] inputs = new NDArray[16];
+        for (int i = 0; i < inputs.length; i++) {
+            inputs[i] = NJ.ones(DType.FLOAT64, 259).slice(Slice.range(1, 258));
+        }
+        try (var context = Jit.context(Jit.Mode.REQUIRED)) {
+            var graph = context.trace(16, i -> {
+                Expr sum = i.input(0);
+                for (int n = 1; n < 16; n++) sum = sum.add(i.input(n));
+                return sum;
+            });
+            var output = graph.eval(inputs);
+            assertEquals(16, output.getDouble(0));
+            assertEquals(16, output.getDouble(256));
+        }
+    }
 }

@@ -12,7 +12,7 @@ public final class Jit {
     /** Creates a context for expression plans.
      * @return a new context
      */
-    public static Context context() { return new Context(Mode.AUTO, 64); }
+    public static Context context() { return new Context(Mode.AUTO, 64, 65536, 16L * 1024 * 1024); }
 
     /** Execution strategy for expression plans. */
     public enum Mode {
@@ -20,6 +20,8 @@ public final class Jit {
         AUTO,
         /** Execute through bounded blocks. */
         BLOCK,
+        /** Execute whole-array ufuncs within the temporary-byte budget. */
+        EAGER,
         /** Require generated execution for nonempty results. */
         REQUIRED
     }
@@ -28,7 +30,7 @@ public final class Jit {
      * @param mode execution mode
      * @return a new context
      */
-    public static Context context(Mode mode) { return new Context(Objects.requireNonNull(mode, "mode"), 64); }
+    public static Context context(Mode mode) { return new Context(Objects.requireNonNull(mode, "mode"), 64, 65536, 16L * 1024 * 1024); }
 
     /** Creates a context with a bounded kernel cache.
      * @param mode execution mode
@@ -36,8 +38,31 @@ public final class Jit {
      * @return a new context
      */
     public static Context context(Mode mode, int cacheEntries) {
+        return context(mode, cacheEntries, 65536);
+    }
+
+    /** Creates a context with a per-invocation block scratch byte cap.
+     * @param mode execution mode
+     * @param cacheEntries maximum generated kernel entries
+     * @param scratchBytes maximum block scratch bytes, from 2048 through 65536
+     * @return a new context
+     */
+    public static Context context(Mode mode, int cacheEntries, int scratchBytes) {
+        return context(mode, cacheEntries, scratchBytes, 16L * 1024 * 1024);
+    }
+
+    /** Creates a context with explicit block and whole-array temporary budgets.
+     * @param mode execution mode
+     * @param cacheEntries maximum generated kernel entries
+     * @param scratchBytes maximum block scratch bytes, from 2048 through 65536
+     * @param eagerBytes maximum bytes reserved for whole-array intermediates
+     * @return a new context
+     */
+    public static Context context(Mode mode, int cacheEntries, int scratchBytes, long eagerBytes) {
         if (cacheEntries < 1 || cacheEntries > 4096) throw new IllegalArgumentException("cache entries must be 1 to 4096");
-        return new Context(Objects.requireNonNull(mode, "mode"), cacheEntries);
+        if (scratchBytes < 2048 || scratchBytes > 65536) throw new IllegalArgumentException("scratch bytes must be 2048 to 65536");
+        if (eagerBytes < 0) throw new IllegalArgumentException("eager bytes must be nonnegative");
+        return new Context(Objects.requireNonNull(mode, "mode"), cacheEntries, scratchBytes, eagerBytes);
     }
 
     /** Owns expression tracing and its runtime resources. */
@@ -45,24 +70,41 @@ public final class Jit {
         private volatile boolean closed;
         private final Mode mode;
         private final int cacheEntries;
+        private final int scratchBytes;
+        private final long eagerBytes;
         private final java.util.LinkedHashMap<KernelKey, GeneratedKernel> kernels = new java.util.LinkedHashMap<>(16, .75f, true);
+        private record FusedEntry(org.numjvm.internal.backend.FusedKernel kernel, String reason) { }
+        private final java.util.LinkedHashMap<KernelKey, FusedEntry> fusedKernels =
+                new java.util.LinkedHashMap<>(16, .75f, true);
+        private final ThreadLocal<String> fusedFailure = new ThreadLocal<>();
         private long compilations;
+        private long compilationNanos;
         private long hits;
         private long evictions;
         private final java.util.concurrent.atomic.LongAdder generatedRuns = new java.util.concurrent.atomic.LongAdder();
         private final java.util.concurrent.atomic.LongAdder blockRuns = new java.util.concurrent.atomic.LongAdder();
-        private Context(Mode mode, int cacheEntries) { this.mode = mode; this.cacheEntries = cacheEntries; }
+        private final java.util.concurrent.atomic.LongAdder eagerRuns = new java.util.concurrent.atomic.LongAdder();
+        private final java.util.concurrent.atomic.LongAdder fusedRuns = new java.util.concurrent.atomic.LongAdder();
+        private long fusedCompilations, fusedHits, fusedEvictions;
+        private final ThreadLocal<Decision> decision = ThreadLocal.withInitial(() -> new Decision("none", "no execution on this thread"));
+        private Context(Mode mode, int cacheEntries, int scratchBytes, long eagerBytes) {
+            this.mode = mode; this.cacheEntries = cacheEntries; this.scratchBytes = scratchBytes; this.eagerBytes = eagerBytes;
+        }
         void checkOpen() { if (closed) throw new IllegalStateException("context is closed"); }
         synchronized void admit() { checkOpen(); }
         Mode mode() { return mode; }
         int cacheEntries() { return cacheEntries; }
+        int scratchBytes() { return scratchBytes; }
+        long eagerBytes() { return eagerBytes; }
         synchronized long compilations() { return compilations; }
 
         synchronized GeneratedKernel kernel(Expression expression, org.numjvm.dtype.DType[] types) {
             KernelKey key = KernelKey.of(expression, types);
             GeneratedKernel existing = kernels.get(key);
             if (existing != null) { hits++; return existing; }
+            long started = System.nanoTime();
             GeneratedKernel compiled = KernelLoader.create(expression, types);
+            compilationNanos += System.nanoTime() - started;
             compilations++;
             if (!closed) {
                 kernels.put(key, compiled);
@@ -73,6 +115,70 @@ public final class Jit {
 
         void generatedRun() { generatedRuns.increment(); }
         void blockRun() { blockRuns.increment(); }
+        void eagerRun() { eagerRuns.increment(); }
+        void fusedRun() { fusedRuns.increment(); }
+        synchronized boolean cached(Expression expression, org.numjvm.dtype.DType[] types) {
+            return kernels.containsKey(KernelKey.of(expression, types));
+        }
+        synchronized boolean fusedCached(Expression expression, org.numjvm.dtype.DType[] types) {
+            var entry = fusedKernels.get(KernelKey.of(expression, types));
+            return entry != null && entry.kernel() != null;
+        }
+        synchronized org.numjvm.internal.backend.FusedKernel fusedKernel(Expression expression, org.numjvm.dtype.DType[] types) {
+            KernelKey key = KernelKey.of(expression, types);
+            var entry = fusedKernels.get(key);
+            if (entry != null) { fusedHits++; fusedFailure.set(entry.reason()); return entry.kernel(); }
+            org.numjvm.internal.backend.FusedKernel kernel;
+            String reason;
+            try {
+                kernel = FusedProviders.compile(expression, types);
+                reason = kernel == null ? "provider does not support this graph" : "compiled";
+            } catch (RuntimeException | LinkageError failure) {
+                kernel = null;
+                reason = "fused compilation failed: " + failure.getClass().getSimpleName();
+            }
+            fusedFailure.set(reason);
+            fusedCompilations++;
+            if (!closed) {
+                fusedKernels.put(key, new FusedEntry(kernel, reason));
+                if (fusedKernels.size() > cacheEntries) {
+                    fusedKernels.remove(fusedKernels.keySet().iterator().next()); fusedEvictions++;
+                }
+            }
+            return kernel;
+        }
+        String fusedFailure() { return fusedFailure.get(); }
+        void selected(String strategy, String reason) { decision.set(new Decision(strategy, reason)); }
+
+        /** Returns the latest selection on the current thread.
+         * @return execution strategy and reason
+         */
+        public Decision lastDecision() { return decision.get(); }
+
+        /** Drops current-thread diagnostic state, useful for pooled threads. */
+        public void clearThreadDecision() { decision.remove(); fusedFailure.remove(); }
+
+        /** Returns the number of completed whole-array eager executions.
+         * @return completed eager runs
+         */
+        public long eagerRuns() { return eagerRuns.sum(); }
+
+        /** Returns bounded fused-kernel cache and execution diagnostics.
+         * @return statistics snapshot
+         */
+        public synchronized FusedStatistics fusedStatistics() {
+            return new FusedStatistics(fusedCompilations, fusedHits, fusedEvictions, fusedKernels.size(), fusedRuns.sum());
+        }
+
+        /** Returns the discovered optional fused-vector provider name.
+         * @return provider name or unavailable
+         */
+        public String fusedVectorProvider() { return FusedProviders.name(); }
+
+        /** Returns time spent compiling successfully generated kernels in this context.
+         * @return accumulated compilation time in nanoseconds
+         */
+        public synchronized long compilationNanos() { return compilationNanos; }
 
         /** Returns cumulative context diagnostics.
      * @return a statistics snapshot
@@ -112,7 +218,7 @@ public final class Jit {
             return new Expression(this, arity, result);
         }
 
-        @Override public synchronized void close() { closed = true; kernels.clear(); }
+        @Override public synchronized void close() { closed = true; kernels.clear(); fusedKernels.clear(); }
     }
 
     /** A snapshot of context activity.
@@ -125,6 +231,21 @@ public final class Jit {
      */
     public record Statistics(long compilations, long cacheHits, long evictions, int cachedKernels,
                              long generatedRuns, long blockRuns) { }
+
+    /** Current-thread execution selection.
+     * @param strategy selected strategy
+     * @param reason selection or fallback reason
+     */
+    public record Decision(String strategy, String reason) { }
+
+    /** Fused compilation and execution counters.
+     * @param compilations provider compile attempts
+     * @param cacheHits cached supported or unsupported graph lookups
+     * @param evictions entries removed for capacity
+     * @param cachedKernels retained supported and unsupported entries
+     * @param runs completed fused executions
+     */
+    public record FusedStatistics(long compilations, long cacheHits, long evictions, int cachedKernels, long runs) { }
 
     /** Symbolic inputs available while a trace callback runs. */
     public static final class Inputs {

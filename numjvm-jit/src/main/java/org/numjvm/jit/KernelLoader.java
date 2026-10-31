@@ -19,7 +19,7 @@ final class KernelLoader {
 
     static GeneratedKernel create(Expression expression, DType[] inputTypes) {
         var types = new TypeResolver(inputTypes);
-        List<Expr> nodes = new GraphPlan(expression.root()).nodes();
+        List<Expr> nodes = expression.graph().nodes();
         if (nodes.size() > MAX_GENERATED_NODES) throw new IllegalArgumentException("expression exceeds code generation limit");
         ClassDesc name = ClassDesc.of("org.numjvm.jit.GeneratedExpression");
         ClassDesc marker = ClassDesc.of("org.numjvm.jit.GeneratedKernel");
@@ -33,7 +33,7 @@ final class KernelLoader {
                         code -> code.iconst_1().ireturn())
                 .withMethodBody("evaluate", MethodTypeDesc.of(ConstantDescs.CD_double,
                                 ConstantDescs.CD_double.arrayType()), ClassFile.ACC_PUBLIC,
-                        code -> { emit(code, nodes, types, false); code.dreturn(); })
+                        code -> { emit(code, nodes, types, false, 2, null, null); code.dreturn(); })
                 .withMethodBody("run", MethodTypeDesc.of(ConstantDescs.CD_void,
                                 ClassDesc.of("java.lang.foreign.MemorySegment").arrayType(),
                                 ConstantDescs.CD_long.arrayType(), ConstantDescs.CD_long.arrayType(), ConstantDescs.CD_long),
@@ -50,7 +50,7 @@ final class KernelLoader {
     }
 
     static boolean supports(Expression expression) {
-        return new GraphPlan(expression.root()).nodes().size() <= MAX_GENERATED_NODES;
+        return expression.graph().nodes().size() <= MAX_GENERATED_NODES;
     }
 
     private static void emitRun(CodeBuilder code, DType[] inputs, TypeResolver types, List<Expr> nodes, DType result) {
@@ -59,29 +59,39 @@ final class KernelLoader {
         var write = MethodTypeDesc.of(ConstantDescs.CD_void, memory, ConstantDescs.CD_long, ConstantDescs.CD_double);
         var loop = code.newLabel();
         var done = code.newLabel();
+        int[] segments = new int[inputs.length + 1];
+        int[] offsets = new int[segments.length];
+        int[] strides = new int[segments.length];
+        int local = 8;
+        for (int i = 0; i < segments.length; i++) {
+            segments[i] = local++; offsets[i] = local; local += 2; strides[i] = local; local += 2;
+            // Segment references and run metadata do not change inside this loop.
+            code.aload(1).loadConstant(i).aaload().astore(segments[i]);
+            code.aload(2).loadConstant(i).laload().lstore(offsets[i]);
+            code.aload(3).loadConstant(i).laload().lstore(strides[i]);
+        }
         code.lconst_0().lstore(6).labelBinding(loop).lload(6).lload(4).lcmp().ifge(done);
-        code.aload(1).loadConstant(inputs.length).aaload();
-        offset(code, inputs.length);
-        emit(code, nodes, types, true);
+        code.aload(segments[inputs.length]);
+        code.lload(offsets[inputs.length]);
+        emit(code, nodes, types, true, local, segments, offsets);
         code.invokestatic(access, result == DType.FLOAT32 ? "writeFloat" : "writeDouble", write);
+        for (int i = 0; i < segments.length; i++)
+            code.lload(offsets[i]).lload(strides[i]).ladd().lstore(offsets[i]);
         code.lload(6).lconst_1().ladd().lstore(6).goto_(loop).labelBinding(done).return_();
     }
 
-    private static void offset(CodeBuilder code, int slot) {
-        code.aload(2).loadConstant(slot).laload().lload(6).aload(3).loadConstant(slot).laload().lmul().ladd();
-    }
-
-    private static void emit(CodeBuilder code, List<Expr> nodes, TypeResolver types, boolean run) {
+    private static void emit(CodeBuilder code, List<Expr> nodes, TypeResolver types, boolean run,
+                             int firstLocal, int[] segments, int[] offsets) {
         var locals = new IdentityHashMap<Expr, Integer>();
-        int next = run ? 8 : 2;
+        int next = firstLocal;
         for (Expr node : nodes) {
             DType type = types.resolve(node);
             boolean single = type == DType.FLOAT32;
             switch (node.op) {
                 case INPUT -> {
                     if (run) {
-                        code.aload(1).loadConstant(node.slot).aaload();
-                        offset(code, node.slot);
+                        code.aload(segments[node.slot]);
+                        code.lload(offsets[node.slot]);
                         code.invokestatic(ClassDesc.of("org.numjvm.jit.GeneratedAccess"),
                                 single ? "readFloat" : "readDouble",
                                 MethodTypeDesc.of(ConstantDescs.CD_double,

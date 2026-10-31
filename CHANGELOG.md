@@ -3,6 +3,28 @@
 All notable changes to NumJVM are listed here. The project follows
 [Semantic Versioning](https://semver.org/); until 1.0 every minor version may change the API.
 
+## [0.5.0-alpha] - Unreleased
+
+M3.1 implementation candidate. Reference-machine performance evidence and
+release gates remain open; see [status](docs/milestones/M3-1-status.md).
+
+### Added
+
+- Experimental real float32/float64 dot and vecdot, including higher-rank and
+  broadcast contractions, explicit outputs, alias protection and scoped results.
+- Optional SIMD and LP64 OpenBLAS DOT acceleration, with Java fallback.
+- Optional fused-vector expression kernels generated with the Class-File API,
+  supporting float32/64, mixed precision and eligible broadcast/layout runs.
+- Reproducible benchmark protocols, NumPy contraction fixtures, lifecycle and
+  consumer checks, and contraction examples.
+
+### Changed
+
+- Reused typed block schedules, direct contiguous runs, bounded scratch and an
+  optional budgeted eager strategy reduce repeated execution work.
+- AUTO records strategy and fallback diagnostics. Its selection thresholds are
+  provisional and the reference performance objectives have not been met or verified.
+
 ## [0.4.0-alpha] - Unreleased
 
 Milestone M3 draft candidate: explicit expression tracing and experimental block

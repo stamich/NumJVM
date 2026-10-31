@@ -10,10 +10,15 @@ final class ScratchBlocks implements AutoCloseable {
     private final int slots;
 
     ScratchBlocks(int slots, int maxElements) {
+        this(slots, maxElements, Scratch.CHUNK_BYTES);
+    }
+
+    ScratchBlocks(int slots, int maxElements, int byteLimit) {
         if (slots < 1 || slots > 130 || maxElements < 1) throw new IllegalArgumentException("invalid scratch request");
+        if (byteLimit < slots * 8 || byteLimit > Scratch.CHUNK_BYTES) throw new IllegalArgumentException("invalid scratch byte cap");
         this.slots = slots;
         // Every slot holds up to eight bytes per element; each slot stays aligned.
-        blockSize = Math.min(maxElements, Scratch.CHUNK_BYTES / (slots * 8));
+        blockSize = Math.min(maxElements, byteLimit / (slots * 8));
         lease = Scratch.lease(Math.multiplyExact(Math.multiplyExact(slots, blockSize), 8));
     }
 

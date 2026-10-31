@@ -28,4 +28,10 @@ public interface LoopProvider {
      * @return accelerated wrapper, or scalar when unsupported
      */
     default BinaryLoop binary(String operation, DType type, BinaryLoop scalar) { return scalar; }
+
+    /** Returns a supported contiguous real dot implementation, or null.
+     * @param type resolved common input and output type
+     * @return vector contraction kernel or null
+     */
+    default DotLoop dot(DType type) { return null; }
 }

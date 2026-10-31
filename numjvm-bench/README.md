@@ -58,3 +58,45 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python3 numjvm-bench/numpy/bench_m2.py
 measure native scratch. Short smoke runs verify instrumentation and dispatch, not
 performance targets. Compare matrix packing-inclusive and already-native layouts
 separately. Automatic native inputs avoid retaining every allocating result in a trial-long scope.
+
+Expression lifecycle and native accounting are measured separately from the warm
+throughput benchmark:
+
+```sh
+./gradlew :numjvm-bench:jmh -PjmhArgs='ExpressionLifecycleBenchmark -f 3 -wi 3 -i 5 -prof gc'
+./gradlew :numjvm-bench:expressionCompileProbe
+./gradlew :numjvm-bench:expressionMemoryProbe
+```
+
+The first-execution benchmark includes compilation and invocation. The diagnostic
+compile probe records their components in a separate single process; use JMH forks
+for reproducible timing. Native counters include tracked scratch and scoped array
+storage; peak is process-wide and cannot be interpreted as per-operation peak.
+Heap allocation is reported by the JMH GC profiler, not by native counters.
+
+`ExpressionMatrixBenchmark` adds float32, float64 and mixed-type ADD/CHAIN cases,
+C/F/strided/broadcast layouts, and allocating/out variants. `ExpressionInPlaceBenchmark`
+measures identical-view writes and resets the input outside the timed method. For
+example, select a small subset using JMH's `-p` options. REQUIRED/generated kernels
+reject layouts they do not support; select eligible contiguous cases for those
+methods rather than treating an unsupported case as a successful fallback. Scalar
+and SIMD-enabled runs must use the same workload parameters and record provider
+execution using `providerProbe`.
+
+Compare compatible saved JMH JSON files and their provenance manifests with:
+
+```sh
+python3 numjvm-bench/compare_expression.py \
+  --baseline /path/before/m3-expression.json --candidate /path/after/m3-expression.json \
+  --baseline-manifest /path/before/manifest.json --candidate-manifest /path/after/manifest.json \
+  --baseline-name eagerOut --candidate-name generatedOut --output /path/report.md
+python3 -m unittest discover -s numjvm-bench -p test_compare_expression.py
+```
+
+The tool reports missing or mismatched configuration without a speedup ratio.
+It does not treat heap GC metrics as native allocation measurements. Source
+revisions may differ, but each must be recorded and have a clean working tree.
+
+The reproducible Ryzen reference campaign is documented in
+[`M3-1-protocol.md`](../docs/benchmarks/M3-1-protocol.md). Its full matrix is
+deliberately separate from fast benchmark smoke runs.

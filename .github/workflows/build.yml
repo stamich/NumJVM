@@ -41,13 +41,14 @@ jobs:
         run: python3 scripts/coverage_summary.py numjvm-core numjvm-io
 
       - name: Run examples
-        run: ./gradlew --quiet :examples:basic-arrays:run :examples:memory-scopes:run :examples:accelerated-arrays:run :examples:matmul:run
+        run: ./gradlew --quiet :examples:basic-arrays:run :examples:memory-scopes:run :examples:accelerated-arrays:run :examples:matmul:run :examples:contractions:run
 
       - name: Consume the published artifacts from a separate build
         run: |
           bash scripts/check_consumers.sh
           ./gradlew publish --console=plain
           bash scripts/check_jit_consumers.sh
+          bash scripts/check_050_consumers.sh
 
       - name: Publish test results
         if: always()

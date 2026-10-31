@@ -7,7 +7,7 @@ import org.numjvm.dtype.DType;
 /** Structural identity contains no invocation arrays or memory addresses. */
 record KernelKey(String graph, List<DType> types) {
     static KernelKey of(Expression expression, DType[] inputTypes) {
-        var nodes = new GraphPlan(expression.root()).nodes();
+        var nodes = expression.graph().nodes();
         var ids = new IdentityHashMap<Expr, Integer>();
         StringBuilder graph = new StringBuilder("v1;");
         for (Expr node : nodes) {

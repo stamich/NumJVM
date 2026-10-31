@@ -30,9 +30,36 @@ computed through a temporary. Output shape and dtype must match exactly.
 
 Block mode uses bounded scratch and existing ufunc kernels. Required mode demands
 an eligible generated run and rejects unsupported layouts or large graphs before
-writing. Automatic mode currently uses a provisional size threshold; it is not a
-performance guarantee. Context statistics distinguish block and generated runs,
-compilations, cache hits and evictions. The cache holds no invocation arrays.
+writing. Automatic mode considers size, graph complexity, dtype, provider,
+generated eligibility, cached kernels and the eager temporary budget. Its
+thresholds are provisional; they are not a performance guarantee. Context
+statistics distinguish block and generated runs, compilations, cache hits and
+evictions; `eagerRuns()` counts whole-array runs. `lastDecision()` reports the
+current thread's latest selection and reason, and `clearThreadDecision()` removes
+it. The cache holds no invocation arrays.
+
+`fusedVectorProvider()` reports service discovery only. `lastDecision()` reports
+`fused-vector` when AUTO selected a supported vector kernel with at least one
+full vector run; `fusedStatistics()` reports its bounded cache and execution
+counts. The provider is optional, honors `numjvm.simd=off`, and JIT remains
+usable without the incubating Vector API. Explicit REQUIRED continues to use its
+generated-scalar contract. AUTO thresholds are provisional and require reference
+measurements with the actual provider and vector species.
 
 Run the example with `./gradlew :examples:fused-expressions:run`. Performance
 validation and unresolved gates are described in [the benchmark protocol](../benchmarks/M3-protocol.md).
+
+## Block scratch configuration
+
+An experimental context may set the operation-local block scratch byte cap with
+`Jit.context(mode, cacheEntries, scratchBytes)`, from 2,048 to 65,536 bytes.
+The default is 65,536 bytes. This cap excludes a full independent result used
+to protect hazardous output overlap. The existing process-wide scratch limit also
+applies. `ExpressionScratchBenchmark` compares several caps; the default has not
+yet been tuned on the designated reference machine.
+
+`Jit.Mode.EAGER` explicitly executes whole-array ufuncs and can allocate full-sized
+intermediates. Its default conservative intermediate budget is 16 MiB. Configure
+both budgets with `Jit.context(mode, cacheEntries, scratchBytes, eagerBytes)`.
+The eager budget excludes the result, alias-protection result and the existing
+bounded ufunc conversion scratch; a graph over budget is rejected before writes.

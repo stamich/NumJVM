@@ -1,0 +1,11 @@
+{
+  "numpy_version_requirement": "2.0 or newer",
+  "cases": [
+    {"name": "dot_scalars", "operation": "dot", "a": 2.0, "b": 3.0, "expected_shape": [], "expected": 6.0},
+    {"name": "dot_vectors", "operation": "dot", "a": [1.0, 2.0, 3.0], "b": [4.0, 5.0, 6.0], "expected_shape": [], "expected": 32.0},
+    {"name": "dot_matrices", "operation": "dot", "a": [[1.0, 2.0], [3.0, 4.0]], "b": [[5.0], [6.0]], "expected_shape": [2, 1], "expected": [[17.0], [39.0]]},
+    {"name": "dot_empty", "operation": "dot", "a": [], "b": [], "expected_shape": [], "expected": 0.0},
+    {"name": "vecdot_broadcast", "operation": "vecdot", "axis": -1, "a": [[1.0, 2.0], [3.0, 4.0]], "b": [5.0, 6.0], "expected_shape": [2], "expected": [17.0, 39.0]},
+    {"name": "vecdot_axis_zero", "operation": "vecdot", "axis": 0, "a": [[1.0, 2.0], [3.0, 4.0]], "b": [[5.0, 6.0], [7.0, 8.0]], "expected_shape": [2], "expected": [26.0, 44.0]}
+  ]
+}
