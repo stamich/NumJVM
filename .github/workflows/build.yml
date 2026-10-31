@@ -46,6 +46,8 @@ jobs:
       - name: Consume the published artifacts from a separate build
         run: |
           bash scripts/check_consumers.sh
+          ./gradlew publish --console=plain
+          bash scripts/check_jit_consumers.sh
 
       - name: Publish test results
         if: always()

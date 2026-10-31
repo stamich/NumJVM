@@ -14,10 +14,9 @@
 Numerical computing for the Java Virtual Machine: N-dimensional arrays with NumPy semantics, built on the Java 25
 Foreign Function & Memory API. No Python, NumPy or native libraries are needed at run time.
 
-> **Status: 0.3.0-alpha review candidate (M2).** Optional SIMD and portable real
-> matrix multiplication extend the existing array and elementwise API. Release
-> performance and remote quality evidence remain open; see [M2 status](docs/milestones/M2-status.md).
-> The API remains experimental.
+> **Status: 0.4.0-alpha draft candidate (M3).** Experimental expression execution
+> extends the existing CPU and matrix APIs. M2 and M3 reference-performance gates
+> remain open; see [M3 status](docs/milestones/M3-status.md). The API remains experimental.
 
 ## Quick start
 
@@ -92,6 +91,7 @@ Runnable versions: [`examples/basic-arrays`](examples/basic-arrays) and
 | Module                | Artifact                        | Contents                                                |
 |-----------------------|---------------------------------|---------------------------------------------------------|
 | `numjvm-core`         | `io.github.stamich:numjvm-core` | dtypes, memory, NDArray, views, ufuncs, reductions      |
+| `numjvm-jit`          | `io.github.stamich:numjvm-jit`  | experimental expression execution |
 | `numjvm-io`           | `io.github.stamich:numjvm-io`   | NumPy `.npy` I/O                                        |
 | `numjvm-vector` | `io.github.stamich:numjvm-vector` | optional SIMD kernels |
 | `numjvm-linalg` | `io.github.stamich:numjvm-linalg` | Java matmul, optional OpenBLAS |
@@ -124,6 +124,15 @@ OpenBLAS supports Linux x86-64 LP64 CBLAS. See the [setup and backend guide](doc
 for flags, forced modes, ownership, diagnostics, native validation and consumer examples.
 The [M2 status](docs/milestones/M2-status.md) distinguishes implemented behavior from
 outstanding release performance evidence.
+
+## Experimental expression fusion
+
+The optional `numjvm-jit` module traces explicit float32/float64 arithmetic
+expressions for block or generated execution. The alpha supports add, subtract,
+multiply, divide, negative, absolute, square, and square root; comparisons,
+conditional selection, other transcendental functions, reductions, and matmul
+inside expressions are not yet supported. See the [expression guide](docs/design/expression-execution.md)
+and run `./gradlew :examples:fused-expressions:run`.
 
 ## Building
 

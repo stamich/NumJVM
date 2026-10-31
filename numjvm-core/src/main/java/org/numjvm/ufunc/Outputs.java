@@ -10,6 +10,7 @@ import org.numjvm.exception.DTypeException;
 import org.numjvm.exception.ReadOnlyArrayException;
 import org.numjvm.exception.ShapeException;
 import org.numjvm.internal.SharedSecrets;
+import org.numjvm.internal.ExpressionSemantics;
 import org.numjvm.internal.loops.KernelRegistry;
 import org.numjvm.internal.loops.LoopExecutor;
 import org.numjvm.ndarray.NDArray;
@@ -31,16 +32,7 @@ final class Outputs {
     }
 
     static void accessible(NDArray... arrays) {
-        for (NDArray array : arrays) {
-            Objects.requireNonNull(array, "array");
-            var memory = SharedSecrets.arrayAccess().buffer(array).segment();
-            if (!memory.scope().isAlive()) {
-                throw new org.numjvm.exception.MemoryException("array scope is closed");
-            }
-            if (!memory.isAccessibleBy(Thread.currentThread())) {
-                throw new org.numjvm.exception.MemoryException("array is confined to another thread");
-            }
-        }
+        ExpressionSemantics.accessible(arrays);
     }
 
     static void check(String ufunc, NDArray out, Shape shape, DType result) {
@@ -80,12 +72,7 @@ final class Outputs {
      * Copies {@code src} into {@code out}, converting the dtype if needed.
      */
     static NDArray copyInto(NDArray src, NDArray out) {
-        if (src.dtype() == out.dtype()) {
-            LoopExecutor.unary(KernelRegistry.unary("copy", src.dtype()), src, out);
-        } else {
-            LoopExecutor.unary(KernelRegistry.unary("cast:" + out.dtype().typeName(), src.dtype()), src, out);
-        }
-        return out;
+        return ExpressionSemantics.copyInto(src, out);
     }
 
     /**

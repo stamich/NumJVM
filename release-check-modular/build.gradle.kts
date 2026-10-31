@@ -2,7 +2,7 @@ plugins {
     application
 }
 
-val numjvmVersion = providers.gradleProperty("numjvmVersion").orElse("0.3.0-alpha")
+val numjvmVersion = providers.gradleProperty("numjvmVersion").orElse("0.4.0-alpha")
 
 dependencies {
     implementation(numjvmVersion.map { "io.github.stamich:numjvm-io:$it" })

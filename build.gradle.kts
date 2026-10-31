@@ -98,7 +98,7 @@ sonar {
     }
 }
 
-val sonarSkipped = setOf("numjvm-bench", "examples", "basic-arrays", "memory-scopes", "accelerated-arrays", "matmul")
+val sonarSkipped = setOf("numjvm-bench", "examples", "basic-arrays", "memory-scopes", "accelerated-arrays", "matmul", "fused-expressions")
 
 configure(subprojects.filter { it.name in sonarSkipped }) {
     extensions.configure<org.sonarqube.gradle.SonarExtension> {
@@ -112,7 +112,7 @@ configure(subprojects.filter { it.name in sonarSkipped }) {
 // staged in build/staging-repo (./gradlew publish) and can be installed locally with
 // ./gradlew publishToMavenLocal; release-check/ consumes them like a user project would.
 
-val publishedModules = setOf("numjvm-core", "numjvm-io", "numjvm-vector", "numjvm-linalg")
+val publishedModules = setOf("numjvm-core", "numjvm-io", "numjvm-vector", "numjvm-linalg", "numjvm-jit")
 
 configure(subprojects.filter { it.name in publishedModules }) {
     apply(plugin = "maven-publish")

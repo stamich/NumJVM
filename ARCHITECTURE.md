@@ -1,7 +1,7 @@
 # NumJVM architecture
 
 NumJVM is a Java-first numerical library: Java owns the array model, memory management and the numerical loops; native
-code is used only where existing implementations give a clear advantage (BLAS and LAPACK from M2). This document
+code is used only where existing implementations give a clear advantage (BLAS from M2; LAPACK remains a follow-up). This document
 describes the M2 implementation candidate (0.3.0-alpha), its optional CPU providers, and future extension points.
 
 ```text

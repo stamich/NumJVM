@@ -21,3 +21,5 @@
 - [CPU backends and matmul](design/cpu-backends.md)
 - [M2 implementation plan](milestones/M2-plan.md)
 - [M2 evidence and remaining gates](milestones/M2-status.md)
+
+- [Experimental expression execution](design/expression-execution.md)

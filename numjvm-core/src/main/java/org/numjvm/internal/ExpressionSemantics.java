@@ -1,0 +1,123 @@
+package org.numjvm.internal;
+
+import org.numjvm.dtype.DType;
+import org.numjvm.dtype.TypePromotion;
+import java.util.Objects;
+import org.numjvm.exception.MemoryException;
+import org.numjvm.internal.memory.HybridAllocator;
+import org.numjvm.internal.memory.MemoryAllocator;
+import org.numjvm.memory.NJScope;
+import org.numjvm.ndarray.NDArray;
+import org.numjvm.ndarray.Shape;
+import org.numjvm.ndarray.Order;
+import org.numjvm.iteration.IterationPlan;
+import org.numjvm.shape.Broadcasting;
+import org.numjvm.internal.loops.KernelRegistry;
+import org.numjvm.internal.loops.LoopExecutor;
+import org.numjvm.ufunc.BinaryUfunc;
+import org.numjvm.ufunc.UnaryUfunc;
+
+/** Semantic queries shared with the optional expression compiler. */
+public final class ExpressionSemantics {
+    private ExpressionSemantics() { }
+
+    /** Copies values into a validated destination, preserving existing cast semantics.
+     * @param source input array
+     * @param destination destination array
+     * @return destination array
+     */
+    public static NDArray copyInto(NDArray source, NDArray destination) {
+        String name = source.dtype() == destination.dtype() ? "copy" : "cast:" + destination.dtype().typeName();
+        LoopExecutor.unary(KernelRegistry.unary(name, source.dtype()), source, destination);
+        return destination;
+    }
+
+    /** Resolves a unary result using the same ufunc as eager execution.
+     * @param operation unary operation
+     * @param input input dtype
+     * @return result dtype
+     */
+    public static DType unaryResult(UnaryUfunc operation, DType input) {
+        return operation.resultType(input);
+    }
+
+    /** Resolves an array/array result using eager promotion and loop selection.
+     * @param operation binary operation
+     * @param left left dtype
+     * @param right right dtype
+     * @return result dtype
+     */
+    public static DType binaryResult(BinaryUfunc operation, DType left, DType right) {
+        return operation.resultType(left, right);
+    }
+
+    /** Resolves a weak-double operand as eager scalar overloads do.
+     * @param operation binary operation
+     * @param array array dtype
+     * @return result dtype
+     */
+    public static DType weakDoubleResult(BinaryUfunc operation, DType array) {
+        DType common = TypePromotion.resultTypeWithDouble(array);
+        return operation.resultType(common, common);
+    }
+
+    /** Uses the first live scoped operand, as eager ufuncs do.
+     * @param operands input arrays
+     * @return selected allocator
+     */
+    public static MemoryAllocator allocator(NDArray... operands) {
+        for (NDArray operand : operands) {
+            if (operand.memoryOwner() instanceof NJScope scope && scope.isAlive()) {
+                return SharedSecrets.scopeAccess().allocator(scope);
+            }
+        }
+        return HybridAllocator.defaultInstance();
+    }
+
+    /** Checks accessibility before an executor reads or writes any elements.
+     * @param arrays arrays to validate
+     */
+    public static void accessible(NDArray... arrays) {
+        for (NDArray array : arrays) {
+            var segment = SharedSecrets.arrayAccess().buffer(Objects.requireNonNull(array, "array")).segment();
+            if (!segment.scope().isAlive()) {
+                throw new MemoryException("array scope is closed");
+            }
+            if (!segment.isAccessibleBy(Thread.currentThread())) {
+                throw new MemoryException("array is confined to another thread");
+            }
+        }
+    }
+
+    /** Allocates in eager ufunc order for the broadcast inputs.
+     * @param allocator selected allocator
+     * @param dtype result dtype
+     * @param shape result shape
+     * @param inputs broadcast-compatible input arrays
+     * @return allocated result
+     */
+    public static NDArray allocate(MemoryAllocator allocator, DType dtype, Shape shape, NDArray... inputs) {
+        long[] dims = shape.dimensions();
+        long[][] strides = new long[inputs.length][];
+        for (int i = 0; i < inputs.length; i++) {
+            strides[i] = Broadcasting.broadcastStrides(inputs[i].shape(), inputs[i].strides(), shape).values();
+        }
+        int[] order = IterationPlan.memoryOrder(dims, strides);
+        boolean identity = true;
+        for (int i = 0; i < order.length; i++) {
+            identity &= order[i] == i;
+        }
+        SharedSecrets.ArrayAccess access = SharedSecrets.arrayAccess();
+        if (identity) {
+            return access.allocate(allocator, dtype, shape, Order.C);
+        }
+        long[] permuted = new long[dims.length];
+        int[] inverse = new int[dims.length];
+        for (int i = 0; i < order.length; i++) {
+            permuted[i] = dims[order[i]];
+            inverse[order[i]] = i;
+        }
+        return access.allocate(allocator, dtype, Shape.of(permuted), Order.C).permuteDims(inverse);
+    }
+
+}

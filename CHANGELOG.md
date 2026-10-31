@@ -3,6 +3,18 @@
 All notable changes to NumJVM are listed here. The project follows
 [Semantic Versioning](https://semver.org/); until 1.0 every minor version may change the API.
 
+## [0.4.0-alpha] - Unreleased
+
+Milestone M3 draft candidate: explicit expression tracing and experimental block
+and generated CPU execution. Reference performance and release checks remain open.
+
+### Added
+
+- Optional `numjvm-jit` artifact with float32/64 expression graphs, bounded block
+  scratch, generated kernels, reusable contexts and cache diagnostics.
+- Expression examples, focused correctness tests, staged consumer checks and
+  exploratory benchmark data. See [M3 status](docs/milestones/M3-status.md).
+
 ## [0.3.0-alpha] - Unreleased
 
 Milestone M2 implementation candidate. Release performance and remote quality gates
