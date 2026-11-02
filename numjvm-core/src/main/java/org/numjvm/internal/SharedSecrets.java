@@ -1,5 +1,6 @@
 package org.numjvm.internal;
 
+import org.numjvm.ParallelContext;
 import org.numjvm.dtype.DType;
 import org.numjvm.internal.memory.Buffer;
 import org.numjvm.internal.memory.MemoryAllocator;
@@ -109,6 +110,35 @@ public final class SharedSecrets {
          * @return byte offset of its element {@code [0, ..., 0]}
          */
         long offset(NDArray array);
+    }
+
+    /** Narrow bridge for the optional expression module's validated chunk execution. */
+    public interface ParallelAccess {
+        /** Executes disjoint chunks or the caller-thread fallback. */
+        void execute(ParallelContext context, NDArray[] arrays, long size, boolean eligible,
+                     RangeTask task, Runnable fallback);
+    }
+
+    /** An internal logical element range. */
+    @FunctionalInterface public interface RangeTask {
+        /** Executes a half-open range. */
+        void run(long start, long end);
+    }
+
+    private static volatile ParallelAccess parallelAccess;
+
+    /** Registers the parallel context bridge. */
+    public static void setParallelAccess(ParallelAccess access) { parallelAccess = access; }
+
+    /** Returns the initialized bridge. */
+    public static ParallelAccess parallelAccess() {
+        ParallelAccess access = parallelAccess;
+        if (access == null) {
+            ensureInitialized(ParallelContext.class);
+            access = parallelAccess;
+            if (access == null) throw notRegistered(ParallelContext.class);
+        }
+        return access;
     }
 
     private static volatile ScopeAccess scopeAccess;

@@ -14,10 +14,9 @@
 Numerical computing for the Java Virtual Machine: N-dimensional arrays with NumPy semantics, built on the Java 25
 Foreign Function & Memory API. No Python, NumPy or native libraries are needed at run time.
 
-> **Status: 0.5.0-alpha implementation candidate (M3.1).** Experimental expression
-> execution and real contractions extend the CPU APIs. Reference measurements show
-> substantial AUTO regressions in some cases; see [0.5.0 status](docs/milestones/M3-1-status.md).
-> Performance gates remain open and the API remains experimental.
+> **Status: 0.6.0-alpha implementation candidate.** Optional CPU workers and
+> generated fusion improvements are experimental. Reference performance and
+> scaling remain unverified; see [0.6.0 status](docs/milestones/M4-0.6-status.md).
 
 ## Quick start
 
@@ -143,6 +142,15 @@ fused SIMD when eligible; `lastDecision()` identifies the actual strategy.
 Reference results show substantial AUTO slowdowns and allocation in some cases;
 see the [results](docs/benchmarks/M3-1-reference-results.md) and
 [reference protocol](docs/benchmarks/M3-1-protocol.md).
+
+## Opt-in parallel CPU execution
+
+`NJ.parallel(workers)` provides a reusable bounded worker context for selected
+contiguous float32/64 ufuncs, expressions and full-array sum. Existing calls
+remain single-threaded. Confined scopes and unsupported layouts fall back to
+the calling thread. Parallel floating-point sum uses a deterministic chunk
+order, which can produce different low bits from sequential sum. See the
+[parallel execution guide](docs/design/parallel-cpu.md).
 
 ## Building
 

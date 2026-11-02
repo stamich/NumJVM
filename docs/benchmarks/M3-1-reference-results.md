@@ -43,7 +43,7 @@ that run the recorded status also listed two untracked JSON files. For 1,048,576
 elements, F-order CHAIN eager versus AUTO was 391.303 versus 3,664.833 µs for
 float32, and 3,002.260 versus 7,548.619 µs for float64. The earlier apparent
 F-order AUTO advantage therefore does not hold in these corrected cases. The
-benchmark patch has not yet been applied to this repository.
+benchmark correction is applied on the 0.6.0 branch.
 
 ## JFR and compilation
 
@@ -81,3 +81,12 @@ compilation. The separate lifecycle JMH suite also ran.
 
 See the [protocol](M3-1-protocol.md) and the proposed
 [0.6.0 plan](../milestones/M4-0.6-plan.md).
+
+## 0.6.0 starting baseline
+
+The 0.6.0 work starts from the merged 0.5.0 implementation and oracle cache
+fix. The reference timings above were measured at `4aff717` on the user's
+machine, not at the later merge: source provenance is part of the measurement.
+The clean follow-up was a focused investigation, not a complete replacement for
+the earlier dirty full campaign. Keep those datasets distinct when comparing
+future work. No reference-machine measurements have yet been made for 0.6.0.

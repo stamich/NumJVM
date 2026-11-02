@@ -2,11 +2,12 @@ plugins {
     application
 }
 
-val numjvmVersion = providers.gradleProperty("numjvmVersion").orElse("0.5.0-alpha")
+val numjvmVersion = providers.gradleProperty("numjvmVersion").orElse("0.6.0-alpha")
 
 dependencies {
     implementation(numjvmVersion.map { "io.github.stamich:numjvm-io:$it" })
     implementation(numjvmVersion.map { "io.github.stamich:numjvm-linalg:$it" })
+    implementation(numjvmVersion.map { "io.github.stamich:numjvm-jit:$it" })
     if (providers.gradleProperty("withVector").isPresent || providers.gradleProperty("unresolvedVector").isPresent) {
         runtimeOnly(numjvmVersion.map { "io.github.stamich:numjvm-vector:$it" })
     }

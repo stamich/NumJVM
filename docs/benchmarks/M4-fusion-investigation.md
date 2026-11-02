@@ -1,0 +1,51 @@
+# Fused vector investigation
+
+The supplied JDK 25 recordings reproduce the 0.5.0 allocation issue on the
+reference host: float32, 1,048,576 elements, JMH GC profiler: AUTO ADD
+16,785,621 B/op and CHAIN 33,568,252 B/op versus eager approximately 1,089
+and 3,267 B/op. JFR allocation samples point to `FloatFusedKernel.run` vector
+loads, including `float[]` and `Float256Vector` objects. Samples are not counts;
+see [reference results](M3-1-reference-results.md) for provenance and limits.
+
+The loop loads vectors into a `FloatVector[]` and sends that array through the
+`FloatExpression.evaluate` interface at every vector-sized iteration. This
+can cause objects to escape scalar replacement, but the profile does not prove
+why HotSpot allocated them. Generate or otherwise specialize a whole traversal
+loop and measure both allocation and speed before concluding that a change
+fixes the cause. Confirm float64 and mixed independently. Small AUTO overhead
+occurs even when eager is selected and needs a separate investigation.
+
+`FusedAllocationBenchmark` provides a focused JMH regression matrix. Run with
+`-prof gc` and inspect `gc.alloc.rate.norm` as well as elapsed time, recording
+provider and `NUMJVM_AUTO_DECISION` from its setup. For example, pass
+`-PjmhArgs='FusedAllocationBenchmark -p size=1048576 -p layout=C -p types=FLOAT32 -p chain=ADD,CHAIN -prof gc'`
+to `:numjvm-bench:jmh` with `-PsimdBench` and the required vector JVM options.
+
+An exploratory shared-machine JDK 25 run (one fork, three one-second warmups
+and measurements, 1,048,576 float32 C-order elements) compared the old array
+based path with a generated whole-run loop. AUTO ADD allocation fell from about
+12.6 MB/op to 8.1 kB/op and CHAIN from 25.2 MB/op to 13.7 kB/op. These are
+separate runs on a shared machine, not reference-machine acceptance results.
+The generated loop keeps vector intermediates in locals, preserving a separate
+scalar-tail path; mixed graphs are handled by a separately generated typed loop. Repeat the full matrix on the reference
+machine before closing performance gates.
+
+A short exploratory JDK 25 smoke run also exercised C- and F-order float64
+and mixed CHAIN cases with the generated loops and GC profiler. Mixed
+float32-to-float64 transitions remain explicit so float32 nodes round before
+promotion. These smoke tests do not replace the reference campaign.
+
+For a single unary or binary ufunc with array inputs, the eager scheduler needs
+no temporary arrays. AUTO now checks the small-input eager path before building
+a generated traversal, and that single-ufunc case avoids opening a temporary
+scope. More complex small graphs still incur scheduler and scope costs; the
+reference-machine small-input budget has not yet been remeasured.
+
+AUTO selects eager for a single direct array ufunc with an available SIMD
+provider. Such an operation has no intermediate array for fusion to eliminate;
+the clean 0.5.0 ADD comparison also favored eager. A decision is reported as
+`single ufunc`. Scalar-provider dispatch and multi-operation thresholds remain
+unchanged. Since the kernels changed after the reference run, numerical
+threshold calibration requires new reference measurements; do not infer it
+from the older measurements. The allocation benchmark's ADD case now measures
+the selected eager path, while CHAIN exercises eligible fused execution.

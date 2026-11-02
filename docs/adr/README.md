@@ -15,3 +15,4 @@ marked "Superseded by ADR-NNN" rather than deleted.
 - [ADR-007: explicit expression execution](ADR-007-expression-execution.md) (proposed)
 - [ADR-008: expression strategy and optional fused vectors](ADR-008-expression-strategy.md) (proposed)
 - [ADR-009: real dot and vecdot contractions](ADR-009-contractions.md) (proposed)
+- [ADR-010: opt-in parallel CPU execution](ADR-010-parallel-execution.md) (proposed)

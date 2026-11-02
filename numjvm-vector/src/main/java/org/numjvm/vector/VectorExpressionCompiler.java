@@ -34,11 +34,16 @@ final class VectorExpressionCompiler {
         ClassDesc name = ClassDesc.of("org.numjvm.vector.Generated" + kind + "Expression");
         ClassDesc contract = ClassDesc.of("org.numjvm.vector." + kind + "Expression");
         byte[] bytes = ClassFile.of().build(name, builder -> builder.withFlags(ClassFile.ACC_FINAL | ClassFile.ACC_SUPER)
-                .withInterfaceSymbols(contract)
+                .withInterfaceSymbols(contract, ClassDesc.of("org.numjvm.vector.VectorLoop"))
                 .withMethodBody("<init>", MethodTypeDesc.of(ConstantDescs.CD_void), 0,
                         code -> code.aload(0).invokespecial(ConstantDescs.CD_Object, "<init>", MethodTypeDesc.of(ConstantDescs.CD_void)).return_())
                 .withMethodBody("evaluate", MethodTypeDesc.of(vector, vector.arrayType()), ClassFile.ACC_PUBLIC,
-                        code -> emit(code, graph, vector, single)));
+                        code -> { emit(code, graph, vector, single, 2, null, null, null); code.areturn(); })
+                .withMethodBody("runVectors", MethodTypeDesc.of(ConstantDescs.CD_void,
+                                ClassDesc.of("java.lang.foreign.MemorySegment").arrayType(),
+                                ConstantDescs.CD_long.arrayType(), ConstantDescs.CD_long.arrayType(),
+                                ConstantDescs.CD_long, ConstantDescs.CD_int), ClassFile.ACC_PUBLIC,
+                        code -> emitLoop(code, graph, vector, single)));
         try {
             var lookup = MethodHandles.lookup().defineHiddenClass(bytes, true);
             return lookup.findConstructor(lookup.lookupClass(), MethodType.methodType(void.class)).invoke();
@@ -46,11 +51,40 @@ final class VectorExpressionCompiler {
         catch (Throwable error) { throw new IllegalStateException("cannot define fused vector expression", error); }
     }
 
-    private static void emit(CodeBuilder code, FusedGraph graph, ClassDesc vector, boolean single) {
+    private static void emitLoop(CodeBuilder code, FusedGraph graph, ClassDesc vector, boolean single) {
+        int count = graph.inputTypes().size() + 1;
+        int[] segments = new int[count], offsets = new int[count], strides = new int[count];
+        int local = 9;
+        for (int i = 0; i < count; i++) {
+            segments[i] = local++; offsets[i] = local; local += 2; strides[i] = local; local += 2;
+            code.aload(1).loadConstant(i).aaload().astore(segments[i]);
+            code.aload(2).loadConstant(i).laload().lstore(offsets[i]);
+            code.aload(3).loadConstant(i).laload().lstore(strides[i]);
+        }
+        var loop = code.newLabel();
+        var done = code.newLabel();
+        code.lconst_0().lstore(7).labelBinding(loop).lload(7).lload(4).lcmp().ifge(done);
+        code.aload(segments[count - 1]).lload(offsets[count - 1]);
+        emit(code, graph, vector, single, local, segments, offsets, strides);
+        code.invokestatic(ClassDesc.of("org.numjvm.vector.VectorMemory"), single ? "storeFloat" : "storeDouble",
+                MethodTypeDesc.of(ConstantDescs.CD_void, ClassDesc.of("java.lang.foreign.MemorySegment"), ConstantDescs.CD_long, vector));
+        for (int i = 0; i < count; i++)
+            code.lload(offsets[i]).lload(strides[i]).iload(6).i2l().lmul().ladd().lstore(offsets[i]);
+        code.lload(7).iload(6).i2l().ladd().lstore(7).goto_(loop).labelBinding(done).return_();
+    }
+
+    private static void emit(CodeBuilder code, FusedGraph graph, ClassDesc vector, boolean single,
+                             int first, int[] segments, int[] offsets, int[] strides) {
         for (int i = 0; i < graph.nodes().size(); i++) {
             var node = graph.nodes().get(i);
             switch (node.op()) {
-                case INPUT -> code.aload(1).loadConstant(node.slot()).aaload();
+                case INPUT -> {
+                    if (segments == null) code.aload(1).loadConstant(node.slot()).aaload();
+                    else code.aload(segments[node.slot()]).lload(offsets[node.slot()]).lload(strides[node.slot()])
+                            .invokestatic(ClassDesc.of("org.numjvm.vector.VectorMemory"), single ? "loadFloat" : "loadDouble",
+                                    MethodTypeDesc.of(vector, ClassDesc.of("java.lang.foreign.MemorySegment"),
+                                            ConstantDescs.CD_long, ConstantDescs.CD_long));
+                }
                 case CONSTANT -> {
                     code.getstatic(vector, "SPECIES_PREFERRED", SPECIES);
                     if (single) {
@@ -67,18 +101,18 @@ final class VectorExpressionCompiler {
                 case ADD, SUBTRACT, MULTIPLY, DIVIDE -> {
                     String method = switch (node.op()) { case ADD -> "add"; case SUBTRACT -> "sub";
                         case MULTIPLY -> "mul"; default -> "div"; };
-                    code.aload(2 + node.left()).aload(2 + node.right())
+                    code.aload(first + node.left()).aload(first + node.right())
                             .invokevirtual(vector, method, MethodTypeDesc.of(vector, BASE_VECTOR));
                 }
                 case NEGATIVE, ABSOLUTE, SQRT -> {
                     String method = node.op() == FusedGraph.Op.NEGATIVE ? "neg" : node.op() == FusedGraph.Op.ABSOLUTE ? "abs" : "sqrt";
-                    code.aload(2 + node.left()).invokevirtual(vector, method, MethodTypeDesc.of(vector));
+                    code.aload(first + node.left()).invokevirtual(vector, method, MethodTypeDesc.of(vector));
                 }
-                case SQUARE -> code.aload(2 + node.left()).aload(2 + node.left())
+                case SQUARE -> code.aload(first + node.left()).aload(first + node.left())
                         .invokevirtual(vector, "mul", MethodTypeDesc.of(vector, BASE_VECTOR));
             }
-            code.astore(2 + i);
+            code.astore(first + i);
         }
-        code.aload(1 + graph.nodes().size()).areturn();
+        code.aload(first + graph.nodes().size() - 1);
     }
 }

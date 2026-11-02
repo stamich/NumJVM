@@ -1,6 +1,9 @@
 package org.numjvm.jit;
 
 import org.numjvm.NJ;
+import org.numjvm.ParallelContext;
+import org.numjvm.dtype.DType;
+import org.numjvm.ndarray.Slice;
 import org.numjvm.Experimental;
 import org.numjvm.internal.SharedSecrets;
 import org.numjvm.ndarray.NDArray;
@@ -75,6 +78,43 @@ public final class Expression {
         return output;
     }
 
+    /** Evaluates into an output using an opt-in parallel context when eligible.
+     * Unsupported layouts, small arrays and confined memory use the caller thread.
+     * @param parallel reusable CPU execution context
+     * @param output destination
+     * @param inputs expression inputs
+     * @return output
+     */
+    public NDArray evalInto(ParallelContext parallel, NDArray output, NDArray... inputs) {
+        java.util.Objects.requireNonNull(parallel, "parallel");
+        context.admit();
+        var plan = new InvocationPlan(this, inputs);
+        plan.checkOutput(output);
+        boolean eligible = output.isCContiguous() && !plan.needsTemporary(output)
+                && (output.dtype() == DType.FLOAT32 || output.dtype() == DType.FLOAT64);
+        for (var input : inputs) {
+            eligible &= input.isCContiguous() && input.shape().equals(output.shape())
+                    && (input.dtype() == DType.FLOAT32 || input.dtype() == DType.FLOAT64);
+        }
+        NDArray[] arrays = java.util.Arrays.copyOf(inputs, inputs.length + 1);
+        arrays[inputs.length] = output;
+        NDArray[] flat = null;
+        NDArray flatOutput = null;
+        if (eligible) {
+            flat = new NDArray[inputs.length];
+            for (int i = 0; i < inputs.length; i++) flat[i] = inputs[i].reshapeView(inputs[i].size());
+            flatOutput = output.reshapeView(output.size());
+        }
+        NDArray[] finalFlat = flat;
+        NDArray finalOutput = flatOutput;
+        SharedSecrets.parallelAccess().execute(parallel, arrays, output.size(), eligible, (start, end) -> {
+            NDArray[] part = new NDArray[finalFlat.length];
+            for (int i = 0; i < part.length; i++) part[i] = finalFlat[i].slice(Slice.range(start, end));
+            evalInto(finalOutput.slice(Slice.range(start, end)), part);
+        }, () -> evalInto(output, inputs));
+        return output;
+    }
+
     private void execute(NDArray[] inputs, NDArray output) {
         if (context.mode() == Jit.Mode.EAGER) {
             if (!EagerExecutor.tryRun(this, inputs, output, context.eagerBytes()))
@@ -90,24 +130,31 @@ public final class Expression {
             context.selected("block", "explicit mode");
             return;
         }
+        long size = output.shape().size();
+        if (size == 0) { context.selected("empty", "zero elements"); return; }
+        boolean small = size <= 512;
+        if (context.mode() == Jit.Mode.AUTO && small && EagerExecutor.tryRun(this, inputs, output, context.eagerBytes())) {
+            context.eagerRun();
+            context.selected("eager", "small expression");
+            return;
+        }
         boolean eligible = KernelLoader.supports(this) && GeneratedExecutor.eligible(inputs, output);
         if (context.mode() == Jit.Mode.REQUIRED && !eligible)
             throw new IllegalArgumentException("generated execution does not support this layout or graph size");
-        long size = output.shape().size();
-        if (size == 0) { context.selected("empty", "zero elements"); return; }
         var types = new org.numjvm.dtype.DType[inputs.length];
         for (int i = 0; i < inputs.length; i++) types[i] = inputs[i].dtype();
         boolean cached = eligible && context.cached(this, types);
         boolean homogeneous = true;
         for (int i = 1; i < types.length; i++) homogeneous &= types[i] == types[0];
         boolean vectorProvider = !org.numjvm.BackendInfo.simdProvider().equals("scalar");
-        boolean small = size <= 512;
-        boolean eagerCandidate = small || (size <= 65536 && homogeneous && vectorProvider && graph.nodes().size() >= 3);
-        if (context.mode() == Jit.Mode.AUTO && small && EagerExecutor.tryRun(this, inputs, output, context.eagerBytes())) {
+        // There is no intermediate traffic to save for one direct ufunc.
+        if (context.mode() == Jit.Mode.AUTO && vectorProvider && EagerExecutor.isDirect(this)
+                && EagerExecutor.tryRun(this, inputs, output, context.eagerBytes())) {
             context.eagerRun();
-            context.selected("eager", "small expression");
+            context.selected("eager", "single ufunc");
             return;
         }
+        boolean eagerCandidate = small || (size <= 65536 && homogeneous && vectorProvider && graph.nodes().size() >= 3);
         String fusedFallback = null;
         if (context.mode() == Jit.Mode.AUTO && eligible && vectorProvider && FusedProviders.provider() != null) {
             boolean fusedCached = context.fusedCached(this, types);

@@ -8,6 +8,25 @@ import org.numjvm.ndarray.NDArray;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FusedFloatTest {
+    @Test void generatedLoopHandlesFiveInputsBroadcastAndTail() {
+        Assumptions.assumeTrue(FusedProviders.provider() != null, "optional vector provider unavailable");
+        try (var context = Jit.context(Jit.Mode.REQUIRED)) {
+            var graph = context.trace(5, i -> i.input(0).multiply(i.input(1)).add(i.input(2))
+                    .divide(i.input(3)).subtract(i.input(4)));
+            NDArray[] inputs = {NJ.ones(DType.FLOAT32, 513), NJ.ones(DType.FLOAT32, 513),
+                    NJ.ones(DType.FLOAT32, 1), NJ.ones(DType.FLOAT32, 513), NJ.ones(DType.FLOAT32, 513)};
+            var kernel = FusedProviders.compile(graph, new DType[]{DType.FLOAT32, DType.FLOAT32,
+                    DType.FLOAT32, DType.FLOAT32, DType.FLOAT32});
+            assertNotNull(kernel);
+            var actual = new InvocationPlan(graph, inputs).allocate();
+            GeneratedExecutor.run(kernel, inputs, actual);
+            var expected = graph.eval(inputs);
+            for (int i = 0; i < 513; i++)
+                assertEquals(Float.floatToRawIntBits((float) expected.getDouble(i)),
+                        Float.floatToRawIntBits((float) actual.getDouble(i)), "index " + i);
+        }
+    }
+
     @Test void allOperationsMatchScalar() {
         Assumptions.assumeTrue(FusedProviders.provider() != null, "optional vector provider unavailable");
         var input = NJ.array(new float[]{-0.0f, 0, -1, 1, Float.NaN, Float.POSITIVE_INFINITY,

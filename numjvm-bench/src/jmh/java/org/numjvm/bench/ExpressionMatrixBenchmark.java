@@ -42,6 +42,13 @@ public class ExpressionMatrixBenchmark {
         if (layout == Layouts.Layout.F) out = out.copy(Order.F);
         temp1 = NJ.zeros(resultType, Layouts.rows(size), Layouts.cols(size));
         temp2 = NJ.zeros(resultType, Layouts.rows(size), Layouts.cols(size));
+        // Match intermediate traversal to the Fortran-ordered inputs and output.
+        if (layout == Layouts.Layout.F) {
+            temp1 = temp1.copy(Order.F);
+            temp2 = temp2.copy(Order.F);
+            if (!out.isFContiguous() || !temp1.isFContiguous() || !temp2.isFContiguous())
+                throw new IllegalStateException("Fortran benchmark buffers must be F-contiguous");
+        }
         auto = Jit.context(Jit.Mode.AUTO); block = Jit.context(Jit.Mode.BLOCK); generated = Jit.context(Jit.Mode.REQUIRED);
         scheduled = Jit.context(Jit.Mode.EAGER, 64, 65536, 64L * 1024 * 1024);
         autoPlan = trace(auto); blockPlan = trace(block); generatedPlan = trace(generated); scheduledPlan = trace(scheduled);

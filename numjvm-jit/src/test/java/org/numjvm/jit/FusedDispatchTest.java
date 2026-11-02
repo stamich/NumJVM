@@ -9,6 +9,18 @@ import org.numjvm.ndarray.Slice;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FusedDispatchTest {
+    @Test void singleVectorUfuncUsesEagerWithoutCompilation() {
+        Assumptions.assumeTrue(FusedProviders.provider() != null, "optional vector provider unavailable");
+        try (var context = Jit.context(Jit.Mode.AUTO)) {
+            var graph = context.trace(2, i -> i.input(0).add(i.input(1)));
+            var a = NJ.ones(DType.FLOAT32, 65536);
+            assertEquals(2.0, graph.eval(a, a).getDouble(0));
+            assertEquals("eager", context.lastDecision().strategy());
+            assertEquals("single ufunc", context.lastDecision().reason());
+            assertEquals(0, context.fusedStatistics().compilations());
+        }
+    }
+
     @Test void autoRunsAndCachesFusedGraphWhileExplicitModesRemainStable() {
         Assumptions.assumeTrue(FusedProviders.provider() != null, "optional vector provider unavailable");
         try (var context = Jit.context(Jit.Mode.AUTO, 1)) {

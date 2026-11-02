@@ -8,6 +8,19 @@ import org.numjvm.ufunc.Ufuncs;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EagerExecutorTest {
+    @Test void directSingleUfuncSupportsMixedInputsAndInPlaceOutputWithoutScratch() {
+        try (var context = Jit.context(Jit.Mode.EAGER, 4, 2048, 0)) {
+            var left = NJ.ones(DType.FLOAT64, 17);
+            var right = NJ.ones(DType.FLOAT32, 17);
+            var add = context.trace(2, i -> i.input(0).add(i.input(1)));
+            assertSame(left, add.evalInto(left, left, right));
+            assertEquals(2.0, left.getDouble(16));
+            var square = context.trace(1, i -> i.input(0).square());
+            square.evalInto(left, left);
+            assertEquals(4.0, left.getDouble(16));
+        }
+    }
+
     @Test void sharedDagWeakScalarsAndMixedTypesMatchEager() {
         try (var context = Jit.context(Jit.Mode.BLOCK)) {
             var expression = context.trace(2, i -> {
