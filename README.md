@@ -15,8 +15,9 @@ Numerical computing for the Java Virtual Machine: N-dimensional arrays with NumP
 Foreign Function & Memory API. No Python, NumPy or native libraries are needed at run time.
 
 > **Status: 0.5.0-alpha implementation candidate (M3.1).** Experimental expression
-> execution and real contractions extend the CPU APIs. Reference-performance gates
-> remain open; see [0.5.0 status](docs/milestones/M3-1-status.md). The API remains experimental.
+> execution and real contractions extend the CPU APIs. Reference measurements show
+> substantial AUTO regressions in some cases; see [0.5.0 status](docs/milestones/M3-1-status.md).
+> Performance gates remain open and the API remains experimental.
 
 ## Quick start
 
@@ -139,7 +140,9 @@ conditional selection, other transcendental functions, reductions, and matmul
 inside expressions are not yet supported. See the [expression guide](docs/design/expression-execution.md)
 and run `./gradlew :examples:fused-expressions:run`. AUTO may select optional
 fused SIMD when eligible; `lastDecision()` identifies the actual strategy.
-Performance targets remain unverified; see the [reference protocol](docs/benchmarks/M3-1-protocol.md).
+Reference results show substantial AUTO slowdowns and allocation in some cases;
+see the [results](docs/benchmarks/M3-1-reference-results.md) and
+[reference protocol](docs/benchmarks/M3-1-protocol.md).
 
 ## Building
 
